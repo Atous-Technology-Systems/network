@@ -1,11 +1,3 @@
-Ótima observação\! Peço desculpas pelo erro na sintaxe do Mermaid. A presença de parênteses dentro das labels dos nós pode quebrar o renderizador. A correção é colocar o texto entre aspas.
-
-Já ajustei o "Diagrama 5" e revisei os outros para garantir que todos estejam corretos.
-
-Aqui está o `README.md` completo e corrigido, pronto para ser utilizado:
-
------
-
 # ATous Secure Network 🛡️
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
