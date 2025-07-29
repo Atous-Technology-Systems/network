@@ -195,10 +195,16 @@ class ModelManagerImpl:
         Returns:
             str: Current version string or None if not available
         """
+        # First check metadata
         if hasattr(self, 'metadata') and self.metadata and 'current_version' in self.metadata:
             return self.metadata['current_version']
+            
+        # Fall back to updater's current version if available
+        if hasattr(self, 'updater') and hasattr(self.updater, 'current_version'):
+            return self.updater.current_version
+            
         return None
-
+    
     def get_model_info(self, version: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """
         Get information about a specific model version.
@@ -348,10 +354,26 @@ class ModelManagerImpl:
                 return [int(n) for n in v.split('.')]
             except (ValueError, AttributeError):
                 return []
-                
-        versions = [v for v in self.metadata.keys() if v.replace('.', '').isdigit()]
-        versions.sort(reverse=True, key=version_key)
-        return versions
+        
+        # Get versions from metadata
+        versions = set()
+        if hasattr(self, 'metadata') and self.metadata:
+            versions.update(v for v in self.metadata.keys() if v.replace('.', '').isdigit())
+        
+        # Also check the filesystem for version directories
+        try:
+            for entry in os.listdir(self.config['storage_path']):
+                if os.path.isdir(os.path.join(self.config['storage_path'], entry)):
+                    # Check for directories named 'vX.Y.Z' or 'modelname_vX.Y.Z'
+                    if entry.startswith('v') and all(c.isdigit() or c == '.' for c in entry[1:]):
+                        versions.add(entry[1:])  # Remove the 'v' prefix
+                    elif '_v' in entry and all(c.isdigit() or c == '.' for c in entry.split('_v')[-1]):
+                        versions.add(entry.split('_v')[-1])
+        except (FileNotFoundError, OSError) as e:
+            self.logger.warning(f"Error scanning for version directories: {e}")
+        
+        # Sort versions with newest first
+        return sorted(versions, key=version_key, reverse=True)
     
     def rollback_version(self, version: str) -> bool:
         """
@@ -441,41 +463,52 @@ class ModelManagerImpl:
             - Preserves at least one version even if keep_versions is 0
         """
         if keep_versions is None:
-            keep_versions = self.config.get('max_versions', 5)
-        
-        # Always keep at least one version
+            keep_versions = self.max_versions
+            
+        # Ensure we keep at least one version
         keep_versions = max(1, keep_versions)
         
-        # Get all versions, excluding the current version from cleanup
-        all_versions = self.list_available_versions()
+        # Get all versions and sort them (newest first)
+        versions = self.list_available_versions()
+        if not versions:
+            return 0
+            
+        # Sort versions (newest first)
+        versions = sorted(versions, reverse=True, key=lambda v: [int(n) for n in v.split('.')])
+        
+        # Get current version
         current_version = self._get_current_version()
         
-        # Filter out the current version and any non-version keys
-        versions_to_clean = [v for v in all_versions 
-                           if v != current_version and v.replace('.', '').isdigit()]
+        # Don't remove if we don't have more than keep_versions
+        if len(versions) <= keep_versions:
+            return 0
+            
+        # Get versions to remove (oldest first, exclude current version)
+        versions_to_remove = []
         
-        # Sort versions by semantic versioning (newest first)
-        versions_to_clean.sort(reverse=True, 
-                             key=lambda v: [int(n) for n in v.split('.')])
-        
-        if len(versions_to_clean) <= keep_versions:
-            return 0  # Not enough versions to clean up
-        
-        # Determine which versions to remove (keep the most recent 'keep_versions')
-        versions_to_remove = versions_to_clean[keep_versions:]
-        
-        removed = 0
-        for version in versions_to_remove:
-            model_info = self.metadata.get(version)
-            if not model_info:
+        # Start from the end (oldest) and work backwards
+        for version in reversed(versions):
+            if version == current_version:
                 continue
                 
+            if len(versions) - len(versions_to_remove) > keep_versions:
+                versions_to_remove.append(version)
+            else:
+                break
+                
+        # Remove the versions
+        removed = 0
+        for version in versions_to_remove:
+            # Get model path from metadata
+            model_info = self.metadata.get(version, {})
             model_path = model_info.get('path')
+            
             if not model_path or not os.path.exists(model_path):
-                # Remove from metadata if file doesn't exist
-                del self.metadata[version]
-                removed += 1
-                continue
+                # Try to construct the path if not in metadata
+                model_path = os.path.join(self.config['storage_path'], f'v{version}', 'model.bin')
+                if not os.path.exists(model_path):
+                    self.logger.warning(f"Model path not found for version {version}")
+                    continue
                 
             try:
                 # Remove the model file
@@ -483,14 +516,16 @@ class ModelManagerImpl:
                     os.remove(model_path)
                 elif os.path.isdir(model_path):
                     shutil.rmtree(model_path)
-                    
-                # Remove the version directory if it's empty
-                version_dir = os.path.dirname(model_path)
-                if os.path.exists(version_dir) and not os.listdir(version_dir):
-                    os.rmdir(version_dir)
                 
-                # Remove from metadata
-                del self.metadata[version]
+                # Remove the version directory if it exists and is empty
+                version_dir = os.path.dirname(model_path)
+                if os.path.exists(version_dir):
+                    if not os.listdir(version_dir):  # Only remove if empty
+                        os.rmdir(version_dir)
+                
+                # Remove from metadata if it exists
+                if version in self.metadata:
+                    del self.metadata[version]
                 removed += 1
                 self.logger.info(f"Removed old version: {version}")
                 
