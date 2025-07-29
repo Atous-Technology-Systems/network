@@ -148,20 +148,25 @@ class ModelManager:
             
         return self.updater.rollback(version)
         
-    def check_for_updates(self) -> Dict[str, Any]:
+    def check_for_updates(self, server_url: str) -> Dict[str, Any]:
         """
         Check for available model updates.
         
+        Args:
+            server_url: URL of the update server
+            
         Returns:
             Dict[str, Any]: Update information, including whether an update is available
         """
-        self.logger.info("Checking for model updates")
+        self.logger.info(f"Checking for model updates from {server_url}")
         
         # For testing purposes, if updater is None, return a default response
         if self.updater is None:
             return {'update_available': False}
             
-        return self.updater.check_for_updates()
+        # Forward the call to the updater if available and convert the boolean response to a dict
+        update_available = self.updater.check_for_updates(server_url)
+        return {'update_available': update_available}
         
         # Ensure storage directory exists
         os.makedirs(self.config['storage_path'], exist_ok=True)

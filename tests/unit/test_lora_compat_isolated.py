@@ -157,15 +157,24 @@ class TestLoRaOptimizerIsolated(unittest.TestCase):
         # Reset mock call count
         self.mock_hardware_instance.send_command.reset_mock()
         
+        # Setup mock to return success for AT and AT+SEND commands
+        self.mock_hardware_instance.send_command.side_effect = [
+            (True, "OK"),  # Response to AT command
+            (True, "OK")   # Response to AT+SEND command
+        ]
+        
         # Call the method under test
         result = self.lora.send(self.test_message)
                
-        # Verify the result and calls
+        # Verify the result
         self.assertEqual(result, len(self.test_message))  # Should return number of bytes sent
         
-        # Verify the AT command was sent with the correct format
-        expected_cmd = f"AT+SEND={self.test_message}"
-        self.mock_hardware_instance.send_command.assert_called_once_with(expected_cmd)
+        # Verify both AT and AT+SEND commands were sent
+        expected_calls = [
+            unittest.mock.call("AT"),
+            unittest.mock.call(f"AT+SEND={self.test_message}")
+        ]
+        self.mock_hardware_instance.send_command.assert_has_calls(expected_calls)
     
     def test_receive_message_success(self):
         """Test successful message reception."""

@@ -133,7 +133,7 @@ class TestRealModelManager:
         manager = ModelManager(model_config)
         
         # Since updater is None, it should return default response for testing
-        result = manager.check_for_updates()
+        result = manager.check_for_updates(server_url='http://example.com/updates')
         
         assert result == {'update_available': False}
 
