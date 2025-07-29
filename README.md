@@ -1,8 +1,8 @@
-Com certeza\! Com base em toda a análise do seu sistema, preparei um `README.md` completo, projetado para ser ao mesmo tempo tecnicamente informativo para desenvolvedores e atraente para potenciais clientes.
+Ótima observação\! Peço desculpas pelo erro na sintaxe do Mermaid. A presença de parênteses dentro das labels dos nós pode quebrar o renderizador. A correção é colocar o texto entre aspas.
 
-Ele inclui a visão geral, funcionalidades, arquitetura, os diagramas detalhados que ilustram o funcionamento e um guia de início rápido.
+Já ajustei o "Diagrama 5" e revisei os outros para garantir que todos estejam corretos.
 
-Aqui está o `README.md` para o seu projeto:
+Aqui está o `README.md` completo e corrigido, pronto para ser utilizado:
 
 -----
 
@@ -197,33 +197,33 @@ graph TD
     F --> R1;
 ```
 
-#### **Diagrama 5: Diagrama de Fluxo de Dados da Pipeline Cognitiva (LLM-SLM)**
+#### **Diagrama 5: Diagrama de Fluxo de Dados da Pipeline Cognitiva (LLM-SLM) - CORRIGIDO**
 
 *Ilustra a transferência de contexto entre os modelos de linguagem na borda e na nuvem para aprendizado aprimorado.*
 
 ```mermaid
 graph TD
     subgraph "Dispositivo de Borda (Edge Device)"
-        A[1. Dados Brutos (ex: logs de rede)]
-        B[2. SLM (Modelo Pequeno) local]
-        C[3. Geração de Contexto Cognitivo]
-        D[Payload Compacto e Anonimizado]
+        A["1. Dados Brutos (ex: logs de rede)"]
+        B["2. SLM (Modelo Pequeno) local"]
+        C["3. Geração de Contexto Cognitivo"]
+        D["Payload Compacto e Anonimizado"]
     end
 
     subgraph "Servidor Central / Nuvem"
-        E[5. Agregação de Contextos]
-        F[6. LLM (Modelo Grande) - Análise Profunda]
-        G[7. Geração de Insights e Atualizações]
-        H[8. Novas Assinaturas de Ameaças / Otimizações de Modelo]
+        E["5. Agregação de Contextos"]
+        F["6. LLM (Modelo Grande) - Análise Profunda"]
+        G["7. Geração de Insights e Atualizações"]
+        H["8. Novas Assinaturas / Otimizações de Modelo"]
     end
 
-    A --> B: "Processa"
-    B --> C: "Extrai Embeddings e Gera Resumo"
-    C --> D: "{embeddings, summary, metadata}"
+    A -- "Processa" --> B
+    B -- "Extrai Embeddings e Gera Resumo" --> C
+    C -- "{embeddings, summary, metadata}" --> D
     D -- "4. Transmissão Segura (LoRa/Wi-Fi)" --> E
-    E --> F: "Cria Prompt para Análise Agregada"
-    F --> G: "Identifica Padrões Globais"
-    G --> H: "Envia para o Model Manager"
+    E -- "Cria Prompt para Análise Agregada" --> F
+    F -- "Identifica Padrões Globais" --> G
+    G -- "Envia para o Model Manager" --> H
     H -- "9. Distribuição via OTA para os Nós" --> A
 
     classDef edge fill:#cce5ff,stroke:#333;
