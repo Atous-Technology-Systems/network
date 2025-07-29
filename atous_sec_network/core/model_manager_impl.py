@@ -698,7 +698,10 @@ class ModelManagerImpl:
     def _log_download_progress(downloaded: int, total: int) -> None:
         """Log download progress."""
         if total > 0:
-            percent = (downloaded / total) * 100
-            print(f"\rDownloaded: {downloaded}/{total} bytes ({percent:.1f}%)", end='')
+            progress = (downloaded / total) * 100
+            print(f"Download progress: {progress:.1f}% ({downloaded}/{total} bytes)", end='\r')
             if downloaded >= total:
-                print()  # New line when done
+                print()  # New line when download is complete
+
+# Create an alias for backward compatibility
+ModelManager = ModelManagerImpl

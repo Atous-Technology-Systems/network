@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Teste de Integração Completa - ATous Secure Network
 

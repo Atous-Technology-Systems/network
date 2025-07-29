@@ -3,5 +3,6 @@
 # Import directly from modules
 from atous_sec_network.core.model_manager import ModelManager, FederatedModelUpdater
 from atous_sec_network.core.model_metadata import ModelMetadata
+from atous_sec_network.core.model_manager_impl import ModelManagerImpl
 
-__all__ = ['ModelManager', 'FederatedModelUpdater', 'ModelMetadata']
+__all__ = ['ModelManager', 'FederatedModelUpdater', 'ModelMetadata', 'ModelManagerImpl']

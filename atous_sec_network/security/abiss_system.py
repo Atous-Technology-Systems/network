@@ -224,8 +224,14 @@ class AdaptiveResponse:
                 message = self.parameters.get("message", "Security alert")
                 success = True  # Simulação
                 
+            elif self.action == "monitor":
+                # Simular monitoramento
+                ip = self.parameters.get("ip", "")
+                duration = self.parameters.get("duration", 3600)
+                success = True  # Simulação
+                
             else:
-                success = False
+                success = False  # Ação desconhecida
             
             execution_time = time.time() - start_time
             
@@ -328,20 +334,32 @@ class ABISSSystem:
                 # Get model parameters from config or use defaults
                 model_params = self.config.get("model_params", {})
                 
+                # Create a copy to avoid modifying the original config
+                model_params = model_params.copy()
+                
                 # Set default torch_dtype if not specified
                 if "torch_dtype" not in model_params and hasattr(torch, 'float16'):
                     model_params["torch_dtype"] = torch.float16
+                
+                # Handle string dtype (e.g., "float16")
+                if isinstance(model_params.get("torch_dtype"), str):
+                    if hasattr(torch, model_params["torch_dtype"]):
+                        model_params["torch_dtype"] = getattr(torch, model_params["torch_dtype"])
                 
                 # Set default device_map if not specified
                 if "device_map" not in model_params:
                     model_params["device_map"] = "auto"
                 
-                self.model = AutoModelForCausalLM.from_pretrained(
+                # Store the model in a temporary variable first
+                model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
                     **model_params
                 )
-                if self.model is None:
+                if model is None:
                     raise ValueError("Falha ao carregar o modelo")
+                
+                # Only set the model attribute if everything is successful
+                self.model = model
             except Exception as e:
                 self.logger.error(f"Erro ao carregar o modelo: {str(e)}")
                 self.tokenizer = None
@@ -353,6 +371,9 @@ class ABISSSystem:
             try:
                 # Get pipeline parameters from config or use defaults
                 pipeline_params = self.config.get("pipeline_params", {})
+                
+                # Create a copy to avoid modifying the original config
+                pipeline_params = pipeline_params.copy()
                 
                 # Set default parameters if not specified
                 if "max_length" not in pipeline_params:

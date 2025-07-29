@@ -12,6 +12,7 @@ requests>=2.26.0
 websockets>=10.0
 asyncio-mqtt>=0.11.0
 setuptools>=80.0.0
+
 # Security & Cryptography
 cryptography>=3.4.0
 pycryptodome>=3.10.0
@@ -47,3 +48,11 @@ protobuf>=3.19.0
 # Async Support
 aiohttp>=3.8.0
 asyncio>=3.4.3
+
+# Hugging Face 
+datasets>=3.3.2
+accelerate>=1.4.0
+evaluate>=0.4.3
+bitsandbytes=0.45.3
+trl>=0.15.2
+peft>=0.14.0

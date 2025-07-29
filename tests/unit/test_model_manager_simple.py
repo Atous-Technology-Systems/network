@@ -11,7 +11,12 @@ from unittest.mock import MagicMock, patch
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 # Import the module to test
-from atous_sec_network.core.model_manager_impl import ModelManager
+# Import ModelManager from model_manager_impl
+try:
+    from atous_sec_network.core.model_manager_impl import ModelManager
+except ImportError:
+    # Fallback to regular ModelManager if impl version not available
+    from atous_sec_network.core.model_manager import ModelManager
 
 def test_model_manager_initialization():
     """Test that ModelManager can be initialized."""

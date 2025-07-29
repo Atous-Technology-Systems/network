@@ -53,6 +53,39 @@ class ModelManager:
         # Set up logging
         self.logger = logging.getLogger(__name__)
         
+    def _save_model_metadata(self, model_name: str, version: str, metadata: Dict[str, Any]) -> bool:
+        """
+        Save metadata for a model to a JSON file.
+        
+        Args:
+            model_name: Name of the model
+            version: Version of the model
+            metadata: Dictionary containing model metadata
+            
+        Returns:
+            bool: True if metadata was saved successfully, False otherwise
+        """
+        try:
+            # Create the metadata directory if it doesn't exist
+            os.makedirs(self.config.get('storage_path', 'models'), exist_ok=True)
+            
+            # Construct the metadata file path
+            metadata_file = os.path.join(
+                self.config.get('storage_path', 'models'),
+                f"{model_name}_v{version}_metadata.json"
+            )
+            
+            # Save the metadata to a JSON file
+            with open(metadata_file, 'w') as f:
+                json.dump(metadata, f, indent=2)
+                
+            self.logger.info(f"Saved metadata for {model_name} v{version} to {metadata_file}")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error saving metadata for {model_name} v{version}: {e}")
+            return False
+    
     def download_model(self, model_url: str, model_path: str, checksum: Optional[str] = None, 
                       timeout: int = 60, max_retries: int = 3) -> bool:
         """

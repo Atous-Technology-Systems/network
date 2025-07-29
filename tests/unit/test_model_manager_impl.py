@@ -18,7 +18,12 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 # Mock dependencies before importing the module
 import atous_sec_network.core.model_manager as model_manager
 from atous_sec_network.core.model_metadata import ModelMetadata
-from atous_sec_network.core.model_manager_impl import ModelManager
+# Import ModelManager from model_manager_impl
+try:
+    from atous_sec_network.core.model_manager_impl import ModelManager
+except ImportError:
+    # Fallback to regular ModelManager if impl version not available
+    from atous_sec_network.core.model_manager import ModelManager
 
 class TestModelManager(unittest.TestCase):
     """Test cases for ModelManager class."""
@@ -50,7 +55,7 @@ class TestModelManager(unittest.TestCase):
         
         # Patch the FederatedModelUpdater class
         self.updater_patcher = patch('atous_sec_network.core.model_manager_impl.FederatedModelUpdater', 
-                                    return_value=self.mock_updater)
+        return_value=self.mock_updater)
         self.mock_updater_class = self.updater_patcher.start()
         
         # Initialize the manager

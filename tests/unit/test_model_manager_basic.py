@@ -49,9 +49,9 @@ class TestModelManagerBasic(unittest.TestCase):
                            self.mock_updater_class)
         self.patcher.start()
         
-        # Import ModelManager after patching
-        from atous_sec_network.core.model_manager_impl import ModelManager
-        self.ModelManager = ModelManager
+        # Import ModelManagerImpl after patching
+        from atous_sec_network.core.model_manager_impl import ModelManagerImpl
+        self.ModelManager = ModelManagerImpl
     
     def tearDown(self):
         """Clean up after tests."""
