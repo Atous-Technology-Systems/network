@@ -3,7 +3,7 @@ import sys
 import os
 import pytest
 import importlib.util
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, patch
 
 # Add the project root to sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -94,12 +94,25 @@ class TestModelManagerDirect:
         assert hasattr(manager, 'model_path')
         assert hasattr(manager, 'updater')
     
-    def test_download_model_without_updater(self, model_config):
+    @patch('requests.Session')
+    def test_download_model_without_updater(self, mock_session, model_config):
         """Test download_model when updater is None."""
-        manager = ModelManager(model_config)
-        manager.updater = None
-        result = manager.download_model('test_model', '1.0.0')
-        assert result is True
+        # Setup mock session
+        mock_session_instance = mock_session.return_value
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.content = b"mock_model_data"
+        mock_response.raise_for_status.return_value = None
+        mock_session_instance.get.return_value = mock_response
+        
+        import tempfile, os
+        with tempfile.TemporaryDirectory() as tmpdir:
+            model_config['storage_path'] = tmpdir
+            manager = ModelManager(model_config)
+            manager.updater = None
+            model_path = os.path.join(tmpdir, 'test_model.bin')
+            result = manager.download_model('http://example.com/test_model', model_path)
+            assert result is True
     
     def test_download_model_with_updater(self, model_config, mock_updater):
         """Test download_model with a mocked updater."""

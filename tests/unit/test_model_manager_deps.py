@@ -38,6 +38,7 @@ class TestModelManagerDependencies(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.content = b"mock_model_data"
+        mock_response.raise_for_status.return_value = None
         mock_session_instance.get.return_value = mock_response
 
         # Create temporary directory for test
@@ -48,8 +49,9 @@ class TestModelManagerDependencies(unittest.TestCase):
                 'auto_rollback': True
             })
             
-            # Test download
-            success = manager.download_model('test_model', '1.0.0')
+            # Test download with proper URL and path
+            model_path = os.path.join(tmpdir, 'test_model.bin')
+            success = manager.download_model('http://example.com/test_model', model_path)
             self.assertTrue(success)
             
             # Verify request was made using the session

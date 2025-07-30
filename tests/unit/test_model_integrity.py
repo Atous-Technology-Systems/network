@@ -98,10 +98,11 @@ class TestModelIntegrity(unittest.TestCase):
         }
         
         # Test with invalid checksum
-        with patch('json.load', return_value=metadata):
-            with patch('builtins.open', mock_open(read_data=self.test_data)):
-                result = manager._verify_model_integrity(self.model_path, '1.0.0')
-                self.assertFalse(result)
+        with patch('os.path.exists', return_value=True):  # Make metadata file appear to exist
+            with patch('json.load', return_value=metadata):
+                with patch('builtins.open', mock_open(read_data=self.test_data)):
+                    result = manager._verify_model_integrity(self.model_path, '1.0.0')
+                    self.assertFalse(result)
     
     def test_verify_integrity_missing_metadata(self):
         """Test verifying a model with missing metadata."""
@@ -132,10 +133,11 @@ class TestModelIntegrity(unittest.TestCase):
         
         # Test with corrupted file data
         corrupted_data = b'corrupted model data'
-        with patch('json.load', return_value=metadata):
-            with patch('builtins.open', mock_open(read_data=corrupted_data)):
-                result = manager._verify_model_integrity(self.model_path, '1.0.0')
-                self.assertFalse(result)
+        with patch('os.path.exists', return_value=True):  # Make metadata file appear to exist
+            with patch('json.load', return_value=metadata):
+                with patch('builtins.open', mock_open(read_data=corrupted_data)):
+                    result = manager._verify_model_integrity(self.model_path, '1.0.0')
+                    self.assertFalse(result)
     
     def test_verify_integrity_size_mismatch(self):
         """Test verifying a model with incorrect file size."""
@@ -153,10 +155,11 @@ class TestModelIntegrity(unittest.TestCase):
         }
         
         # Test with size mismatch
-        with patch('json.load', return_value=metadata):
-            with patch('builtins.open', mock_open(read_data=self.test_data)):
-                result = manager._verify_model_integrity(self.model_path, '1.0.0')
-                self.assertFalse(result)
+        with patch('os.path.exists', return_value=True):  # Make metadata file appear to exist
+            with patch('json.load', return_value=metadata):
+                with patch('builtins.open', mock_open(read_data=self.test_data)):
+                    result = manager._verify_model_integrity(self.model_path, '1.0.0')
+                    self.assertFalse(result)
     
     def test_verify_integrity_version_mismatch(self):
         """Test verifying a model with version mismatch."""
@@ -174,10 +177,11 @@ class TestModelIntegrity(unittest.TestCase):
         }
         
         # Test with version mismatch
-        with patch('json.load', return_value=metadata):
-            with patch('builtins.open', mock_open(read_data=self.test_data)):
-                result = manager._verify_model_integrity(self.model_path, '1.0.0')
-                self.assertFalse(result)
+        with patch('os.path.exists', return_value=True):  # Make metadata file appear to exist
+            with patch('json.load', return_value=metadata):
+                with patch('builtins.open', mock_open(read_data=self.test_data)):
+                    result = manager._verify_model_integrity(self.model_path, '1.0.0')
+                    self.assertFalse(result)
     
     def test_verify_integrity_io_error(self):
         """Test handling of IOError during integrity check."""
@@ -199,10 +203,11 @@ class TestModelIntegrity(unittest.TestCase):
         })
         
         # Test with JSON decode error
-        with patch('json.load', side_effect=ValueError("Invalid JSON")):
-            with patch('builtins.open', mock_open(read_data=self.test_data)):
-                result = manager._verify_model_integrity(self.model_path, '1.0.0')
-                self.assertFalse(result)
+        with patch('os.path.exists', return_value=True):  # Make metadata file appear to exist
+            with patch('json.load', side_effect=ValueError("Invalid JSON")):
+                with patch('builtins.open', mock_open(read_data=self.test_data)):
+                    result = manager._verify_model_integrity(self.model_path, '1.0.0')
+                    self.assertFalse(result)
 
 if __name__ == '__main__':
     unittest.main()
