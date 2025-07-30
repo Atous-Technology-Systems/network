@@ -305,6 +305,71 @@ class ABISSSystem:
         if _attr not in globals():
             globals()[_attr] = _DummyObject if "_DummyObject" in globals() else lambda *a, **k: None
 
+    def learn_threat_pattern(self, pattern_data: Dict[str, Any]) -> str:
+        """
+        Aprende um novo padrão de ameaça
+        
+        Args:
+            pattern_data: Dicionário com os dados do padrão de ameaça
+                Deve conter: pattern_type, indicators, severity, frequency
+                Opcional: description, pattern_id
+                
+        Returns:
+            ID do padrão aprendido
+            
+        Raises:
+            ValueError: Se os dados do padrão forem inválidos
+        """
+        try:
+            # Validar dados obrigatórios
+            required_fields = ["pattern_type", "indicators", "severity", "frequency"]
+            for field in required_fields:
+                if field not in pattern_data:
+                    raise ValueError(f"Campo obrigatório ausente: {field}")
+            
+            # Criar instância do padrão de ameaça
+            pattern = ThreatPattern(
+                pattern_type=pattern_data["pattern_type"],
+                indicators=pattern_data["indicators"],
+                severity=float(pattern_data["severity"]),
+                frequency=float(pattern_data["frequency"]),
+                description=pattern_data.get("description", "")
+            )
+            
+            # Usar ID fornecido ou gerar um novo
+            if "pattern_id" in pattern_data and pattern_data["pattern_id"]:
+                pattern.pattern_id = pattern_data["pattern_id"]
+            
+            # Armazenar o padrão
+            self.threat_patterns[pattern.pattern_id] = pattern
+            
+            # Registrar no histórico de aprendizado
+            self.learning_history.append({
+                "timestamp": time.time(),
+                "action": "learn_threat_pattern",
+                "pattern_id": pattern.pattern_id,
+                "pattern_type": pattern.pattern_type
+            })
+            
+            self.logger.info(f"Novo padrão de ameaça aprendido: {pattern.pattern_type} (ID: {pattern.pattern_id})")
+            return pattern.pattern_id
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao aprender padrão de ameaça: {str(e)}")
+            raise
+    
+    def get_threat_pattern(self, pattern_id: str) -> Optional[ThreatPattern]:
+        """
+        Obtém um padrão de ameaça pelo ID
+        
+        Args:
+            pattern_id: ID do padrão de ameaça
+            
+        Returns:
+            Instância de ThreatPattern ou None se não encontrado
+        """
+        return self.threat_patterns.get(pattern_id)
+    
     def _initialize_model(self) -> None:
         """Inicializa o modelo Gemma 3N"""
         # Reset all model components to None first
@@ -337,14 +402,22 @@ class ABISSSystem:
                 # Create a copy to avoid modifying the original config
                 model_params = model_params.copy()
                 
-                # Set default torch_dtype if not specified
-                if "torch_dtype" not in model_params and hasattr(torch, 'float16'):
-                    model_params["torch_dtype"] = torch.float16
-                
+                # Handle torch_dtype configuration
+                if "torch_dtype" not in model_params:
+                    # Try to use float16 if available, otherwise fall back to float32
+                    if hasattr(torch, 'float16'):
+                        model_params["torch_dtype"] = torch.float16
+                    elif hasattr(torch, 'float32'):
+                        model_params["torch_dtype"] = torch.float32
                 # Handle string dtype (e.g., "float16")
-                if isinstance(model_params.get("torch_dtype"), str):
-                    if hasattr(torch, model_params["torch_dtype"]):
-                        model_params["torch_dtype"] = getattr(torch, model_params["torch_dtype"])
+                elif isinstance(model_params["torch_dtype"], str):
+                    dtype_str = model_params["torch_dtype"]
+                    if hasattr(torch, dtype_str):
+                        model_params["torch_dtype"] = getattr(torch, dtype_str)
+                    elif dtype_str == "float16" and hasattr(torch, 'float32'):
+                        # Fall back to float32 if float16 is requested but not available
+                        model_params["torch_dtype"] = torch.float32
+                        self.logger.warning("float16 not available, falling back to float32")
                 
                 # Set default device_map if not specified
                 if "device_map" not in model_params:
