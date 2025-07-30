@@ -69,8 +69,10 @@ class TestLoraHardwareInterface(unittest.TestCase):
         """Tests serial communication with retry and validation"""
         # Setup GPIO mock
         mock_gpio.BCM = 11
-        mock_gpio.OUT = 0
-        mock_gpio.IN = 1
+        mock_gpio.OUT = 1
+        mock_gpio.IN = 0
+        mock_gpio.HIGH = 1
+        mock_gpio.LOW = 0
         mock_gpio.setmode = Mock()
         mock_gpio.setup = Mock()
         
@@ -94,25 +96,47 @@ class TestLoraHardwareInterface(unittest.TestCase):
         self.assertTrue(success, "First command should succeed")
         self.assertEqual(response, "OK", "First response should be OK")
         
+        # Verify the command was sent correctly
+        mock_serial.write.assert_called_with(b'AT\r\n')
+        
+        # Reset mock for next test
+        mock_serial.write.reset_mock()
+        
         # Test second command (should fail)
         success, response = interface.send_command("BAD")
         self.assertFalse(success, "Second command should fail")
         self.assertEqual(response, "ERROR", "Second response should be ERROR")
         
+        # Verify the command was sent correctly
+        mock_serial.write.assert_called_with(b'BAD\r\n')
+        
+        # Reset mock for next test
+        mock_serial.write.reset_mock()
+        
         # Test third command (should succeed)
         success, response = interface.send_command("AT")
         self.assertTrue(success, "Third command should succeed")
         self.assertEqual(response, "OK", "Third response should be OK")
+        
+        # Verify the command was sent correctly
+        mock_serial.write.assert_called_with(b'AT\r\n')
+        
+        # Verify the serial port was opened and closed correctly
+        mock_serial_constructor.assert_called_once_with(port="COM1", baudrate=9600, timeout=1)
+        mock_serial.open.assert_called_once()
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
     @patch('serial.Serial')
     @patch('serial.tools.list_ports.comports')
     def test_gpio_initialization(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests GPIO initialization"""
-        # Setup expected pin modes
+        # Setup mock GPIO constants to match RPi.GPIO
         mock_gpio.BCM = 11
-        mock_gpio.OUT = 0
-        mock_gpio.IN = 1
+        mock_gpio.BOARD = 10
+        mock_gpio.OUT = 1
+        mock_gpio.IN = 0
+        mock_gpio.HIGH = 1
+        mock_gpio.LOW = 0
         
         # Create a mock serial port
         mock_serial = MagicMock()
@@ -127,9 +151,87 @@ class TestLoraHardwareInterface(unittest.TestCase):
         interface = LoraHardwareInterface()
         
         # Verify GPIO setup
-        mock_gpio.setmode.assert_called_with(mock_gpio.BCM)
-        mock_gpio.setup.assert_any_call(17, mock_gpio.OUT)  # Reset pin
-        mock_gpio.setup.assert_any_call(18, mock_gpio.IN)   # Ready pin
+        mock_gpio.setmode.assert_called_once_with(11)  # Should be called with GPIO.BCM (11)
+        
+        # Check that setup was called for both pins with correct modes
+        setup_calls = [
+            call(17, 1),  # Reset pin (17) as OUTPUT (1)
+            call(18, 0)   # Ready pin (18) as INPUT (0)
+        ]
+        mock_gpio.setup.assert_has_calls(setup_calls, any_order=True)
+        assert mock_gpio.setup.call_count == 2  # Should be called exactly twice
+    
+    @patch('atous_sec_network.network.lora_optimizer.GPIO')
+    @patch('serial.Serial')
+    @patch('serial.tools.list_ports.comports')
+    def test_serial_pool_initialization(self, mock_comports, mock_serial_constructor, mock_gpio):
+        """Tests serial pool initialization and management"""
+        # Setup GPIO mock
+        mock_gpio.BCM = 11
+        mock_gpio.OUT = 1
+        mock_gpio.IN = 0
+        mock_gpio.HIGH = 1
+        mock_gpio.LOW = 0
+        mock_gpio.setmode = Mock()
+        mock_gpio.setup = Mock()
+        
+        # Setup serial mock
+        mock_serial = MagicMock()
+        mock_serial_constructor.return_value = mock_serial
+        mock_serial.is_open = True
+        mock_serial.open = Mock()
+        mock_serial.read.return_value = b'OK\r\n'
+        # Setup port listing mock
+        mock_comports.return_value = [Mock(device="COM1")]
+        
+        # Test with default pool size (1)
+        interface = LoraHardwareInterface(port="COM1")
+        self.assertEqual(len(interface._serial_pool), 1, "Default pool size should be 1")
+        
+        # Test with custom pool size
+        pool_size = 3
+        interface = LoraHardwareInterface(port="COM1", pool_size=pool_size)
+        self.assertEqual(len(interface._serial_pool), pool_size, 
+                        f"Pool size should be {pool_size}")
+        
+        # Verify all connections are initialized
+        self.assertEqual(mock_serial_constructor.call_count, pool_size, 
+                        f"Should create {pool_size} serial connections")
+        
+        # Verify all connections are opened
+        self.assertEqual(mock_serial.open.call_count, pool_size, 
+                        f"Should open {pool_size} serial connections")
+        
+        # Test getting a connection from the pool
+        connection = interface._get_connection()
+        self.assertIsNotNone(connection, "Should return a valid connection")
+        
+        # Test returning a connection to the pool
+        interface._return_connection(connection)
+        
+        # Test getting multiple connections from the pool
+        connections = []
+        for _ in range(pool_size):
+            conn = interface._get_connection()
+            self.assertIsNotNone(conn, "Should return a valid connection")
+            connections.append(conn)
+        
+        # Verify all connections are unique
+        self.assertEqual(len(set(connections)), pool_size, 
+                        "Should return unique connections from the pool")
+        
+        # Test getting a connection when pool is empty (should create a new one)
+        extra_connection = interface._get_connection()
+        self.assertIsNotNone(extra_connection, "Should return a valid connection")
+        
+        # Verify a new connection was created when pool was empty
+        self.assertEqual(mock_serial_constructor.call_count, pool_size + 1, 
+                        "Should create a new connection when pool is empty")
+        
+        # Test closing all connections
+        interface.close()
+        self.assertEqual(mock_serial.close.call_count, pool_size + 1, 
+                        "Should close all connections")
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
     @patch('serial.Serial')
@@ -138,30 +240,64 @@ class TestLoraHardwareInterface(unittest.TestCase):
         """Tests AT command validation"""
         # Setup GPIO mock
         mock_gpio.BCM = 11
-        mock_gpio.OUT = 0
-        mock_gpio.IN = 1
+        mock_gpio.OUT = 1
+        mock_gpio.IN = 0
+        mock_gpio.HIGH = 1
+        mock_gpio.LOW = 0
         mock_gpio.setmode = Mock()
         mock_gpio.setup = Mock()
         
-        # Create a mock serial port
+        # Setup serial mock
         mock_serial = MagicMock()
         mock_serial_constructor.return_value = mock_serial
         mock_serial.is_open = True
+        mock_serial.open = Mock()
         mock_serial.read.return_value = b'OK\r\n'
-        
         # Setup port listing mock
         mock_comports.return_value = [Mock(device="COM1")]
         
-        # Create interface and test
-        interface = LoraHardwareInterface()
+        # Create interface
+        interface = LoraHardwareInterface(port="COM1")
         
         # Test invalid commands
-        with self.assertRaises(ValueError):
-            interface.send_command("")  # Empty command
-        with self.assertRaises(ValueError):
-            interface.send_command("   ")  # Only whitespace
-        with self.assertRaises(ValueError):
-            interface.send_command(None)  # None command
+        invalid_commands = [
+            "",                    # Empty command
+            "   ",                 # Only whitespace
+            None,                   # None command
+            "AT+TEST=123",         # No checksum
+            "AT+TEST=123*XX",      # Invalid checksum format
+            "AT+TEST=123*1",       # Checksum too short
+            "AT+TEST=123*123",     # Checksum too long
+            "AT+TEST=123*XX*YY",   # Multiple checksums
+            "AT+TEST=123*XX\r\n",  # Newline in command
+            "AT+TEST=123*XX\n",    # Newline in command
+            "AT+TEST=123*XX\r",    # Carriage return in command
+            "AT+TEST=123*XX "       # Trailing space
+        ]
+        
+        for cmd in invalid_commands:
+            with self.subTest(cmd=cmd):
+                with self.assertRaises(ValueError):
+                    interface.send_command(cmd)
+        
+        # Test valid commands (should not raise exceptions)
+        valid_commands = [
+            "AT",
+            "AT+TEST=123*45",
+            "AT+TEST=123*AB",
+            "AT+TEST=123*ab",
+            "AT+TEST=123*12"
+        ]
+        
+        for cmd in valid_commands:
+            with self.subTest(cmd=cmd):
+                try:
+                    interface.send_command(cmd)
+                except ValueError:
+                    self.fail(f"Valid command raised ValueError: {cmd}")
+        
+        # Verify no commands were sent to the serial port during validation
+        mock_serial.write.assert_not_called()
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
     @patch('serial.Serial')
@@ -203,32 +339,57 @@ class TestLoraHardwareInterface(unittest.TestCase):
     @patch('serial.tools.list_ports.comports')
     def test_checksum(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests checksum calculation for command validation"""
-        with patch('atous_sec_network.network.lora_optimizer.GPIO') as mock_gpio, \
-             patch('serial.Serial') as mock_serial, \
-             patch('serial.tools.list_ports.comports') as mock_comports:
-            
-            # Setup GPIO mock
-            mock_gpio.BCM = 11
-            mock_gpio.OUT = 0
-            mock_gpio.IN = 1
-            mock_gpio.setmode = Mock()
-            mock_gpio.setup = Mock()
-            
-            # Setup serial mock
-            mock_serial.return_value.write.return_value = 10
-            mock_serial.return_value.in_waiting = True
-            mock_serial.return_value.is_open = True
-            mock_serial.return_value.open = Mock()
-            
-            # Setup port listing mock
-            mock_comports.return_value = [Mock(device="COM1")]
-            interface = LoraHardwareInterface()
-            
-            # Test sample commands
-            cmd = "AT+ADDR=1234"
+        # Setup GPIO mock
+        mock_gpio.BCM = 11
+        mock_gpio.OUT = 1
+        mock_gpio.IN = 0
+        mock_gpio.HIGH = 1
+        mock_gpio.LOW = 0
+        mock_gpio.setmode = Mock()
+        mock_gpio.setup = Mock()
+        
+        # Setup serial mock
+        mock_serial = MagicMock()
+        mock_serial_constructor.return_value = mock_serial
+        mock_serial.is_open = True
+        mock_serial.open = Mock()
+        
+        # Setup port listing mock
+        mock_comports.return_value = [Mock(device="COM1")]
+        
+        # Create interface
+        interface = LoraHardwareInterface(port="COM1")
+        
+        # Test checksum calculation with various commands
+        test_commands = [
+            "AT+ADDR=1234",
+            "AT+MODE=TEST",
+            "AT+POWER=14"
+        ]
+        
+        for cmd in test_commands:
+            # Add checksum to the command
             cmd_with_checksum = interface.add_checksum(cmd)
-            self.assertTrue(interface.verify_checksum(cmd_with_checksum))
+            
+            # Verify the checksum is correctly formatted
+            self.assertTrue(cmd_with_checksum.startswith(cmd + "*"), 
+                         f"Checksum should be appended to the command: {cmd}")
+            self.assertEqual(len(cmd_with_checksum.split("*")[1]), 2, 
+                          "Checksum should be 2 characters long")
+            
+            # Verify the checksum can be verified
+            self.assertTrue(interface.verify_checksum(cmd_with_checksum),
+                          f"Checksum verification failed for command: {cmd}")
             
             # Test tampering detection
-            tampered_cmd = cmd_with_checksum[:-2] + "00"  # Change last 2 digits
-            self.assertFalse(interface.verify_checksum(tampered_cmd))
+            if len(cmd_with_checksum) > 3:  # Ensure we can safely tamper
+                tampered_cmd = cmd_with_checksum[:-2] + "00"  # Change last 2 digits
+                self.assertFalse(interface.verify_checksum(tampered_cmd),
+                               f"Tampered command should fail verification: {tampered_cmd}")
+        
+        # Test edge cases
+        with self.assertRaises(ValueError):
+            interface.verify_checksum("INVALID*XX")  # No command before checksum
+            
+        with self.assertRaises(ValueError):
+            interface.verify_checksum("AT+TEST")  # No checksum

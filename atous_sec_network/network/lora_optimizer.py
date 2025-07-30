@@ -5,36 +5,67 @@ LoRa Adaptive Engine - Dynamic Parameter Optimization
 import threading
 import serial
 import serial.tools.list_ports
+from serial import SerialException
 import logging
 import time
+import math
+from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from collections import deque
+
+# Optional GPIO support for Raspberry Pi
+GPIO = None
+HAS_HARDWARE = False
 
 try:
     import RPi.GPIO as GPIO
     HAS_HARDWARE = True
 except ImportError:
-    from tests.mocks.gpio_mock import GPIO
-    HAS_HARDWARE = False
+    # For development environments without RPi.GPIO
+    try:
+        from tests.mocks.gpio_mock import GPIO
+        HAS_HARDWARE = True  # Set to True since we're using mocks
+        logging.info("Using mock GPIO implementation for testing")
+    except ImportError:
+        logging.warning("GPIO not available - GPIO functionality disabled")
+        HAS_HARDWARE = False
+        GPIO = None
+
+# Make GPIO available as a module attribute for testing
+__all__ = ['LoraHardwareInterface', 'LoraAdaptiveEngine', 'LoraMetrics', 'GPIO']
 
 
 class LoraHardwareInterface:
     """Interface for LoRa hardware communication"""
     
-    def __init__(self, port=None, baudrate=9600, timeout=1):
+    def __init__(self, port=None, baudrate=9600, timeout=1, gpio_module=None, pool_size=1):
         """Initialize hardware interface
         
         Args:
             port: Serial port path (optional - will auto-detect if not specified)
             baudrate: Serial baudrate
             timeout: Serial timeout in seconds
+            gpio_module: Optional GPIO module to use (for testing)
+            pool_size: Number of serial connections to maintain in the pool (default: 1)
         """
         self.baudrate = baudrate
         self.timeout = timeout
-        self.serial = None
+        self.pool_size = max(1, int(pool_size))  # Ensure at least 1 connection
+        self._serial_pool = []
+        self._current_connection = 0
         
-        # Initialize GPIO pins
-        GPIO.setmode(GPIO.BCM)  # Always setup GPIO - HAS_HARDWARE flag only affects real/mock GPIO
-        GPIO.setup(17, GPIO.OUT)  # Reset pin
-        GPIO.setup(18, GPIO.IN)   # Ready pin
+        # Use the provided GPIO module or the global one
+        self.gpio = gpio_module if gpio_module is not None else GPIO
+        
+        # Initialize GPIO pins if GPIO is available
+        if self.gpio is not None:
+            try:
+                self.gpio.setmode(self.gpio.BCM)  # Always setup GPIO - HAS_HARDWARE flag only affects real/mock GPIO
+                self.gpio.setup(17, self.gpio.OUT)  # Reset pin
+                self.gpio.setup(18, self.gpio.IN)   # Ready pin
+            except Exception as e:
+                logging.warning(f"Failed to initialize GPIO: {e}")
+                self.gpio = None
         
         if port:
             self.port = port
@@ -81,25 +112,47 @@ class LoraHardwareInterface:
             return False
         
     def _setup_serial(self):
-        """Setup serial connection with retry"""
+        """Setup serial connection pool with retry"""
         max_retries = 3
         retry_delay = 1
         
-        for attempt in range(max_retries):
-            try:
-                self.serial = serial.Serial(
-                    port=self.port,
-                    baudrate=self.baudrate,
-                    timeout=self.timeout
-                )
-                return
-            except serial.SerialException as e:
-                logging.error(f"Failed to open serial port (attempt {attempt + 1}): {e}")
-                if attempt < max_retries - 1:
+        # Clear any existing connections
+        for conn in self._serial_pool:
+            if conn and hasattr(conn, 'close') and conn.is_open:
+                conn.close()
+        self._serial_pool = []
+        
+        # Create new connections
+        for _ in range(self.pool_size):
+            for attempt in range(max_retries):
+                try:
+                    conn = serial.Serial(
+                        port=self.port,
+                        baudrate=self.baudrate,
+                        timeout=self.timeout
+                    )
+                    self._serial_pool.append(conn)
+                    break
+                except SerialException as e:
+                    logging.error(f"Failed to open serial port (attempt {attempt + 1}): {e}")
+                    if attempt >= max_retries - 1:
+                        raise
                     time.sleep(retry_delay)
-                else:
-                    raise
+        
+        # Set the current serial connection to the first one in the pool
+        if self._serial_pool:
+            self.serial = self._serial_pool[0]
     
+    def _get_next_connection(self):
+        """Get the next available serial connection from the pool using round-robin"""
+        if not self._serial_pool:
+            raise RuntimeError("No serial connections available in the pool")
+            
+        # Get next connection in round-robin fashion
+        conn = self._serial_pool[self._current_connection]
+        self._current_connection = (self._current_connection + 1) % len(self._serial_pool)
+        return conn
+        
     def send_command(self, command: str, retry_count=3) -> tuple[bool, str]:
         """Send command to LoRa module with retry
         
@@ -112,7 +165,16 @@ class LoraHardwareInterface:
             
         Raises:
             ValueError: If command validation fails
+            RuntimeError: If no serial connections are available
         """
+        # Get the next available connection
+        if not self._serial_pool:
+            self._setup_serial()  # Try to reinitialize connections
+            if not self._serial_pool:
+                raise RuntimeError("No serial connections available")
+                
+        conn = self._get_next_connection()
+        
         # Validate command format
         if not command or not isinstance(command, str) or command.strip() == "":
             raise ValueError("Command must be a non-empty string")
@@ -147,43 +209,13 @@ class LoraHardwareInterface:
                 else:
                     return False, response_str or "No valid response received"
                 
-            except serial.SerialException as e:
+            except SerialException as e:
                 logging.error(f"Serial error on attempt {attempt + 1}: {e}")
                 if attempt < retry_count - 1:
                     time.sleep(1)
                     self._setup_serial()
         
         return False, "Max retries exceeded"
-import logging
-import time
-import math
-from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass
-from collections import deque  # Not used anymore, keeping import for future reference if needed
-
-import serial
-import logging
-import time
-
-# Optional GPIO support for Raspberry Pi
-GPIO = None
-HAS_HARDWARE = False
-
-try:
-    import RPi.GPIO as GPIO
-    HAS_HARDWARE = True
-except ImportError:
-    # For development environments without RPi.GPIO
-    from tests.mocks.gpio_mock import GPIO
-    HAS_HARDWARE = True  # Set to True since we're using mocks
-    logging.info("Using mock GPIO implementation for testing")
-    # For development environments without pyserial
-    logging.warning("Pyserial not available - serial functionality disabled")
-    HAS_HARDWARE = False
-    GPIO = None
-
-# Make GPIO available to the class
-GPIO = GPIO
 
 
 @dataclass
@@ -323,7 +355,7 @@ class LoraAdaptiveEngine:
         self.allow_simulation = self.config.get("allow_simulation", True)
         
         # Initialize GPIO if available
-        if HAS_HARDWARE:
+        if HAS_HARDWARE and GPIO is not None:
             try:
                 # Store GPIO instance
                 self.GPIO = GPIO
@@ -408,7 +440,7 @@ class LoraAdaptiveEngine:
                     "error_count": 0
                 })
                 self.logger.info(f"Initialized serial connection on {port}")
-            except serial.SerialException as e:
+            except SerialException as e:
                 self.logger.error(f"Failed to initialize serial on {port}: {e}")
                 
     def _start_port_monitor(self) -> None:

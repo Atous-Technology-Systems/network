@@ -20,6 +20,9 @@ class LoRaOptimizer:
         self.hardware = None
         self.port = None
         self.baud = None
+        self.frequency = 915.0  # Default frequency in MHz
+        self.power = 14  # Default power in dBm
+        self.spreading_factor = 7  # Default spreading factor
         
     def initialize(self, port: str, baud: int = 9600) -> bool:
         """Initialize the LoRa hardware interface
@@ -55,10 +58,6 @@ class LoRaOptimizer:
             self.engine = LoraAdaptiveEngine(config)
             logger.debug(f"Engine created: {self.engine}")
             
-            # Set initialized flag before testing communication
-            self.initialized = True
-            logger.debug("Set initialized=True")
-            
             # Test communication (this should work with mocks)
             logger.debug("Sending AT command to test communication")
             success, response = self.hardware.send_command("AT")
@@ -69,6 +68,8 @@ class LoRaOptimizer:
                 self.initialized = False
                 return False
                 
+            # Set initialized flag only after successful communication test
+            self.initialized = True
             logger.debug("LoRa initialization successful")
             return True
             
@@ -77,6 +78,28 @@ class LoRaOptimizer:
             self.initialized = False
             return False
     
+    def send_data(self, message) -> bool:
+        """Send data via LoRa
+        
+        Args:
+            message: Data to send
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if not self.initialized or not self.hardware:
+            return False
+            
+        try:
+            if hasattr(self.hardware, 'send'):
+                return self.hardware.send(message)
+            else:
+                # Fall back to the old send method
+                result = self.send(message)
+                return result > 0
+        except Exception:
+            return False
+            
     def send(self, message: str) -> int:
         """Send a message via LoRa
         
@@ -130,6 +153,27 @@ class LoRaOptimizer:
             logger.error(f"Error sending message: {e}", exc_info=True)
             return -1
     
+    def receive_data(self, timeout: float = 1.0):
+        """Receive data via LoRa
+        
+        Args:
+            timeout: Timeout in seconds
+            
+        Returns:
+            Data received, or None if no data or error
+        """
+        if not self.initialized or not self.hardware:
+            return None
+            
+        try:
+            if hasattr(self.hardware, 'receive'):
+                return self.hardware.receive(timeout)
+            else:
+                # Fall back to the old receive method
+                return self.receive(timeout)
+        except Exception:
+            return None
+            
     def receive(self, timeout: float = 1.0) -> Optional[str]:
         """Receive a message via LoRa
         
@@ -198,6 +242,66 @@ class LoRaOptimizer:
             logger.error(f"Error receiving message: {e}", exc_info=True)
             return None
     
+    def set_frequency(self, frequency: float) -> bool:
+        """Set the LoRa frequency
+        
+        Args:
+            frequency: Frequency in MHz
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if not self.initialized:
+            return False
+            
+        try:
+            self.frequency = frequency
+            if self.engine:
+                self.engine.set_parameter('frequency', frequency)
+            return True
+        except Exception:
+            return False
+            
+    def set_power(self, power: int) -> bool:
+        """Set the LoRa transmit power
+        
+        Args:
+            power: Transmit power in dBm
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if not self.initialized:
+            return False
+            
+        try:
+            self.power = power
+            if self.engine:
+                self.engine.set_parameter('tx_power', power)
+            return True
+        except Exception:
+            return False
+            
+    def set_spreading_factor(self, sf: int) -> bool:
+        """Set the LoRa spreading factor
+        
+        Args:
+            sf: Spreading factor (7-12)
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if not self.initialized:
+            return False
+            
+        try:
+            self.spreading_factor = sf
+            if self.engine:
+                self.engine.set_parameter('spreading_factor', sf)
+            return True
+        except Exception:
+            return False
+            
     def close(self):
         """Close the LoRa connection and clean up"""
         if self.hardware and hasattr(self.hardware, 'close'):
