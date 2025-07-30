@@ -1,0 +1,86 @@
+# Project-specific files
+failures.md
+fixed.md
+todo.md
+scripts/
+.gitignore
+lora_training
+deployment-guide.md
+failures-detailed.md
+improvemens.md
+run_lora_test.py
+test_import.py
+debug_test.py
+direct_test.py
+final_lora_test.py
+test_output_full.txt
+technical-map.md
+security-report.md
+todo-advanced.md
+test_integration.py
+simple_lora_test.py
+
+INSTALLATION_STATUS.md
+LORA_TESTING_README.md
+test_output.txt
+technical-changelog.md
+# Virtual Environment
+venv/
+env/
+.env/
+improvements.md
+cacert.pem
+debug_serial.py
+.pytest_cache/
+test_output.TXT
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Logs
+*.log
+logs/
+log/
+
+# Local development
+.env
+.venv
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+# Arquivos de cobertura de testes
+.coverage
+coverage.xml
+
