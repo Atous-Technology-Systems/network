@@ -15,9 +15,10 @@ import zlib
 import time
 
 from atous_sec_network.core.model_metadata import ModelMetadata
+from atous_sec_network.core.model_manager_base import ModelManagerBase
 
 
-class ModelManager:
+class ModelManager(ModelManagerBase):
     """
     High-level interface for managing machine learning models.
     
@@ -67,50 +68,81 @@ class ModelManager:
         """
         try:
             # Create the metadata directory if it doesn't exist
-            os.makedirs(self.config.get('storage_path', 'models'), exist_ok=True)
+            metadata_dir = os.path.join(self.config.get('storage_path', 'models'), '.metadata')
+            os.makedirs(metadata_dir, exist_ok=True)
             
-            # Construct the metadata file path
-            metadata_file = os.path.join(
-                self.config.get('storage_path', 'models'),
-                f"{model_name}_v{version}_metadata.json"
-            )
-            
-            # Save the metadata to a JSON file
+            # Save metadata to a JSON file
+            metadata_file = os.path.join(metadata_dir, f"{model_name}_{version}.json")
             with open(metadata_file, 'w') as f:
                 json.dump(metadata, f, indent=2)
                 
-            self.logger.info(f"Saved metadata for {model_name} v{version} to {metadata_file}")
             return True
             
         except Exception as e:
-            self.logger.error(f"Error saving metadata for {model_name} v{version}: {e}")
+            self.logger.error(f"Failed to save metadata for {model_name} v{version}: {e}")
             return False
     
-    def download_model(self, model_url: str, model_path: str, checksum: Optional[str] = None, 
-                      timeout: int = 60, max_retries: int = 3) -> bool:
+    def download_model(self, url: str = None, path: Optional[str] = None, checksum: Optional[str] = None, 
+                      timeout: int = 60, max_retries: int = 3, **kwargs) -> bool:
         """
         Download a model from the specified URL to the given path.
         
         Args:
-            model_url: URL to download the model from
-            model_path: Path to save the model to
+            url: URL to download the model from (also accepts source_url from kwargs)
+            path: Path to save the model to (also accepts model_path from kwargs)
             checksum: Optional checksum to verify the downloaded model
             timeout: Connection timeout in seconds
             max_retries: Maximum number of retry attempts
+            **kwargs: Additional arguments for the download process
             
         Returns:
             bool: True if download was successful, False otherwise
         """
-        self.logger.info(f"Downloading model from {model_url} to {model_path}")
-        print(f"DEBUG: In download_model - self.updater = {self.updater}")
+        # Handle different parameter naming conventions
+        source_url = kwargs.pop('source_url', url)
+        model_path = kwargs.pop('model_path', path)
         
-        # For testing purposes, if updater is None, return True
-        if self.updater is None:
-            print("DEBUG: updater is None, returning True for testing")
-            return True
+        if not source_url:
+            raise ValueError("URL is required for download_model")
             
-        return self.updater.download_model(model_url, model_path, checksum=checksum, 
-                                          timeout=timeout, max_retries=max_retries)
+        self.logger.info(f"Downloading model from {source_url} to {model_path}")
+        
+        # For testing purposes, if updater is None, handle download directly
+        if self.updater is None:
+            try:
+                import requests
+                from requests.adapters import HTTPAdapter
+                from urllib3.util.retry import Retry
+                
+                # Create session with retry strategy
+                session = requests.Session()
+                retry_strategy = Retry(
+                    total=max_retries,
+                    backoff_factor=1,
+                    status_forcelist=[429, 500, 502, 503, 504],
+                )
+                adapter = HTTPAdapter(max_retries=retry_strategy)
+                session.mount("http://", adapter)
+                session.mount("https://", adapter)
+                
+                # Download the file
+                response = session.get(source_url, timeout=timeout)
+                response.raise_for_status()
+                
+                # Save to file if path is provided
+                if model_path:
+                    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+                    with open(model_path, 'wb') as f:
+                        f.write(response.content)
+                
+                return True
+                
+            except Exception as e:
+                self.logger.error(f"Download failed: {e}")
+                return False
+            
+        return self.updater.download_model(source_url, model_path, checksum=checksum, 
+                                          timeout=timeout, max_retries=max_retries, **kwargs)
                                           
     def apply_patch(self, patch_data: Dict[str, Any]) -> bool:
         """
@@ -148,7 +180,7 @@ class ModelManager:
             
         return self.updater.rollback(version)
         
-    def check_for_updates(self, server_url: str) -> Dict[str, Any]:
+    def check_for_updates(self, server_url: str) -> bool:
         """
         Check for available model updates.
         
@@ -156,84 +188,60 @@ class ModelManager:
             server_url: URL of the update server
             
         Returns:
-            Dict[str, Any]: Update information, including whether an update is available
+            bool: True if an update is available, False otherwise
         """
         self.logger.info(f"Checking for model updates from {server_url}")
         
-        # For testing purposes, if updater is None, return a default response
+        # For testing purposes, if updater is None, return False
         if self.updater is None:
-            return {'update_available': False}
+            return False
             
-        # Forward the call to the updater if available and convert the boolean response to a dict
-        update_available = self.updater.check_for_updates(server_url)
-        return {'update_available': update_available}
+        # Forward the call to the updater if available
+        result = self.updater.check_for_updates(server_url)
         
-        # Ensure storage directory exists
-        os.makedirs(self.config['storage_path'], exist_ok=True)
-        
-        # Expose config values as attributes for easier access
-        self.version_control = self.config['version_control']
-        self.auto_rollback = self.config['auto_rollback']
-        self.max_versions = self.config['max_versions']
-        self.model_name = self.config.get('model_name', 'default_model')
-        self.model_path = self.config['model_path']
-        
-        # Initialize metadata
-        self.metadata = {'current_version': '1.0.0'}
+        # Handle both boolean and dictionary responses from updater
+        if isinstance(result, dict):
+            return result.get('update_available', False)
+        return bool(result)
     
-    def download_model(self, url: str, path: Optional[str] = None, 
-                      checksum: Optional[str] = None, timeout: int = 60, 
-                      max_retries: int = 3) -> bool:
+    def check_resources(self, required_memory: int = None, required_disk: int = None) -> bool:
         """
-        Download a model from the given URL.
+        Check if the system has sufficient resources for model operations.
         
         Args:
-            url: URL to download the model from
-            path: Path to save the model to (default: self.model_path)
-            checksum: Expected checksum of the model (default: None)
-            timeout: Timeout for the download in seconds (default: 60)
-            max_retries: Maximum number of retries (default: 3)
+            required_memory: Required memory in bytes (optional)
+            required_disk: Required disk space in bytes (optional)
             
         Returns:
-            bool: True if successful, False otherwise
+            bool: True if sufficient resources are available, False otherwise
         """
-        return True
+        try:
+            import psutil
+            
+            # Check memory if required
+            if required_memory:
+                memory = psutil.virtual_memory()
+                if memory.available < required_memory:
+                    self.logger.warning(f"Insufficient memory: {memory.available} available, {required_memory} required")
+                    return False
+            
+            # Check disk space if required
+            if required_disk:
+                disk = psutil.disk_usage(self.config.get('storage_path', '.'))
+                if disk.free < required_disk:
+                    self.logger.warning(f"Insufficient disk space: {disk.free} available, {required_disk} required")
+                    return False
+            
+            return True
+            
+        except ImportError:
+            self.logger.warning("psutil not available, skipping resource checks")
+            return True  # Assume resources are available if we can't check
     
-    def apply_patch(self, patch_data: Dict[str, Any]) -> bool:
-        """
-        Apply a patch to the current model.
-        
-        Args:
-            patch_data: Dictionary containing patch data
-            
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        return True
-    
-    def rollback(self, version: str) -> bool:
-        """
-        Roll back to a previous version.
-        
-        Args:
-            version: Version to roll back to
-            
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        return True
-    
-    def check_for_updates(self, server_url: str) -> bool:
-        """
-        Check for updates from the given server.
-        
-        Args:
-            server_url: URL of the update server
-            
-        Returns:
-            bool: True if updates were found and applied, False otherwise
-        """
-        return False
+    # Métodos já implementados corretamente acima:
+    # - apply_patch
+    # - rollback
+    # - check_for_updates
     
     def list_available_versions(self) -> List[str]:
         """
