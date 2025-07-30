@@ -10,6 +10,10 @@ from .p2p_recovery import ChurnMitigation
 from .lora_optimizer import LoraAdaptiveEngine, LoraHardwareInterface
 from .lora_compat import LoRaOptimizer, LoraOptimizer
 
+# Make modules available for direct import
+from . import lora_optimizer
+from . import lora_compat
+
 __all__ = [
     # P2P Recovery
     'ChurnMitigation',
@@ -19,4 +23,6 @@ __all__ = [
     'LoraHardwareInterface',
     'LoRaOptimizer',
     'LoraOptimizer',  # Alias for backward compatibility
+    'lora_optimizer',
+    'lora_compat',
 ]
