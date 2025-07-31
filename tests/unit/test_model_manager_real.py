@@ -99,17 +99,18 @@ class TestRealModelManager:
     
     def test_check_for_updates(self, real_model_manager, mock_federated_model_updater):
         """Test checking for model updates."""
-        # Set up the mock return value
-        mock_federated_model_updater.check_for_updates.return_value = {'update_available': False}
+        # Set up the mock return value - ModelManager.check_for_updates returns boolean
+        mock_federated_model_updater.check_for_updates.return_value = False
         
-        # Call the model_manager's check_for_updates method
-        result = real_model_manager.check_for_updates()
+        # Call the model_manager's check_for_updates method with required server_url
+        server_url = 'http://example.com/updates'
+        result = real_model_manager.check_for_updates(server_url)
         
-        # Verify the mock was called
-        mock_federated_model_updater.check_for_updates.assert_called_once()
+        # Verify the mock was called with the server_url
+        mock_federated_model_updater.check_for_updates.assert_called_once_with(server_url)
         
-        # Assert the result matches the expected value
-        assert result == {'update_available': False}
+        # Assert the result matches the expected value (boolean, not dict)
+        assert result is False
 
 if __name__ == '__main__':
     pytest.main(['-v', __file__])
