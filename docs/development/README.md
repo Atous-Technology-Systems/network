@@ -23,7 +23,7 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/atous-secure-network.git
+   git clone https://github.com/Atous-Technology-Systems/network.git
    cd atous-secure-network
    ```
 
@@ -54,6 +54,81 @@
    ```
 
 ## Testing
+
+### Quick Testing
+
+For rapid development testing:
+
+```bash
+# Application starter with multiple options
+python start_app.py --test     # Run full test suite
+python start_app.py --lite     # Quick functionality test
+python start_app.py --debug    # Debug import issues
+python start_app.py --status   # Check application status
+```
+
+### Comprehensive Testing
+
+Run the complete test suite:
+
+```bash
+# Run all tests
+python -m pytest tests/ -v
+
+# Run specific test categories with pytest.ini configuration
+python -m pytest tests/unit/ -v          # Unit tests
+python -m pytest tests/integration/ -v   # Integration tests
+python -m pytest tests/security/ -v      # Security tests
+
+# Run LoRa-specific tests
+python -m pytest -k "lora" -v
+
+# Run ABISS system tests
+python -m pytest -k "abiss" -v
+
+# Generate coverage report
+python -m pytest tests/ --cov=atous_sec_network --cov-report=html
+```
+
+### Test Categories
+
+**Unit Tests** (`tests/unit/`):
+- Individual component testing
+- Mock-based isolation
+- Fast execution
+- Core functionality validation
+
+**Integration Tests** (`tests/integration/`):
+- Component interaction testing
+- System-level validation
+- End-to-end workflows
+
+**Security Tests** (`tests/security/`):
+- ABISS system validation
+- NNIS immune system testing
+- Security protocol verification
+
+### Testing Best Practices
+
+1. **Always run tests before committing**:
+   ```bash
+   python start_app.py --test
+   ```
+
+2. **Use lightweight testing during development**:
+   ```bash
+   python start_app.py --lite
+   ```
+
+3. **Debug import issues immediately**:
+   ```bash
+   python start_app.py --debug
+   ```
+
+4. **Verify specific components**:
+   ```bash
+   python -m pytest tests/unit/test_specific_component.py -v
+   ```
 
 ### Running Tests
 
@@ -111,14 +186,138 @@ The project includes multiple pytest configuration files for different scenarios
 - `tests/unit/conftest_backup.py` - Backup configuration with model manager fixtures
 - `tests/unit/conftest.py.disabled` - External dependency stubbing (rename to `conftest.py` to activate)
 
-### Development Debugging
+## Application Usage
 
-Use the debug import script to troubleshoot import issues:
+### Running the Application
+
+**Application Starter Script** (Recommended):
 ```bash
+# Check application status
+python start_app.py --status
+
+# Quick lightweight test
+python start_app.py --lite
+
+# Full application with ML components
+python start_app.py --full
+
+# Run test suite
+python start_app.py --test
+
+# Debug import issues
+python start_app.py --debug
+```
+
+**Direct Execution**:
+```bash
+# Main application entry point
+python -m atous_sec_network
+
+# Lightweight testing
+python run_app_lite.py
+
+# Debug imports
 python debug_import.py
 ```
 
-This script tests all critical imports and helps identify dependency problems.
+### Application Modes
+
+**Lightweight Mode** (`--lite`):
+- Fast startup (< 10 seconds)
+- No ML model loading
+- Basic functionality testing
+- Ideal for development and CI/CD
+- Tests package structure and imports
+
+**Full Mode** (`--full`):
+- Complete system initialization
+- ML model loading (may take 2-5 minutes first time)
+- All security systems active
+- Production-ready deployment
+- Downloads models if not cached
+
+### Development Workflow
+
+1. **Start Development Session**:
+   ```bash
+   # Activate virtual environment
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate     # Windows
+   
+   # Check system status
+   python start_app.py --status
+   ```
+
+2. **Make Changes and Test**:
+   ```bash
+   # Quick validation
+   python start_app.py --lite
+   
+   # Run relevant tests
+   python -m pytest tests/unit/test_your_module.py -v
+   ```
+
+3. **Full Validation**:
+   ```bash
+   # Complete test suite
+   python start_app.py --test
+   
+   # Full system test
+   python start_app.py --full
+   ```
+
+4. **Commit Changes**:
+   ```bash
+   git add .
+   git commit -m "feat: your feature description"
+   ```
+
+## Development Debugging
+
+Use the debug import script to troubleshoot import issues:
+
+```bash
+python debug_import.py
+# or
+python start_app.py --debug
+```
+
+This script helps identify:
+- Missing dependencies
+- Import path issues
+- Module loading problems
+- Environment configuration issues
+- Package structure validation
+
+### Common Issues and Solutions
+
+**Import Errors**:
+```bash
+# Check Python path and dependencies
+python debug_import.py
+
+# Reinstall dependencies
+pip install -r requirements.txt --force-reinstall
+```
+
+**ML Model Loading Issues**:
+```bash
+# Use lightweight mode for development
+python start_app.py --lite
+
+# Check available disk space (models can be large)
+df -h  # Linux/Mac
+dir C:\ # Windows
+```
+
+**Test Failures**:
+```bash
+# Run specific failing test with verbose output
+python -m pytest tests/unit/test_failing.py -v -s
+
+# Check test configuration
+cat pytest.ini
+```
 
 ## Code Style
 

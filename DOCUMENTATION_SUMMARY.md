@@ -30,7 +30,19 @@
 - ✅ **Cobertura**: Métricas de teste atualizadas
 - ✅ **Próximos Passos**: Roadmap atualizado
 
-### 4. requirements-dev-windows.txt
+### 4. docs/USER_GUIDE.md
+- ✅ **Status**: Guia completo para usuários
+- ✅ **Instalação**: Instruções detalhadas para Windows e Linux
+- ✅ **Uso**: Exemplos práticos e casos de uso
+- ✅ **Troubleshooting**: Soluções para problemas comuns
+
+### 5. docs/development/README.md
+- ✅ **Status**: Guia completo para desenvolvedores
+- ✅ **Setup**: Configuração do ambiente de desenvolvimento
+- ✅ **Workflow**: Fluxo de trabalho e melhores práticas
+- ✅ **Testes**: Estratégias e configurações de teste
+
+### 6. requirements-dev-windows.txt
 - ✅ **Status**: Criado para compatibilidade Windows
 - ✅ **Dependências**: Todas as dependências necessárias
 - ✅ **RPi.GPIO**: Comentado para Windows

@@ -255,36 +255,101 @@ pip install -r requirements-dev-windows.txt
 pip install -r requirements.txt
 ```
 
-#### **2. Executando os Testes**
+#### **2. Verificação da Instalação**
 
-Para garantir que tudo está configurado corretamente, execute a suíte de testes completa.
+Verifique se tudo está configurado corretamente:
 
 ```bash
-# Execute todos os testes unitários com detalhes
-python -m pytest tests/unit/ -v
+# Verifique problemas de importação
+python debug_import.py
+
+# Verifique o status da aplicação
+python start_app.py --status
+```
+
+#### **3. Executando a Aplicação**
+
+```bash
+# Teste rápido (modo leve, sem modelos ML)
+python start_app.py --lite
+
+# Aplicação completa (inclui componentes ML)
+python start_app.py --full
+# ou
+python -m atous_sec_network
+```
+
+#### **4. Executando os Testes**
+
+Para garantir que tudo está funcionando corretamente:
+
+```bash
+# Execute todos os testes
+python start_app.py --test
+# ou
+python -m pytest tests/ -v
+
+# Testes específicos
+python -m pytest tests/unit/ -v          # Testes unitários
+python -m pytest tests/integration/ -v   # Testes de integração
+python -m pytest tests/security/ -v      # Testes de segurança
 
 # Gere um relatório de cobertura de código
 python -m pytest --cov=atous_sec_network --cov-report=html
 ```
 
-#### **3. Teste de Integração Rápido**
+#### **5. Modos de Operação**
 
-O projeto inclui um script de teste de integração que verifica a funcionalidade de todos os subsistemas principais em modo de simulação.
+**Modo Leve** (recomendado para desenvolvimento):
+- Inicialização rápida
+- Sem carregamento de modelos ML pesados
+- Testa funcionalidades básicas
+- Perfeito para desenvolvimento e CI/CD
+
+**Modo Completo** (produção):
+- Inicialização completa dos modelos ML
+- Todos os sistemas de segurança ativos
+- Pode demorar no primeiro uso (download de modelos)
+- Use para implantação em produção
+
+#### **6. Fluxo de Desenvolvimento**
 
 ```bash
-python test_integration.py
+# 1. Verifique o ambiente
+python debug_import.py
+
+# 2. Execute os testes
+python -m pytest tests/ -v
+
+# 3. Teste suas alterações
+python start_app.py --lite
+
+# 4. Teste o sistema completo
+python start_app.py --full
 ```
 
 Você deverá ver uma saída indicando que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS**.
 
 ### 📚 **Documentação Completa**
 
+#### Links Rápidos
+- 🚀 **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
+- 🛠️ **[Guia de Desenvolvimento](docs/development/README.md)** - Configuração e fluxo de trabalho para desenvolvedores
+- 📊 **[Status do Projeto](PROJECT_STATUS.md)** - Status atual de desenvolvimento e resultados de testes
+- 📋 **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
+- 🧪 **[Guia de Testes](tests/TESTING_APPROACH.md)** - Documentação abrangente de testes
+
+#### Recursos Adicionais
 Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento, consulte a pasta `/docs`:
 
   - [**Guia de Iniciação**](https://www.google.com/search?q=./docs/getting-started/README.md)
   - [**Arquitetura do Sistema**](https://www.google.com/search?q=./docs/architecture/README.md)
   - [**Documentação da API**](https://www.google.com/search?q=./docs/technical/API_DOCUMENTATION.md)
   - [**Guia de Implantação (Deployment)**](https://www.google.com/search?q=./docs/deployment/README.md)
+  - [Requisitos](requirements.txt) - Dependências Python
+  - [Licença](LICENSE) - Licença GNU General Public License v3.0
+  - [Documentação de Arquitetura](docs/architecture/) - Design e arquitetura do sistema
+  - [Guia de Implantação](docs/deployment/) - Instruções de implantação em produção
 
 -----
 
