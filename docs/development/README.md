@@ -48,9 +48,16 @@
    pip install -e .
    ```
 
+5. Verify installation with debug script:
+   ```bash
+   python debug_import.py
+   ```
+
 ## Testing
 
 ### Running Tests
+
+The project includes a standardized `pytest.ini` configuration file for consistent test execution.
 
 Run all tests:
 ```bash
@@ -65,6 +72,15 @@ pytest tests/unit/test_module.py
 Run tests with coverage report:
 ```bash
 pytest --cov=atous_sec_network tests/
+```
+
+Run specific test categories:
+```bash
+# Run only LoRa tests
+pytest test_lora_direct_import.py test_lora_simple_import.py
+
+# Run ABISS system tests
+pytest tests/unit/test_abiss_system.py
 ```
 
 ### Writing Tests
@@ -86,6 +102,23 @@ def test_feature_should_do_something():
     # Verify
     assert result == expected_value
 ```
+
+### Alternative Test Configurations
+
+The project includes multiple pytest configuration files for different scenarios:
+
+- `tests/unit/conftest_lora_fixed.py` - LoRa tests with GPIO mocking
+- `tests/unit/conftest_backup.py` - Backup configuration with model manager fixtures
+- `tests/unit/conftest.py.disabled` - External dependency stubbing (rename to `conftest.py` to activate)
+
+### Development Debugging
+
+Use the debug import script to troubleshoot import issues:
+```bash
+python debug_import.py
+```
+
+This script tests all critical imports and helps identify dependency problems.
 
 ## Code Style
 

@@ -2,10 +2,7 @@
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
-[](https://www.google.com/search?q=PROJECT_STATUS.md)
-[](https://www.google.com/search?q=requirements.txt)
-[](https://www.google.com/search?q=LICENSE)
-[](https://www.google.com/search?q=tests/TESTING_APPROACH.md)
+📋 [Project Status](PROJECT_STATUS.md) | 📦 [Requirements](requirements.txt) | 📄 [License](LICENSE) | 🧪 [Testing Guide](tests/TESTING_APPROACH.md) | 🔌 [API Contracts](api-contracts.md)
 
 -----
 
