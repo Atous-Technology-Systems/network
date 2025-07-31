@@ -119,7 +119,8 @@ class TestModelManager(unittest.TestCase):
         
         # Create test files and metadata
         for version in versions:
-            version_dir = os.path.join(self.config['storage_path'], f'v{version}')
+            # Create directories without 'v' prefix to match list_available_versions expectation
+            version_dir = os.path.join(self.config['storage_path'], version)
             os.makedirs(version_dir, exist_ok=True)
             model_file = os.path.join(version_dir, 'model.bin')
             with open(model_file, 'wb') as f:

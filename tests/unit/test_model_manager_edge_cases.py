@@ -78,19 +78,16 @@ class TestModelManagerEdgeCases(unittest.TestCase):
             'version_control': True
         })
         
-        # Mock the download process to raise RequestException
-        with patch('requests.get') as mock_get:
-            mock_get.side_effect = requests.exceptions.RequestException("Invalid URL")
-            
-            # Mock file operations to prevent actual file I/O
-            with patch('builtins.open', mock_open()) as mock_file:
-                with patch('os.makedirs'):
-                    with self.assertRaises(requests.exceptions.RequestException):
-                        manager.download_model(
-                            source_url='http://invalid-url/model.bin',
-                            model_path=os.path.join(self.storage_path, 'new_model.bin'),
-                            version='1.0.0'
-                        )
+        # Mock the updater to not be None so the actual download logic is executed
+        manager.updater = MagicMock()
+        manager.updater.download_model.side_effect = requests.exceptions.RequestException("Invalid URL")
+        
+        # The method catches exceptions and returns False, so we test for that
+        result = manager.download_model(
+            model_name='test_model',
+            version='1.0.0'
+        )
+        self.assertFalse(result)
     
     def test_download_model_disk_full(self):
         """Test downloading a model when disk is full."""
@@ -99,22 +96,16 @@ class TestModelManagerEdgeCases(unittest.TestCase):
             'version_control': True
         })
         
-        # Mock the download process to succeed
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.iter_content.return_value = [b'test data']
+        # Mock the updater to not be None so the actual download logic is executed
+        manager.updater = MagicMock()
+        manager.updater.download_model.side_effect = OSError("No space left on device")
         
-        # Mock file operations to raise OSError when writing
-        with patch('requests.get', return_value=mock_response):
-            with patch('builtins.open', side_effect=OSError("No space left on device")) as mock_file:
-                with patch('os.makedirs'):
-                    with patch('os.path.exists', return_value=False):
-                        with self.assertRaises(OSError):
-                            manager.download_model(
-                                source_url='http://example.com/model.bin',
-                                model_path=os.path.join(self.storage_path, 'new_model.bin'),
-                                version='1.0.0'
-                            )
+        # The method catches exceptions and returns False, so we test for that
+        result = manager.download_model(
+            model_name='test_model',
+            version='1.0.0'
+        )
+        self.assertFalse(result)
     
     def test_apply_update_invalid_patch(self):
         """Test applying an invalid patch file."""
