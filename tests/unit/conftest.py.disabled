@@ -1,0 +1,96 @@
+"""Simple pytest configuration to stub only external/hardware dependencies.
+
+This file creates dummy (stub) modules for external libraries that are required by tests
+but may not be available on the developer/CI machine (e.g. RPi.GPIO, serial, websocket).
+It does NOT interfere with the main package imports.
+"""
+from types import ModuleType, SimpleNamespace
+import sys
+import os
+
+# ---------------------------------------------------------------------------
+# Helper utilities
+# ---------------------------------------------------------------------------
+
+def _make_stub_module(name: str, attrs: dict | None = None) -> ModuleType:
+    """Create a stub module with *attrs* injected and register it in sys.modules."""
+    module = ModuleType(name)
+    if attrs:
+        for key, value in attrs.items():
+            setattr(module, key, value)
+    sys.modules[name] = module
+    return module
+
+# ---------------------------------------------------------------------------
+# Stub for ``RPi.GPIO``
+# ---------------------------------------------------------------------------
+if 'RPi' not in sys.modules:
+    gpio_stub = _make_stub_module('RPi')
+    # ``RPi`` itself is a namespace package; we need a submodule ``GPIO``
+    gpio_ns = SimpleNamespace(  # pylint: disable=too-few-public-methods
+        BCM=11,
+        OUT=0,
+        IN=1,
+        HIGH=1,
+        LOW=0,
+        setmode=lambda *args, **kwargs: None,
+        setup=lambda *args, **kwargs: None,
+        output=lambda *args, **kwargs: None,
+        input=lambda *args, **kwargs: 0,
+        cleanup=lambda *args, **kwargs: None,
+    )
+    gpio_module = _make_stub_module('RPi.GPIO', attrs=gpio_ns.__dict__)
+    # Link submodule as attribute on parent package so that patch('RPi.GPIO') works
+    setattr(gpio_stub, 'GPIO', gpio_module)
+
+# ---------------------------------------------------------------------------
+# Stub for ``serial`` (pyserial)
+# ---------------------------------------------------------------------------
+if 'serial' not in sys.modules:
+    class _DummySerial:  # noqa: D401, pylint: disable=too-few-public-methods
+        """Very small subset of `serial.Serial` used in tests."""
+
+        def __init__(self, *args, **kwargs):
+            self._buffer: bytearray = bytearray()
+            self.timeout = kwargs.get('timeout', 1.0)
+
+        # pylint: disable=unused-argument
+        def read(self, size: int = 1):
+            return bytes(self._buffer[:size] or b'')
+
+        def write(self, data: bytes):
+            self._buffer.extend(data)
+            return len(data)
+
+    serial_mod = _make_stub_module('serial', attrs={'Serial': _DummySerial})
+    # Stub for serial.tools.list_ports.comports
+    tools_mod = _make_stub_module('serial.tools')
+    list_ports_mod = _make_stub_module('serial.tools.list_ports', attrs={'comports': lambda: []})
+    # Expose tools subpackage as attribute of serial
+    setattr(serial_mod, 'tools', tools_mod)
+
+# ---------------------------------------------------------------------------
+# Stub for websocket / websockets
+# ---------------------------------------------------------------------------
+for ws_mod in ('websocket', 'websockets'):
+    if ws_mod not in sys.modules:
+        _make_stub_module(ws_mod)
+
+# ---------------------------------------------------------------------------
+# Stub for paho.mqtt.client (used by mosquitto tests)
+# ---------------------------------------------------------------------------
+if 'paho' not in sys.modules:
+    paho_stub = _make_stub_module('paho')
+    mqtt_stub = _make_stub_module('paho.mqtt')
+    _make_stub_module('paho.mqtt.client', attrs={'Client': object})
+
+# ---------------------------------------------------------------------------
+# Additional dependency stubs required by tests
+# ---------------------------------------------------------------------------
+for pkg in ("prometheus_client", "psutil", "cryptography", "certifi", "flwr"):
+    if pkg not in sys.modules:
+        _make_stub_module(pkg)
+
+# ---------------------------------------------------------------------------
+# End of conftest_simple
+# ---------------------------------------------------------------------------
