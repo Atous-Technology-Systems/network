@@ -63,8 +63,8 @@ class TestLoraHardwareInterface(unittest.TestCase):
     """Testa interface com hardware LoRa"""
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
-    @patch('serial.Serial')
-    @patch('serial.tools.list_ports.comports')
+    @patch('atous_sec_network.network.lora_optimizer.serial.Serial')
+    @patch('atous_sec_network.network.lora_optimizer.serial.tools.list_ports.comports')
     def test_serial_communication_with_retry(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests serial communication with retry and validation"""
         # Setup GPIO mock
@@ -126,8 +126,8 @@ class TestLoraHardwareInterface(unittest.TestCase):
         mock_serial.open.assert_called_once()
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
-    @patch('serial.Serial')
-    @patch('serial.tools.list_ports.comports')
+    @patch('atous_sec_network.network.lora_optimizer.serial.Serial')
+    @patch('atous_sec_network.network.lora_optimizer.serial.tools.list_ports.comports')
     def test_gpio_initialization(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests GPIO initialization"""
         # Setup mock GPIO constants to match RPi.GPIO
@@ -162,8 +162,8 @@ class TestLoraHardwareInterface(unittest.TestCase):
         assert mock_gpio.setup.call_count == 2  # Should be called exactly twice
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
-    @patch('serial.Serial')
-    @patch('serial.tools.list_ports.comports')
+    @patch('atous_sec_network.network.lora_optimizer.serial.Serial')
+    @patch('atous_sec_network.network.lora_optimizer.serial.tools.list_ports.comports')
     def test_serial_pool_initialization(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests serial pool initialization and management"""
         # Setup GPIO mock
@@ -234,8 +234,8 @@ class TestLoraHardwareInterface(unittest.TestCase):
                         "Should close all connections")
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
-    @patch('serial.Serial')
-    @patch('serial.tools.list_ports.comports')
+    @patch('atous_sec_network.network.lora_optimizer.serial.Serial')
+    @patch('atous_sec_network.network.lora_optimizer.serial.tools.list_ports.comports')
     def test_at_command_validation(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests AT command validation"""
         # Setup GPIO mock
@@ -300,8 +300,8 @@ class TestLoraHardwareInterface(unittest.TestCase):
         mock_serial.write.assert_not_called()
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
-    @patch('serial.Serial')
-    @patch('serial.tools.list_ports.comports')
+    @patch('atous_sec_network.network.lora_optimizer.serial.Serial')
+    @patch('atous_sec_network.network.lora_optimizer.serial.tools.list_ports.comports')
     def test_serial_pool_initialization(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests serial port pooling"""
         ports = ["/dev/ttyUSB0", "/dev/ttyUSB1", "COM1", "COM2"]
@@ -335,8 +335,8 @@ class TestLoraHardwareInterface(unittest.TestCase):
         self.assertEqual(mock_serial_constructor.call_args[1]['port'], "/dev/ttyUSB0")
     
     @patch('atous_sec_network.network.lora_optimizer.GPIO')
-    @patch('serial.Serial')
-    @patch('serial.tools.list_ports.comports')
+    @patch('atous_sec_network.network.lora_optimizer.serial.Serial')
+    @patch('atous_sec_network.network.lora_optimizer.serial.tools.list_ports.comports')
     def test_checksum(self, mock_comports, mock_serial_constructor, mock_gpio):
         """Tests checksum calculation for command validation"""
         # Setup GPIO mock
