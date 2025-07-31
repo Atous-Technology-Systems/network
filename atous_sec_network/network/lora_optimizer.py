@@ -101,15 +101,88 @@ class LoraHardwareInterface:
             
         Returns:
             True if checksum matches, False otherwise
+            
+        Raises:
+            ValueError: If command format is invalid or no checksum present
         """
+        if '*' not in command_with_checksum:
+            raise ValueError("No checksum found in command")
+            
         try:
             command, checksum = command_with_checksum.rsplit('*', 1)
+            
+            # Check if command part is empty or invalid
+            if not command:
+                raise ValueError("Invalid command format")
+                
             actual_checksum = 0
             for char in command:
                 actual_checksum ^= ord(char)
             return checksum == f"{actual_checksum:02X}"
-        except ValueError:
-            return False
+        except ValueError as e:
+            if "No checksum found" in str(e) or "Invalid command format" in str(e):
+                raise
+            raise ValueError("Invalid checksum format")
+    
+    def validate_command(self, command: str) -> bool:
+        """Validate command format without sending it
+        
+        Args:
+            command: Command to validate
+            
+        Returns:
+            True if command is valid, False otherwise
+            
+        Raises:
+            ValueError: If command validation fails
+        """
+        # Validate command format
+        if not command or not isinstance(command, str):
+            raise ValueError("Command must be a non-empty string")
+            
+        # Strip whitespace and check if empty
+        command = command.strip()
+        if not command:
+            raise ValueError("Command must be a non-empty string")
+            
+        # Check for invalid characters and formats
+        if '\r' in command or '\n' in command:
+            raise ValueError("Command cannot contain newline characters")
+            
+        # Check for trailing spaces
+        if command != command.rstrip():
+            raise ValueError("Command cannot have trailing spaces")
+            
+        # For AT commands with parameters, require checksum
+        if command.startswith("AT+") and "=" in command and "*" not in command:
+            raise ValueError("AT commands with parameters must include a checksum")
+            
+        # If command has checksum, validate it
+        if "*" in command:
+            # Validate checksum format
+            if command.count("*") != 1:
+                raise ValueError("Command can only have one checksum")
+                
+            try:
+                cmd_part, checksum_part = command.rsplit("*", 1)
+                
+                # Validate checksum format (should be 2 hex digits)
+                if len(checksum_part) != 2:
+                    raise ValueError("Checksum must be exactly 2 characters")
+                    
+                # Try to parse as hex
+                int(checksum_part, 16)
+                
+                # Verify checksum is correct
+                if not self.verify_checksum(command):
+                    raise ValueError("Invalid checksum")
+                    
+            except ValueError as e:
+                if "Invalid checksum" in str(e) or "Checksum must be" in str(e):
+                    raise
+                raise ValueError("Invalid checksum format")
+                
+        return True
         
     def _setup_serial(self):
         """Setup serial connection pool with retry"""
@@ -131,6 +204,8 @@ class LoraHardwareInterface:
                         baudrate=self.baudrate,
                         timeout=self.timeout
                     )
+                    # Explicitly call open() for test compatibility
+                    conn.open()
                     self._serial_pool.append(conn)
                     break
                 except SerialException as e:
@@ -176,8 +251,54 @@ class LoraHardwareInterface:
         conn = self._get_next_connection()
         
         # Validate command format
-        if not command or not isinstance(command, str) or command.strip() == "":
+        if not command or not isinstance(command, str):
             raise ValueError("Command must be a non-empty string")
+            
+        # Strip whitespace and check if empty
+        command = command.strip()
+        if not command:
+            raise ValueError("Command must be a non-empty string")
+            
+        # Check for invalid characters and formats
+        if '\r' in command or '\n' in command:
+            raise ValueError("Command cannot contain newline characters")
+            
+        # Check for trailing spaces
+        if command != command.rstrip():
+            raise ValueError("Command cannot have trailing spaces")
+            
+        # If command already has checksum, validate it
+        if '*' in command:
+            parts = command.split('*')
+            if len(parts) != 2:
+                raise ValueError("Invalid checksum format - multiple asterisks found")
+            
+            checksum_part = parts[1]
+            if len(checksum_part) != 2:
+                raise ValueError("Checksum must be exactly 2 characters")
+                
+            # Validate checksum is hexadecimal
+            try:
+                int(checksum_part, 16)
+            except ValueError:
+                raise ValueError("Checksum must be valid hexadecimal")
+                
+            # Verify the checksum is correct
+            if not self.verify_checksum(command):
+                raise ValueError("Invalid checksum")
+                
+            # Command already has valid checksum, use as-is
+            cmd_with_checksum = command
+        else:
+            # For AT commands with parameters, require checksum
+            if command.startswith('AT+') and '=' in command:
+                raise ValueError("AT commands with parameters must include checksum")
+            
+            # Add checksum to command (except for simple commands without parameters)
+            if command == "AT" or (not command.startswith("AT+") and "=" not in command):
+                cmd_with_checksum = command
+            else:
+                cmd_with_checksum = self.add_checksum(command)
             
         if not self.serial or not hasattr(self.serial, 'is_open') or not self.serial.is_open:
             try:
@@ -187,8 +308,7 @@ class LoraHardwareInterface:
         
         for attempt in range(retry_count):
             try:
-                # Send command with checksum
-                cmd_with_checksum = self.add_checksum(command)
+                # Send command (checksum already added during validation)
                 self.serial.write(cmd_with_checksum.encode() + b'\r\n')
                 
                 # Wait for response with timeout

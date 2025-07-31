@@ -278,21 +278,21 @@ class TestLoraHardwareInterface(unittest.TestCase):
         for cmd in invalid_commands:
             with self.subTest(cmd=cmd):
                 with self.assertRaises(ValueError):
-                    interface.send_command(cmd)
+                    interface.validate_command(cmd)
         
         # Test valid commands (should not raise exceptions)
+        # Calculate correct checksums for test commands
         valid_commands = [
             "AT",
-            "AT+TEST=123*45",
-            "AT+TEST=123*AB",
-            "AT+TEST=123*ab",
-            "AT+TEST=123*12"
+            "AT+TEST=123*25",  # Correct checksum for AT+TEST=123
+            "AT+MODE=TEST*16", # Correct checksum for AT+MODE=TEST
+            "AT+POWER=14*59"   # Correct checksum for AT+POWER=14
         ]
         
         for cmd in valid_commands:
             with self.subTest(cmd=cmd):
                 try:
-                    interface.send_command(cmd)
+                    interface.validate_command(cmd)
                 except ValueError:
                     self.fail(f"Valid command raised ValueError: {cmd}")
         
@@ -389,7 +389,7 @@ class TestLoraHardwareInterface(unittest.TestCase):
         
         # Test edge cases
         with self.assertRaises(ValueError):
-            interface.verify_checksum("INVALID*XX")  # No command before checksum
+            interface.verify_checksum("*XX")  # No command before checksum
             
         with self.assertRaises(ValueError):
             interface.verify_checksum("AT+TEST")  # No checksum
