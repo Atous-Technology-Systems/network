@@ -55,15 +55,19 @@ class TestABISSSystem(unittest.TestCase):
         """Stop patches"""
         self._transformers_patch.stop()
     
-    @patch('atous_sec_network.security.abiss_system.AutoTokenizer.from_pretrained')
-    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM.from_pretrained')
+    @patch('atous_sec_network.security.abiss_system.AutoTokenizer')
+    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM')
     @patch('atous_sec_network.security.abiss_system.pipeline')
-    def test_initialize_model_success(self, mock_pipeline, mock_model, mock_tokenizer):
+    def test_initialize_model_success(self, mock_pipeline, mock_model_class, mock_tokenizer_class):
         """Test successful model initialization"""
         # Configure mocks
-        mock_tokenizer.return_value = "mock_tokenizer"
-        mock_model.return_value = "mock_model"
-        mock_pipeline.return_value = "mock_pipeline"
+        mock_tokenizer = Mock()
+        mock_model = Mock()
+        mock_pipeline_instance = Mock()
+        
+        mock_tokenizer_class.from_pretrained.return_value = mock_tokenizer
+        mock_model_class.from_pretrained.return_value = mock_model
+        mock_pipeline.return_value = mock_pipeline_instance
         
         # Mock torch to have float16 attribute
         with patch('torch.float16', create=True):
@@ -71,13 +75,21 @@ class TestABISSSystem(unittest.TestCase):
             abiss = ABISSSystem(self.config)
         
         # Assert model components were initialized
-        self.assertEqual(abiss.tokenizer, "mock_tokenizer")
-        self.assertEqual(abiss.model, "mock_model")
-        self.assertEqual(abiss.pipeline, "mock_pipeline")
+        self.assertEqual(abiss.tokenizer, mock_tokenizer)
+        self.assertEqual(abiss.model, mock_model)
+        self.assertEqual(abiss.pipeline, mock_pipeline_instance)
+        
+        # Verify the mocks were called
+        mock_tokenizer_class.from_pretrained.assert_called_once()
+        mock_model_class.from_pretrained.assert_called_once()
+        mock_pipeline.assert_called_once()
     
-    @patch('atous_sec_network.security.abiss_system.AutoTokenizer.from_pretrained', side_effect=Exception("Tokenization failed"))
-    def test_initialize_model_tokenizer_failure(self, mock_tokenizer):
+    @patch('atous_sec_network.security.abiss_system.AutoTokenizer')
+    def test_initialize_model_tokenizer_failure(self, mock_tokenizer_class):
         """Test handling of tokenizer initialization failure"""
+        # Configure mock to raise exception
+        mock_tokenizer_class.from_pretrained.side_effect = Exception("Tokenization failed")
+        
         # Create a new instance to trigger _initialize_model
         abiss = ABISSSystem(self.config)
         
@@ -86,12 +98,16 @@ class TestABISSSystem(unittest.TestCase):
         self.assertIsNone(abiss.model)
         self.assertIsNone(abiss.pipeline)
     
-    @patch('atous_sec_network.security.abiss_system.AutoTokenizer.from_pretrained')
-    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM.from_pretrained', side_effect=Exception("Model loading failed"))
-    def test_initialize_model_loading_failure(self, mock_model, mock_tokenizer):
+    @patch('atous_sec_network.security.abiss_system.AutoTokenizer')
+    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM')
+    def test_initialize_model_loading_failure(self, mock_model_class, mock_tokenizer_class):
         """Test handling of model loading failure"""
-        # Configure tokenizer mock
-        mock_tokenizer.return_value = "mock_tokenizer"
+        # Configure tokenizer mock to succeed
+        mock_tokenizer = Mock()
+        mock_tokenizer_class.from_pretrained.return_value = mock_tokenizer
+        
+        # Configure model mock to fail
+        mock_model_class.from_pretrained.side_effect = Exception("Model loading failed")
         
         # Create a new instance to trigger _initialize_model
         abiss = ABISSSystem(self.config)
@@ -101,14 +117,17 @@ class TestABISSSystem(unittest.TestCase):
         self.assertIsNone(abiss.model)  # Model failed to load
         self.assertIsNone(abiss.pipeline)
     
-    @patch('atous_sec_network.security.abiss_system.AutoTokenizer.from_pretrained')
-    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM.from_pretrained')
-    @patch('atous_sec_network.security.abiss_system.pipeline', side_effect=Exception("Pipeline creation failed"))
-    def test_initialize_model_pipeline_failure(self, mock_pipeline, mock_model, mock_tokenizer):
+    @patch('atous_sec_network.security.abiss_system.AutoTokenizer')
+    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM')
+    @patch('atous_sec_network.security.abiss_system.pipeline')
+    def test_initialize_model_pipeline_failure(self, mock_pipeline, mock_model_class, mock_tokenizer_class):
         """Test handling of pipeline creation failure"""
         # Configure mocks
-        mock_tokenizer.return_value = "mock_tokenizer"
-        mock_model.return_value = "mock_model"
+        mock_tokenizer = Mock()
+        mock_model = Mock()
+        mock_tokenizer_class.from_pretrained.return_value = mock_tokenizer
+        mock_model_class.from_pretrained.return_value = mock_model
+        mock_pipeline.side_effect = Exception("Pipeline creation failed")
         
         # Create a new instance to trigger _initialize_model
         abiss = ABISSSystem(self.config)
@@ -118,15 +137,19 @@ class TestABISSSystem(unittest.TestCase):
         self.assertIsNone(abiss.model)
         self.assertIsNone(abiss.pipeline)
     
-    @patch('atous_sec_network.security.abiss_system.AutoTokenizer.from_pretrained')
-    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM.from_pretrained')
+    @patch('atous_sec_network.security.abiss_system.AutoTokenizer')
+    @patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM')
     @patch('atous_sec_network.security.abiss_system.pipeline')
-    def test_initialize_model_with_custom_config(self, mock_pipeline, mock_model, mock_tokenizer):
+    def test_initialize_model_with_custom_config(self, mock_pipeline, mock_model_class, mock_tokenizer_class):
         """Test model initialization with custom configuration"""
         # Configure mocks
-        mock_tokenizer.return_value = "mock_tokenizer"
-        mock_model.return_value = "mock_model"
-        mock_pipeline.return_value = "mock_pipeline"
+        mock_tokenizer = Mock()
+        mock_model = Mock()
+        mock_pipeline_instance = Mock()
+        
+        mock_tokenizer_class.from_pretrained.return_value = mock_tokenizer
+        mock_model_class.from_pretrained.return_value = mock_model
+        mock_pipeline.return_value = mock_pipeline_instance
         
         # Custom config with different model name and parameters
         custom_config = self.config.copy()
@@ -142,25 +165,22 @@ class TestABISSSystem(unittest.TestCase):
             }
         })
         
-        # Mock torch to have float16 attribute
-        with patch('torch.float16', create=True):
+        # Mock torch to have float32 attribute
+        with patch('torch.float32', create=True) as mock_float32:
             # Create a new instance with custom config
             abiss = ABISSSystem(custom_config)
         
         # Assert model components were initialized with custom parameters
-        self.assertGreaterEqual(mock_tokenizer.call_count, 1)
-        mock_tokenizer.assert_any_call("custom/model-name")
-        self.assertGreaterEqual(mock_model.call_count, 1)
-        mock_model.assert_any_call(
+        mock_tokenizer_class.from_pretrained.assert_called_once_with("custom/model-name")
+        mock_model_class.from_pretrained.assert_called_once_with(
             "custom/model-name",
-            torch_dtype="float32",
+            torch_dtype=mock_float32,
             device_map="cpu"
         )
-        self.assertGreaterEqual(mock_pipeline.call_count, 1)
-        mock_pipeline.assert_any_call(
+        mock_pipeline.assert_called_once_with(
             "text-generation",
-            model="mock_model",
-            tokenizer="mock_tokenizer",
+            model=mock_model,
+            tokenizer=mock_tokenizer,
             max_length=256,
             temperature=0.5
         )
