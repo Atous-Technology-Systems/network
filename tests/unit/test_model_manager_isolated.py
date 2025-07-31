@@ -78,25 +78,19 @@ class TestModelManagerIsolated(unittest.TestCase):
     @patch('os.path.exists', return_value=False)
     def test_download_model(self, mock_exists, mock_makedirs):
         """Test downloading a model."""
-        model_url = 'http://example.com/model.pt'
-        model_path = '/tmp/test_model/model.pt'
+        model_name = 'test_model'
+        version = '1.0.0'
         
-        # Mock the updater's download_model method
-        self.mock_updater.download_model.return_value = True
-        
-        # Mock the _update_metadata and _set_current_model methods
-        with patch.object(self.manager, '_update_metadata') as mock_update_metadata, \
-             patch.object(self.manager, '_set_current_model') as mock_set_current:
-            
-            result = self.manager.download_model(model_url, model_path)
+        # Mock the parent class download_model method
+        with patch('atous_sec_network.core.model_manager_base.ModelManagerBase.download_model', return_value=True) as mock_parent_download:
+            result = self.manager.download_model(model_name, version)
             
             self.assertTrue(result)
-            self.mock_updater.download_model.assert_called_once_with(
-                source_url=model_url,
-                target_path=model_path,
-                checksum=None,
-                timeout=60,
-                headers={}
+            # Verify that the parent download_model was called with the generated URL and path
+            expected_path = os.path.join("/tmp/model_storage", model_name, f"model_{version}.bin")
+            mock_parent_download.assert_called_once_with(
+                url=f"https://example.com/models/{model_name}/{version}",
+                path=expected_path
             )
     
     def test_apply_patch(self):
@@ -140,15 +134,16 @@ class TestModelManagerIsolated(unittest.TestCase):
     
     def test_check_for_updates(self):
         """Test checking for model updates."""
-        aggregation_server = 'http://example.com/aggregate'
+        server_url = 'http://example.com/aggregate'
         
-        # Mock the updater's check_for_updates method
-        self.mock_updater.check_for_updates.return_value = {'update_available': False}
+        # Mock the updater's check_for_updates method to return a boolean
+        self.mock_updater.check_for_updates.return_value = False
         
-        result = self.manager.check_for_updates(aggregation_server)
+        result = self.manager.check_for_updates(server_url)
         
+        # The ModelManagerImpl.check_for_updates returns a dict with update_available key
         self.assertEqual(result, {'update_available': False})
-        self.mock_updater.check_for_updates.assert_called_once_with(aggregation_server)
+        self.mock_updater.check_for_updates.assert_called_once_with(server_url)
 
 if __name__ == '__main__':
     unittest.main()

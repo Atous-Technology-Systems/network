@@ -5,7 +5,7 @@ import os
 import sys
 import unittest
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, mock_open
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -89,10 +89,19 @@ def test_download_model():
                 print(f"DEBUG: manager.updater = {manager.updater}")
                 print(f"DEBUG: hasattr(manager, 'updater') = {hasattr(manager, 'updater')}")
                 
-                # Call the method with test data
-                print("\nCalling manager.download_model...")
-                result = manager.download_model(model_url, model_path)
-                print(f"DEBUG: download_model returned: {result}")
+                # Mock requests to avoid actual HTTP calls
+                with patch('requests.Session') as mock_session_class:
+                    mock_session = mock_session_class.return_value
+                    mock_response = mock_session.get.return_value
+                    mock_response.raise_for_status.return_value = None
+                    mock_response.content = b'fake model data'
+                    
+                    # Mock os.makedirs and file operations
+                    with patch('os.makedirs'), patch('builtins.open', mock_open()):
+                        # Call the method with test data
+                        print("\nCalling manager.download_model...")
+                        result = manager.download_model(url=model_url, path=model_path)
+                        print(f"DEBUG: download_model returned: {result}")
                 print(f"DEBUG: type of result = {type(result)}")
                 print(f"DEBUG: result is True? = {result is True}")
                 print(f"DEBUG: result == True? = {result == True}")

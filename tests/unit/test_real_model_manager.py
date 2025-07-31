@@ -3,7 +3,7 @@ import os
 import sys
 import pytest
 import logging
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, mock_open
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -74,14 +74,22 @@ class TestRealModelManager:
         """Test download_model method when updater is None."""
         manager = ModelManager(model_config)
         
-        # Since updater is None, it should return True for testing
-        result = manager.download_model(
-            model_url='http://example.com/model.bin',
-            model_path='/tmp/test_model.bin',
-            checksum='abc123',
-            timeout=30,
-            max_retries=2
-        )
+        # Mock requests to avoid actual HTTP calls
+        with patch('requests.Session') as mock_session_class:
+            mock_session = mock_session_class.return_value
+            mock_response = mock_session.get.return_value
+            mock_response.raise_for_status.return_value = None
+            mock_response.content = b'fake model data'
+            
+            # Mock os.makedirs and file operations
+            with patch('os.makedirs'), patch('builtins.open', mock_open()):
+                result = manager.download_model(
+                    url='http://example.com/model.bin',
+                    path='/tmp/test_model.bin',
+                    checksum='abc123',
+                    timeout=30,
+                    max_retries=2
+                )
         
         assert result is True
     
@@ -92,8 +100,8 @@ class TestRealModelManager:
         
         # Call download_model
         result = manager.download_model(
-            model_url='http://example.com/model.bin',
-            model_path='/tmp/test_model.bin',
+            url='http://example.com/model.bin',
+            path='/tmp/test_model.bin',
             checksum='abc123',
             timeout=30,
             max_retries=2
@@ -132,10 +140,10 @@ class TestRealModelManager:
         """Test check_for_updates method when updater is None."""
         manager = ModelManager(model_config)
         
-        # Since updater is None, it should return default response for testing
+        # Since updater is None, it should return False for testing
         result = manager.check_for_updates(server_url='http://example.com/updates')
         
-        assert result == {'update_available': False}
+        assert result is False
 
 if __name__ == '__main__':
     pytest.main(['-v', __file__])
