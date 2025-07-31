@@ -64,10 +64,14 @@ if 'RPi' not in sys.modules:
 # ---------------------------------------------------------------------------
 if 'serial' not in sys.modules:
     class _DummySerial:  # noqa: D401, pylint: disable=too-few-public-methods
-        """Very small subset of `serial.Serial` used in tests."""
+        """Enhanced serial mock for LoRa optimizer tests."""
 
         def __init__(self, *args, **kwargs):
             self._buffer: bytearray = bytearray()
+            self.is_open = True
+            self.port = kwargs.get('port', 'COM1')
+            self.baudrate = kwargs.get('baudrate', 9600)
+            self.timeout = kwargs.get('timeout', 1)
 
         # pylint: disable=unused-argument
         def read(self, size: int = 1):
@@ -76,8 +80,31 @@ if 'serial' not in sys.modules:
         def write(self, data: bytes):
             self._buffer.extend(data)
             return len(data)
+            
+        def open(self):
+            """Open the serial port."""
+            self.is_open = True
+            
+        def close(self):
+            """Close the serial port."""
+            self.is_open = False
+            
+        @property
+        def in_waiting(self):
+            """Return number of bytes waiting to be read."""
+            return len(self._buffer)
 
-    serial_mod = _make_stub_module('serial', attrs={'Serial': _DummySerial})
+    # Add SerialException for error handling
+    class _SerialException(Exception):
+        """Mock serial exception."""
+        pass
+
+    # Create serialutil submodule with SerialException
+    serialutil_mod = _make_stub_module('serial.serialutil', attrs={'SerialException': _SerialException})
+    
+    serial_mod = _make_stub_module('serial', attrs={'Serial': _DummySerial, 'SerialException': _SerialException})
+    # Link serialutil as submodule
+    setattr(serial_mod, 'serialutil', serialutil_mod)
     # Stub for serial.tools.list_ports.comports
     tools_mod = _make_stub_module('serial.tools')
     list_ports_mod = _make_stub_module('serial.tools.list_ports', attrs={'comports': lambda: []})
