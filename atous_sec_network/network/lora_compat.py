@@ -60,7 +60,15 @@ class LoRaOptimizer:
             
             # Test communication (this should work with mocks)
             logger.debug("Sending AT command to test communication")
-            success, response = self.hardware.send_command("AT")
+            result = self.hardware.send_command("AT")
+            logger.debug(f"AT command result: {result}")
+            
+            # Handle both tuple and single value returns
+            if isinstance(result, tuple) and len(result) == 2:
+                success, response = result
+            else:
+                success, response = (True, result)
+            
             logger.debug(f"AT command response - success: {success}, response: {response}")
             
             if not success:
@@ -91,13 +99,22 @@ class LoRaOptimizer:
             return False
             
         try:
+            # First try the direct send method if available
             if hasattr(self.hardware, 'send'):
-                return self.hardware.send(message)
+                result = self.hardware.send(message)
+                # Handle both boolean and integer returns
+                if isinstance(result, bool):
+                    return result
+                elif isinstance(result, int):
+                    return result > 0
+                else:
+                    return bool(result)
             else:
                 # Fall back to the old send method
                 result = self.send(message)
                 return result > 0
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error in send_data: {e}")
             return False
             
     def send(self, message: str) -> int:
@@ -166,12 +183,15 @@ class LoRaOptimizer:
             return None
             
         try:
+            # First try the direct receive method if available
             if hasattr(self.hardware, 'receive'):
-                return self.hardware.receive(timeout)
+                result = self.hardware.receive(timeout)
+                return result
             else:
                 # Fall back to the old receive method
                 return self.receive(timeout)
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error in receive_data: {e}")
             return None
             
     def receive(self, timeout: float = 1.0) -> Optional[str]:

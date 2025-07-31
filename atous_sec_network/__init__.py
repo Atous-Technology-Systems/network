@@ -12,11 +12,16 @@ project_root = str(Path(__file__).parent.absolute())
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-# Import submodules to make them available
-import atous_sec_network.core
-import atous_sec_network.security
-import atous_sec_network.network
-import atous_sec_network.ml
+# Import submodules to make them accessible
+try:
+    from . import core
+    from . import network
+    from . import security
+    from . import ml
+except ImportError as e:
+    # Handle import errors gracefully during development
+    import warnings
+    warnings.warn(f"Could not import submodule: {e}", ImportWarning)
 
 # Use lazy imports to avoid circular import issues
 def _import_model_manager():
@@ -35,10 +40,16 @@ __version__ = "2.0.0"
 
 # Define __all__ to explicitly specify what gets imported with 'from atous_sec_network import *'
 __all__ = [
+    # Core components
     'ModelManager',
     'ModelMetadata',
     'FederatedModelUpdater',
     '_import_model_manager',
     '_import_model_metadata',
-    '_import_federated_model_updater'
+    '_import_federated_model_updater',
+    # Submodules
+    'core',
+    'network',
+    'security',
+    'ml'
 ]

@@ -62,27 +62,42 @@ if 'RPi' not in sys.modules:
 # ---------------------------------------------------------------------------
 # Stub for ``serial`` (pyserial)
 # ---------------------------------------------------------------------------
+# Note: Serial stub creation is enabled but made compatible with @patch decorators
+# in LoRa optimizer tests. Individual test files can still override with their own mocking.
 if 'serial' not in sys.modules:
     class _DummySerial:  # noqa: D401, pylint: disable=too-few-public-methods
         """Enhanced serial mock for LoRa optimizer tests."""
 
         def __init__(self, *args, **kwargs):
             self._buffer: bytearray = bytearray()
-            self.is_open = True
+            self.is_open = False
             self.port = kwargs.get('port', 'COM1')
             self.baudrate = kwargs.get('baudrate', 9600)
             self.timeout = kwargs.get('timeout', 1)
+            self.writeTimeout = kwargs.get('writeTimeout', 1)
+            # Simulate successful connection for test ports
+            if self.port in ['COM1', '/dev/ttyUSB0', 'COM3', '/dev/ttyACM0']:
+                self.is_open = True
+            else:
+                # Raise exception for unknown ports to simulate real behavior
+                raise _SerialException(f"could not open port '{self.port}': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)")
 
         # pylint: disable=unused-argument
         def read(self, size: int = 1):
+            if not self.is_open:
+                raise _SerialException("Port is not open")
             return bytes(self._buffer[:size] or b'')
 
         def write(self, data: bytes):
+            if not self.is_open:
+                raise _SerialException("Port is not open")
             self._buffer.extend(data)
             return len(data)
             
         def open(self):
             """Open the serial port."""
+            if self.port not in ['COM1', '/dev/ttyUSB0', 'COM3', '/dev/ttyACM0']:
+                raise _SerialException(f"could not open port '{self.port}': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)")
             self.is_open = True
             
         def close(self):
@@ -92,6 +107,8 @@ if 'serial' not in sys.modules:
         @property
         def in_waiting(self):
             """Return number of bytes waiting to be read."""
+            if not self.is_open:
+                return 0
             return len(self._buffer)
 
     # Add SerialException for error handling
@@ -105,9 +122,25 @@ if 'serial' not in sys.modules:
     serial_mod = _make_stub_module('serial', attrs={'Serial': _DummySerial, 'SerialException': _SerialException})
     # Link serialutil as submodule
     setattr(serial_mod, 'serialutil', serialutil_mod)
+    # Mock port info for comports
+    class _MockPortInfo:
+        def __init__(self, device, description="Mock USB Serial Port"):
+            self.device = device
+            self.description = description
+            self.hwid = f"USB VID:PID=1234:5678 SER={device[-1]}"
+    
+    def _mock_comports():
+        """Return mock serial ports for testing."""
+        return [
+            _MockPortInfo('COM1', 'Mock USB Serial Port 1'),
+            _MockPortInfo('/dev/ttyUSB0', 'Mock USB Serial Port 2'),
+            _MockPortInfo('COM3', 'Mock USB Serial Port 3'),
+            _MockPortInfo('/dev/ttyACM0', 'Mock USB Serial Port 4')
+        ]
+    
     # Stub for serial.tools.list_ports.comports
     tools_mod = _make_stub_module('serial.tools')
-    list_ports_mod = _make_stub_module('serial.tools.list_ports', attrs={'comports': lambda: []})
+    list_ports_mod = _make_stub_module('serial.tools.list_ports', attrs={'comports': _mock_comports})
     # Expose tools subpackage as attribute of serial
     setattr(serial_mod, 'tools', tools_mod)
 
