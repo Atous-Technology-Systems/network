@@ -28,12 +28,23 @@ class TestLoRaBasic(unittest.TestCase):
             self.fail(f"Failed to import lora_optimizer module: {e}")
     
     def test_import_lora_compat(self):
-        """Test that we can import the lora_compat module."""
+        """Test importing lora_compat module."""
         try:
+            # Test attribute access first
+            import atous_sec_network.network as network_module
+            lora_compat_attr = getattr(network_module, 'lora_compat', None)
+            self.assertIsNotNone(lora_compat_attr, "lora_compat module should be available as attribute")
+            
+            # Test direct import
             from atous_sec_network.network import lora_compat
-            self.assertTrue(True, "lora_compat module imported successfully")
+            self.assertIsNotNone(lora_compat, "lora_compat module should be importable directly")
+            
+            # Test class import
+            from atous_sec_network.network.lora_compat import LoRaOptimizer
+            self.assertIsNotNone(LoRaOptimizer, "LoRaOptimizer class should be importable")
+            
         except ImportError as e:
-            self.fail(f"Failed to import lora_compat module: {e}")
+            self.fail(f"Failed to import lora_compat: {e}")
     
     def test_import_lora_optimizer_classes(self):
         """Test that we can import classes from lora_optimizer."""
@@ -52,4 +63,4 @@ class TestLoRaBasic(unittest.TestCase):
             self.fail(f"Failed to import LoRaOptimizer from lora_compat: {e}")
 
 if __name__ == '__main__':
-    unittest.main() 
+    unittest.main()

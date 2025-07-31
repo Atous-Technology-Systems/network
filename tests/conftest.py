@@ -13,6 +13,17 @@ populated; if new symbols are required in the future, add them here.
 from types import ModuleType, SimpleNamespace
 import sys
 
+# Force import of main package to ensure proper initialization
+try:
+    import atous_sec_network
+    # Force import of submodules
+    import atous_sec_network.network
+    import atous_sec_network.network.lora_compat
+    REAL_MODULES_IMPORTED = True
+except ImportError as e:
+    print(f"Warning: Could not pre-import modules: {e}")
+    REAL_MODULES_IMPORTED = False
+
 # ---------------------------------------------------------------------------
 # Helper utilities
 # ---------------------------------------------------------------------------
@@ -129,23 +140,10 @@ if not hasattr(tools_mod, 'list_ports'):
     lp_mod = _make_stub_module('serial.tools.list_ports', attrs={'comports': lambda: []})
     setattr(tools_mod, 'list_ports', lp_mod)
 
-# Import the real LoRa modules for testing
-# We want to test the actual implementation, not stubs
-try:
-    from atous_sec_network.network.lora_optimizer import LoraAdaptiveEngine, LoraHardwareInterface
-    from atous_sec_network.network.lora_compat import LoRaOptimizer
-    
-    # Make sure the module exists in sys.modules
-    if 'atous_sec_network.network.lora_optimizer' not in sys.modules:
-        lora_mod = _make_stub_module('atous_sec_network.network.lora_optimizer')
-        setattr(lora_mod, 'LoraAdaptiveEngine', LoraAdaptiveEngine)
-        setattr(lora_mod, 'LoraHardwareInterface', LoraHardwareInterface)
-    
-    if 'atous_sec_network.network' not in sys.modules:
-        network_mod = _make_stub_module('atous_sec_network.network')
-        setattr(network_mod, 'LoRaOptimizer', LoRaOptimizer)
-        
-except ImportError:
+# Use the previously determined module availability
+REAL_LORA_MODULES_AVAILABLE = REAL_MODULES_IMPORTED
+
+if not REAL_LORA_MODULES_AVAILABLE:
     # Fallback to stubs if the real modules can't be imported
     if 'atous_sec_network.network.lora_optimizer' not in sys.modules:
         lora_mod = _make_stub_module('atous_sec_network.network.lora_optimizer')
@@ -181,34 +179,37 @@ except ImportError:
         setattr(lora_mod, 'LoraAdaptiveEngine', _LoraAdaptiveEngineStub)
         setattr(lora_mod, 'LoraHardwareInterface', _LoraHardwareInterfaceStub)
     
-    # Create a basic LoRaOptimizer stub if the real one can't be imported
-    if 'atous_sec_network.network' not in sys.modules:
-        network_mod = _make_stub_module('atous_sec_network.network')
-        
-        class _LoRaOptimizerStub:
-            def __init__(self, *args, **kwargs):
-                self.initialized = False
-                
-            def initialize(self, port, baud=9600):
-                self.port = port
-                self.baud = baud
-                self.initialized = True
-                return True
-                
-            def send(self, message):
-                if not self.initialized:
-                    return -1
-                return len(message)
-                
-            def receive(self, timeout=1.0):
-                if not self.initialized:
-                    return None
-                return "TestMessage"
-                
-            def close(self):
-                self.initialized = False
-        
-        setattr(network_mod, 'LoRaOptimizer', _LoRaOptimizerStub)
+        # Create a basic LoRaOptimizer stub if the real one can't be imported
+        if 'atous_sec_network.network' not in sys.modules:
+            network_mod = _make_stub_module('atous_sec_network.network')
+            
+            class _LoRaOptimizerStub:
+                def __init__(self, *args, **kwargs):
+                    self.initialized = False
+                    
+                def initialize(self, port, baud=9600):
+                    self.port = port
+                    self.baud = baud
+                    self.initialized = True
+                    return True
+                    
+                def send(self, message):
+                    if not self.initialized:
+                        return -1
+                    return len(message)
+                    
+                def receive(self, timeout=1.0):
+                    if not self.initialized:
+                        return None
+                    return "TestMessage"
+                    
+                def close(self):
+                    self.initialized = False
+            
+            setattr(network_mod, 'LoRaOptimizer', _LoRaOptimizerStub)
+else:
+    # Real modules are available, ensure they're not overridden by stubs
+    pass
 
 # Stub for ModelManager class
 if 'atous_sec_network.core.model_manager' not in sys.modules:
