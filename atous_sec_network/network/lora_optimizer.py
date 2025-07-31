@@ -514,31 +514,32 @@ class LoraAdaptiveEngine:
         else:
             self.logger.info("Hardware interfaces not available - using simulation mode")
             
-        # Tenta importar serial se disponível
+        # Tenta usar serial se disponível (já importado no topo do módulo)
         try:
-            import serial
-            import serial.tools.list_ports
-            self.Serial = serial.Serial
-            
-            # Descobre portas disponíveis
-            available_ports = list(serial.tools.list_ports.comports())
-            self.serial_ports = [
-                port.device for port in available_ports
-                if "USB" in port.device or "ACM" in port.device
-            ]
-            
-            if self.serial_ports:
-                # Inicializa pool de conexões
-                self._init_serial_pool()
-                self.serial_available = True
-                self.logger.info(f"Serial interface available on ports: {self.serial_ports}")
+            if serial is not None:
+                self.Serial = serial.Serial
                 
-                # Inicia monitoramento de portas
-                self._start_port_monitor()
+                # Descobre portas disponíveis
+                available_ports = list(serial.tools.list_ports.comports())
+                self.serial_ports = [
+                    port.device for port in available_ports
+                    if "USB" in port.device or "ACM" in port.device
+                ]
+                
+                if self.serial_ports:
+                    # Inicializa pool de conexões
+                    self._init_serial_pool()
+                    self.serial_available = True
+                    self.logger.info(f"Serial interface available on ports: {self.serial_ports}")
+                    
+                    # Inicia monitoramento de portas
+                    self._start_port_monitor()
+                else:
+                    self.logger.warning("No suitable serial ports found")
             else:
-                self.logger.warning("No suitable serial ports found")
+                raise ImportError("Serial module not available")
                 
-        except ImportError as e:
+        except (ImportError, AttributeError) as e:
             self.Serial = None
             self.logger.info(f"Serial interface not available - using simulation: {str(e)}")
             

@@ -9,12 +9,24 @@ from unittest.mock import Mock, MagicMock, patch
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, project_root)
 
-# Mock the dependencies before importing
+# Store original modules to restore later
+original_modules = {}
+modules_to_mock = [
+    'atous_sec_network.utils',
+    'atous_sec_network.utils.crypto',
+    'atous_sec_network.utils.storage',
+    'atous_sec_network.utils.logger',
+    'atous_sec_network.utils.config'
+]
+
+# Save original modules
+for module_name in modules_to_mock:
+    if module_name in sys.modules:
+        original_modules[module_name] = sys.modules[module_name]
+
+# Mock only the utils dependencies, not the main package
 model_metadata_mock = Mock()
 model_metadata_mock.ModelMetadata = Mock
-sys.modules['atous_sec_network'] = Mock()
-sys.modules['atous_sec_network.core'] = Mock()
-sys.modules['atous_sec_network.core.model_metadata'] = model_metadata_mock
 sys.modules['atous_sec_network.utils'] = Mock()
 sys.modules['atous_sec_network.utils.crypto'] = Mock()
 sys.modules['atous_sec_network.utils.crypto'].verify_signature = Mock(return_value=True)
@@ -162,3 +174,27 @@ class TestModelManagerDirect:
         manager.updater = mock_updater
         result = manager.check_for_updates('http://example.com/updates')
         assert result is False
+
+
+def cleanup_modules():
+    """Restore original modules after tests."""
+    for module_name, original_module in original_modules.items():
+        sys.modules[module_name] = original_module
+    
+    # Remove mocked modules
+    modules_to_remove = [
+        'atous_sec_network.utils',
+        'atous_sec_network.utils.crypto',
+        'atous_sec_network.utils.storage',
+        'atous_sec_network.utils.logger',
+        'atous_sec_network.utils.config'
+    ]
+    
+    for module_name in modules_to_remove:
+        if module_name in sys.modules and module_name not in original_modules:
+            del sys.modules[module_name]
+
+
+# Register cleanup function to run after tests
+import atexit
+atexit.register(cleanup_modules)
