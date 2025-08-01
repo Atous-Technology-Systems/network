@@ -822,19 +822,57 @@ class FederatedModelUpdater:
         except Exception:
             return False
 
-    def _verify_digital_signature(self, model_data: bytes, signature: bytes) -> bool:
-        """Verifica assinatura digital do modelo (versão simplificada para testes).
+    def _verify_digital_signature(self, model_data: bytes, signature: bytes, public_key: bytes = None) -> bool:
+        """Verifica assinatura digital do modelo usando RSA.
         
         Args:
             model_data: Dados do modelo
             signature: Assinatura digital
+            public_key: Chave pública para verificação (opcional para compatibilidade)
             
         Returns:
-            bool: True se assinatura é válida (sempre True para testes)
+            bool: True se assinatura é válida
         """
-        # Implementação simplificada para testes
-        # Em produção, isso usaria criptografia real
-        return True
+        # Validar entradas
+        if model_data is None:
+            raise ValueError("model_data não pode ser None")
+        if signature is None:
+            raise ValueError("signature não pode ser None")
+        
+        # Se não há chave pública, retorna False (assinatura inválida)
+        if public_key is None:
+            return False
+            
+        try:
+            import cryptography.hazmat.primitives.hashes as hashes
+            import cryptography.hazmat.primitives.serialization as serialization
+            import cryptography.hazmat.primitives.asymmetric.padding as padding
+            
+            # Se public_key é bytes, carrega como PEM
+            if isinstance(public_key, bytes):
+                public_key_obj = serialization.load_pem_public_key(public_key)
+            else:
+                # Assume que já é um objeto de chave cryptography
+                public_key_obj = public_key
+            
+            # Verifica assinatura
+            public_key_obj.verify(
+                signature,
+                model_data,
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+            
+            return True
+            
+        except ImportError:
+            raise ValueError("Biblioteca cryptography não disponível")
+        except Exception:
+            # Qualquer erro na verificação significa assinatura inválida
+            return False
 
     def _encrypt_model(self, data: bytes, key: bytes, iv: bytes = None) -> bytes:
         """Criptografa modelo usando AES-256-GCM.
@@ -960,3 +998,70 @@ class FederatedModelUpdater:
     def _rollback_to_version(self, target_version: int) -> None:
         """Faz rollback para versão específica"""
         self.current_version = target_version
+
+    def _generate_key_pair(self) -> Tuple[bytes, bytes]:
+        """Gera um par de chaves RSA para assinatura digital"""
+        try:
+            import cryptography.hazmat.primitives.asymmetric.rsa as rsa
+            import cryptography.hazmat.primitives.serialization as serialization
+            
+            # Gera chave privada RSA de 2048 bits
+            private_key = rsa.generate_private_key(
+                public_exponent=65537,
+                key_size=2048
+            )
+            
+            # Serializa chave privada
+            private_pem = private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption()
+            )
+            
+            # Serializa chave pública
+            public_key = private_key.public_key()
+            public_pem = public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+            
+            return private_pem, public_pem
+            
+        except ImportError as e:
+            raise ValueError(f"Biblioteca cryptography não disponível: {e}")
+        except Exception as e:
+            raise ValueError(f"Erro ao gerar par de chaves: {e}")
+
+    def _sign_data(self, data: bytes, private_key) -> bytes:
+        """Assina dados usando chave privada RSA"""
+        try:
+            import cryptography.hazmat.primitives.hashes as hashes
+            import cryptography.hazmat.primitives.serialization as serialization
+            import cryptography.hazmat.primitives.asymmetric.padding as padding
+            
+            # Se private_key é bytes, carrega como PEM
+            if isinstance(private_key, bytes):
+                private_key_obj = serialization.load_pem_private_key(
+                    private_key,
+                    password=None
+                )
+            else:
+                # Assume que já é um objeto de chave cryptography
+                private_key_obj = private_key
+            
+            # Assina os dados
+            signature = private_key_obj.sign(
+                data,
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+            
+            return signature
+            
+        except ImportError as e:
+            raise ValueError(f"Biblioteca cryptography não disponível: {e}")
+        except Exception as e:
+            raise ValueError(f"Erro ao assinar dados: {e}")

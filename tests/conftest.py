@@ -186,9 +186,20 @@ else:
 # ---------------------------------------------------------------------------
 # Additional dependency stubs required by tests
 # ---------------------------------------------------------------------------
-for pkg in ("prometheus_client", "psutil", "cryptography", "certifi", "flwr"):
+# Don't stub cryptography if it's actually available
+try:
+    import cryptography
+    cryptography_available = True
+except ImportError:
+    cryptography_available = False
+
+for pkg in ("prometheus_client", "psutil", "certifi", "flwr"):
     if pkg not in sys.modules:
         _make_stub_module(pkg)
+
+# Only stub cryptography if it's not available
+if not cryptography_available and "cryptography" not in sys.modules:
+    _make_stub_module("cryptography")
 
 # Stub for serial.tools.list_ports
 if 'serial.tools' in sys.modules:
