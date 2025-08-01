@@ -253,13 +253,18 @@ class TestModelSecurity(unittest.TestCase):
     
     def test_encryption_decryption(self):
         """Testa criptografia/descriptografia de modelos"""
-        # Mock de dados criptografados
-        encrypted_data = b"encrypted_model_data"
-        key = b"encryption_key"
+        # Test data
+        original_data = b"test_model_data"
+        key = b"a" * 32  # 32-byte key for AES-256
         
-        # Testar descriptografia
+        # Test encryption
+        encrypted_data = self.updater._encrypt_model(original_data, key)
+        self.assertIsNotNone(encrypted_data)
+        self.assertNotEqual(encrypted_data, original_data)
+        
+        # Test decryption
         decrypted_data = self.updater._decrypt_model(encrypted_data, key)
-        self.assertIsNotNone(decrypted_data)
+        self.assertEqual(decrypted_data, original_data)
 
 
 class TestModelOptimization(unittest.TestCase):
