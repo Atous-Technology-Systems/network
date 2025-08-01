@@ -10,6 +10,10 @@ import pytest
 import os
 from unittest.mock import patch
 
+import pytest
+import os
+from unittest.mock import patch
+
 try:
     from cryptography.hazmat.primitives import hashes, serialization
     from cryptography.hazmat.primitives.asymmetric import rsa, padding, ec
@@ -22,7 +26,6 @@ from atous_sec_network.core.model_manager import FederatedModelUpdater
 
 
 class TestTask002TDD:
-    """Testes TDD para TASK-002 - Funções Criptográficas Reais."""
     
     def setup_method(self):
         """Setup para cada teste."""
@@ -118,10 +121,15 @@ class TestTask002TDD:
         ) if HAS_CRYPTOGRAPHY else None
         
         if private_key:
-            # Testar assinatura
-            signature = self.model_updater._sign_data(self.test_data, private_key)
-            assert signature is not None, "Assinatura deve ser gerada"
-            assert isinstance(signature, bytes), "Assinatura deve ser bytes"
+            try:
+                # Testar assinatura
+                signature = self.model_updater._sign_data(self.test_data, private_key)
+                assert signature is not None, "Assinatura deve ser gerada"
+                assert isinstance(signature, bytes), "Assinatura deve ser bytes"
+            except TypeError as e:
+                pytest.fail(f"Função _sign_data não está implementada corretamente: {e}")
+            except AttributeError:
+                pytest.fail("Função _sign_data não existe")
     
     def test_crypto_error_handling(self):
         """RED: Teste que deve falhar - tratamento de erros criptográficos.
@@ -135,6 +143,16 @@ class TestTask002TDD:
         # Teste com assinatura None
         with pytest.raises((ValueError, TypeError)):
             self.model_updater._verify_digital_signature(self.test_data, None)
+            
+        # Teste com dados None na função _sign_data
+        if hasattr(self.model_updater, '_sign_data'):
+            with pytest.raises((ValueError, TypeError)):
+                private_key = rsa.generate_private_key(
+                    public_exponent=65537,
+                    key_size=2048,
+                    backend=default_backend()
+                ) if HAS_CRYPTOGRAPHY else b"dummy_key"
+                self.model_updater._sign_data(None, private_key)
     
     def test_performance_requirements(self):
         """GREEN: Teste de performance - operações criptográficas devem ser eficientes.

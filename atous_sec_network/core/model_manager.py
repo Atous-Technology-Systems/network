@@ -1033,11 +1033,28 @@ class FederatedModelUpdater:
             raise ValueError(f"Erro ao gerar par de chaves: {e}")
 
     def _sign_data(self, data: bytes, private_key) -> bytes:
-        """Assina dados usando chave privada RSA"""
+        """Assina dados usando chave privada RSA
+        
+        Args:
+            data: Dados a serem assinados
+            private_key: Chave privada (objeto ou bytes PEM)
+            
+        Returns:
+            bytes: Assinatura digital
+            
+        Raises:
+            ValueError: Se a biblioteca cryptography não estiver disponível ou ocorrer erro
+        """
         try:
             import cryptography.hazmat.primitives.hashes as hashes
             import cryptography.hazmat.primitives.serialization as serialization
             import cryptography.hazmat.primitives.asymmetric.padding as padding
+            
+            # Validar entradas
+            if data is None:
+                raise ValueError("data não pode ser None")
+            if private_key is None:
+                raise ValueError("private_key não pode ser None")
             
             # Se private_key é bytes, carrega como PEM
             if isinstance(private_key, bytes):
