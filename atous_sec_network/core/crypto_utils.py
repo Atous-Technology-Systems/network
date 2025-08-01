@@ -54,14 +54,14 @@ class CryptoManager:
         
         Args:
             private_key: Local private key
-            public_key_bytes: Remote public key as bytes
+            peer_public_key: Remote public key as bytes
             
         Returns:
             Derived encryption key
         """
         # Reconstruct public key from bytes
         public_key = ec.EllipticCurvePublicKey.from_encoded_point(
-            ec.SECP256R1(), public_key_bytes
+            ec.SECP256R1(), peer_public_key
         )
         
         # Perform ECDH key exchange
@@ -101,8 +101,11 @@ class CryptoManager:
         
         encrypted_data = encryptor.update(data) + encryptor.finalize()
         
-        # Combine encrypted data with IV
-        encrypted_with_iv = encrypted_data + iv
+        # Get authentication tag from GCM
+        auth_tag = encryptor.tag
+        
+        # Combine encrypted data with IV and auth tag
+        encrypted_with_iv = encrypted_data + iv + auth_tag
         
         # Create HMAC signature
         signature = hmac.new(
@@ -138,14 +141,17 @@ class CryptoManager:
         if not hmac.compare_digest(signature, expected_signature):
             raise ValueError("Invalid signature - data may be tampered")
         
-        # Extract IV and ciphertext
-        iv = encrypted_data_with_iv[-self.IV_LENGTH:]
-        ciphertext = encrypted_data_with_iv[:-self.IV_LENGTH]
+        # Extract IV, auth tag and ciphertext
+        # Format: ciphertext + iv + auth_tag
+        auth_tag_length = 16  # GCM auth tag is 16 bytes
+        iv = encrypted_data_with_iv[-auth_tag_length-self.IV_LENGTH:-auth_tag_length]
+        auth_tag = encrypted_data_with_iv[-auth_tag_length:]
+        ciphertext = encrypted_data_with_iv[:-auth_tag_length-self.IV_LENGTH]
         
         # Decrypt
         cipher = Cipher(
             algorithms.AES(key),
-            modes.GCM(iv),
+            modes.GCM(iv, auth_tag),
             backend=default_backend()
         )
         decryptor = cipher.decryptor()
