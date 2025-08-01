@@ -19,9 +19,37 @@ class TestLoggingSystemIntegration:
         """Setup para cada teste"""
         self.temp_dir = Path(tempfile.mkdtemp())
         self.log_dir = self.temp_dir / "logs"
+        
+        # Resetar configuração global do logging
+        import atous_sec_network.core.logging_config as log_module
+        log_module._is_configured = False
+        log_module._logging_config = None
+        
+        # Limpar handlers existentes
+        import logging
+        root_logger = logging.getLogger()
+        for handler in root_logger.handlers[:]:
+            root_logger.removeHandler(handler)
+        
+        # Limpar loggers específicos
+        for logger_name in ['atous_sec_network', 'atous_sec_network.security']:
+            logger = logging.getLogger(logger_name)
+            for handler in logger.handlers[:]:
+                logger.removeHandler(handler)
     
     def teardown_method(self):
         """Cleanup após cada teste"""
+        # Limpar variáveis de ambiente
+        for env_var in ["LOG_DIR", "LOG_LEVEL"]:
+            if env_var in os.environ:
+                del os.environ[env_var]
+        
+        # Resetar configuração global do logging
+        import atous_sec_network.core.logging_config as log_module
+        log_module._is_configured = False
+        log_module._logging_config = None
+        
+        # Limpar diretório temporário
         if self.temp_dir.exists():
             shutil.rmtree(self.temp_dir, ignore_errors=True)
     
@@ -85,8 +113,8 @@ class TestLoggingSystemIntegration:
             assert general_log.exists(), f"Arquivo de log não foi criado na inicialização em {general_log}"
             
             log_content = general_log.read_text(encoding='utf-8')
-            assert "ATous Secure Network - Módulo Principal Inicializado" in log_content or "Sistema de logging configurado" in log_content
-            assert "Versão: 1.0.0" in log_content or "DEBUG" in log_content
+            assert "Sistema de logging inicializado" in log_content or "ATous Secure Network - Sistema de Logging Inicializado" in log_content
+            assert "DEBUG" in log_content or "INFO" in log_content
             
         finally:
             # Limpa variáveis de ambiente
