@@ -73,7 +73,7 @@ coverage.xml
 *.log
 logs/
 log/
-
+LORA_TESTING_README.md
 # Local development
 .env
 .venv

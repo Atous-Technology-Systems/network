@@ -6,18 +6,60 @@ para o sistema ATous Secure Network.
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import logging
 import time
 import psutil
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Dict, Any, Optional
 
-from ..core.logging_config import get_logger
+from ..core.logging_config import setup_logging
+from ..security.abiss_system import ABISSSystem
+from ..security.nnis_system import NNISSystem
+from .routes import security
 
-# Logger
-logger = get_logger('api.server')
+# Configurar logging
+setup_logging()
+logger = logging.getLogger(__name__)
+
+# Instâncias globais dos sistemas de segurança
+abiss_system = None
+nnis_system = None
+
+# Funções para inicialização lazy
+def get_abiss_system():
+    """Obtém a instância do sistema ABISS, inicializando se necessário."""
+    global abiss_system
+    if abiss_system is None:
+        try:
+            logger.info("Inicializando sistema ABISS (lazy loading)...")
+            from ..security.abiss_system import ABISSSystem
+            abiss_system = ABISSSystem(app.state.abiss_config)
+            logger.info("Sistema ABISS inicializado com sucesso")
+            app.state.systems['abiss'] = {'status': 'healthy', 'initialized': True}
+        except Exception as e:
+            logger.exception("Falha na inicialização do ABISS: %s", str(e))
+            app.state.systems['abiss'] = {'status': 'unhealthy', 'initialized': False, 'error': str(e)}
+            raise
+    return abiss_system
+
+def get_nnis_system():
+    """Obtém a instância do sistema NNIS, inicializando se necessário."""
+    global nnis_system
+    if nnis_system is None:
+        try:
+            logger.info("Inicializando sistema NNIS (lazy loading)...")
+            from ..security.nnis_system import NNISSystem
+            nnis_system = NNISSystem(app.state.nnis_config)
+            logger.info("Sistema NNIS inicializado com sucesso")
+            app.state.systems['nnis'] = {'status': 'healthy', 'initialized': True}
+        except Exception as e:
+            logger.exception("Falha na inicialização do NNIS: %s", str(e))
+            app.state.systems['nnis'] = {'status': 'unhealthy', 'initialized': False, 'error': str(e)}
+            raise
+    return nnis_system
 
 # Variável global para rastrear tempo de inicialização
 start_time = time.time()
@@ -26,23 +68,63 @@ start_time = time.time()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Gerencia ciclo de vida da aplicação"""
-    # Startup
-    logger.info("Iniciando ATous Secure Network API Server")
+    global abiss_system, nnis_system
     
-    # Inicializar componentes do sistema
+    # Startup
+    logger.info("Iniciando aplicação...")
     try:
+        # Configurações padrão para os sistemas
+        abiss_config = {
+            "model_name": "google/gemma-3n-2b",
+            "memory_size": 1000,
+            "threat_threshold": 0.7,
+            "learning_rate": 0.01,
+            "enable_monitoring": True
+        }
+        
+        nnis_config = {
+            "model_name": "google/gemma-3n-2b",
+            "memory_size": 1000,
+            "immune_cell_count": 50,
+            "memory_cell_count": 100,
+            "threat_threshold": 0.8
+        }
+        
+        # Inicialização lazy dos sistemas ABISS e NNIS
+        logger.info("Configurando inicialização lazy dos sistemas de segurança...")
+        
+        # Armazenar configurações para inicialização lazy
+        app.state.abiss_config = abiss_config
+        app.state.nnis_config = nnis_config
+        
+        # Inicializar status como 'not_initialized' para lazy loading
+        abiss_status = {'status': 'not_initialized', 'initialized': False}
+        nnis_status = {'status': 'not_initialized', 'initialized': False}
+        
+        logger.info("Sistemas configurados para inicialização lazy")
+        
         # Inicializar sistemas principais
         app.state.systems = {
-            'abiss': {'status': 'healthy', 'initialized': True},
-            'nnis': {'status': 'healthy', 'initialized': True},
+            'abiss': abiss_status,
+            'nnis': nnis_status,
             'model_manager': {'status': 'healthy', 'initialized': True}
         }
         
-        logger.info("Todos os sistemas inicializados com sucesso")
+        logger.info("Aplicação inicializada com sistemas ABISS e NNIS")
         
     except Exception as e:
-        logger.error("Falha na inicialização dos sistemas: %s", str(e))
-        raise
+        logger.error("Falha na inicialização da aplicação: %s", str(e))
+        logger.exception("Detalhes do erro:")
+        # Continuar mesmo com erro na inicialização
+        abiss_system = None
+        nnis_system = None
+        
+        # Inicializar sistemas com status de erro
+        app.state.systems = {
+            'abiss': {'status': 'unhealthy', 'initialized': False, 'error': str(e)},
+            'nnis': {'status': 'unhealthy', 'initialized': False, 'error': str(e)},
+            'model_manager': {'status': 'unhealthy', 'initialized': False, 'error': str(e)}
+        }
     
     yield
     
@@ -57,9 +139,33 @@ app = FastAPI(
     description="API para gerenciamento da rede segura ATous com Federated Learning",
     version="2.0.0",
     docs_url="/docs",
-    redoc_url="/redoc",
-    lifespan=lifespan
+    redoc_url="/redoc"
 )
+
+# Inicializar configurações na criação do app
+app.state.abiss_config = {
+    "model_name": "google/gemma-3n-2b",
+    "memory_size": 1000,
+    "threat_threshold": 0.7,
+    "learning_rate": 0.01,
+    "enable_monitoring": True
+}
+
+app.state.nnis_config = {
+    "model_name": "google/gemma-3n-2b",
+    "memory_size": 1000,
+    "immune_cell_count": 50,
+    "memory_cell_count": 100,
+    "threat_threshold": 0.8
+}
+
+app.state.systems = {
+    'abiss': {'status': 'not_initialized', 'initialized': False},
+    'nnis': {'status': 'not_initialized', 'initialized': False},
+    'model_manager': {'status': 'healthy', 'initialized': True}
+}
+
+logger.info("Aplicação FastAPI criada com configurações lazy loading")
 
 # Middleware de segurança
 app.add_middleware(
@@ -76,6 +182,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Incluir routers
+app.include_router(security.router, prefix="/api/v1", tags=["security"])
+
 
 # Exception handler global
 @app.exception_handler(Exception)
@@ -86,7 +195,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={
             "error": "Internal server error",
             "message": "An unexpected error occurred",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
     )
 
@@ -117,20 +226,20 @@ async def health_check():
                 if system_info.get('initialized', False):
                     systems_status[system_name] = {
                         "status": "healthy",
-                        "last_check": datetime.utcnow().isoformat()
+                        "last_check": datetime.now(UTC).isoformat()
                     }
                 else:
                     systems_status[system_name] = {
                         "status": "unhealthy",
                         "error": "System not initialized",
-                        "last_check": datetime.utcnow().isoformat()
+                        "last_check": datetime.now(UTC).isoformat()
                     }
                     overall_status = "unhealthy"
             except Exception as e:
                 systems_status[system_name] = {
                     "status": "unhealthy",
                     "error": str(e),
-                    "last_check": datetime.utcnow().isoformat()
+                    "last_check": datetime.now(UTC).isoformat()
                 }
                 overall_status = "unhealthy"
         
@@ -148,7 +257,7 @@ async def health_check():
         response_data = {
             "status": overall_status,
             "systems": systems_status,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "metrics": {
                 "response_time_ms": round(response_time_ms, 2),
                 "memory_usage_mb": round(memory_usage_mb, 2),
@@ -172,7 +281,7 @@ async def health_check():
                 "status": "unhealthy",
                 "error": "Health check failed",
                 "message": str(e),
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(UTC).isoformat()
             }
         )
 
@@ -185,7 +294,7 @@ async def root():
         "name": "ATous Secure Network API",
         "version": "2.0.0",
         "status": "operational",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "endpoints": {
             "health": "/health",
             "docs": "/docs",
@@ -227,4 +336,4 @@ def run_server(
 
 
 if __name__ == "__main__":
-    run_server(reload=True)
+    run_server(reload=False)
