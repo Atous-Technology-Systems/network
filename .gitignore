@@ -55,7 +55,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
+LOGGING_IMPLEMENTATION_PLAN.md
+DEPLOYMENT_READINESS_ANALYSIS.md
+INTEGRATION_TESTING_PLAN.md
 # Coverage reports
 htmlcov/
 .tox/
