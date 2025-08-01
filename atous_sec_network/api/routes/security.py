@@ -256,3 +256,121 @@ async def get_threat_intelligence(
     except Exception as e:
         logger.error(f"Erro ao obter inteligência de ameaças: {e}")
         raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+
+
+# Endpoints para teste e configuração do middleware de segurança
+@router.post("/middleware/test")
+async def test_security_middleware(request_data: Dict[str, Any]) -> JSONResponse:
+    """Endpoint para testar o middleware de segurança com dados simulados"""
+    try:
+        # Este endpoint será interceptado pelo middleware de segurança
+        # e pode ser usado para testar diferentes tipos de payloads
+        
+        response_data = {
+            "message": "Request processed successfully",
+            "received_data": request_data,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "middleware_status": "passed"
+        }
+        
+        return JSONResponse(content=response_data)
+        
+    except Exception as e:
+        logger.error(f"Erro no endpoint de teste: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+
+
+@router.get("/middleware/config")
+async def get_middleware_config() -> JSONResponse:
+    """Obtém a configuração atual do middleware de segurança"""
+    try:
+        config = {
+            "abiss_threat_threshold": 0.7,
+            "nnis_anomaly_threshold": 0.8,
+            "combined_threshold": 0.6,
+            "excluded_paths": ["/health", "/docs", "/redoc", "/openapi.json", "/"],
+            "fail_open_on_error": True,
+            "log_all_requests": True
+        }
+        
+        return JSONResponse(content=config)
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter configuração do middleware: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+
+
+@router.post("/middleware/simulate-attack")
+async def simulate_attack(attack_type: str = "sql_injection") -> JSONResponse:
+    """Simula diferentes tipos de ataques para testar o middleware"""
+    try:
+        attack_payloads = {
+            "sql_injection": {
+                "payload": "'; DROP TABLE users; --",
+                "headers": {"Content-Type": "application/json"},
+                "description": "SQL Injection attempt"
+            },
+            "xss": {
+                "payload": "<script>alert('XSS')</script>",
+                "headers": {"Content-Type": "text/html"},
+                "description": "Cross-Site Scripting attempt"
+            },
+            "command_injection": {
+                "payload": "; rm -rf / --no-preserve-root",
+                "headers": {"Content-Type": "application/x-www-form-urlencoded"},
+                "description": "Command injection attempt"
+            },
+            "ddos_simulation": {
+                "payload": "A" * 10000,  # Large payload
+                "headers": {"User-Agent": "AttackBot/1.0"},
+                "description": "DDoS simulation with large payload"
+            }
+        }
+        
+        if attack_type not in attack_payloads:
+            raise HTTPException(status_code=400, detail=f"Unknown attack type: {attack_type}")
+        
+        attack_data = attack_payloads[attack_type]
+        
+        # Este endpoint será interceptado pelo middleware
+        # Se chegou até aqui, o ataque não foi bloqueado
+        response_data = {
+            "message": "Attack simulation processed",
+            "attack_type": attack_type,
+            "attack_data": attack_data,
+            "status": "not_blocked",
+            "warning": "This attack should have been blocked by the security middleware",
+            "timestamp": datetime.now(UTC).isoformat()
+        }
+        
+        return JSONResponse(content=response_data)
+        
+    except Exception as e:
+        logger.error(f"Erro na simulação de ataque: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+
+
+@router.get("/middleware/stats")
+async def get_middleware_stats() -> JSONResponse:
+    """Obtém estatísticas do middleware de segurança"""
+    try:
+        # Em uma implementação real, essas estatísticas seriam coletadas do middleware
+        stats = {
+            "total_requests_analyzed": 0,
+            "threats_blocked": 0,
+            "anomalies_detected": 0,
+            "average_processing_time_ms": 0.0,
+            "last_threat_blocked": None,
+            "system_status": {
+                "abiss_available": True,
+                "nnis_available": True,
+                "middleware_active": True
+            },
+            "timestamp": datetime.now(UTC).isoformat()
+        }
+        
+        return JSONResponse(content=stats)
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter estatísticas do middleware: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
