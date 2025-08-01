@@ -295,4 +295,4 @@ if __name__ == "__main__":
     # Teste de performance
     log_performance("test_function", 0.5)
     
-    print(f"✅ Sistema de logging testado. Logs salvos em: {_logging_config.log_dir}")
+    print(f"Sistema de logging testado. Logs salvos em: {_logging_config.log_dir}")
