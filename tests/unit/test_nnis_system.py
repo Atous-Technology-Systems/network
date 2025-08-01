@@ -384,7 +384,7 @@ class TestNNISSystem(unittest.TestCase):
             self.nnis.config["learning_rate"] = rate
             
             # Simular aprendizado
-            performance = self.nnis.test_learning_performance()
+            performance = self.nnis.evaluate_learning_performance()
             
             if performance > best_performance:
                 best_performance = performance
