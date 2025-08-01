@@ -1,7 +1,28 @@
+#!/usr/bin/env python3
 """
-ATous Secure Network - Core Module
-Package containing secure network implementations with LoRa and P2P optimizations
+ATous Secure Network - Sistema de Segurança Inteligente
+
+Este módulo implementa um sistema de segurança baseado em IA que combina:
+- ABISS (Anomaly-Based Intrusion Security System)
+- NNIS (Neural Network Intrusion System) 
+- LoRa Optimizer para comunicação eficiente
+- P2P Recovery System para recuperação distribuída
+
+O sistema utiliza aprendizado de máquina para detectar anomalias e ameaças
+em tempo real, fornecendo proteção adaptativa e inteligente.
 """
+
+__version__ = "1.0.0"
+__author__ = "ATous Security Team"
+__description__ = "Sistema de Segurança Inteligente com IA"
+
+# Configurar logging centralizado na inicialização do módulo
+from .core.logging_config import setup_logging
+
+# Inicializar sistema de logging
+_main_logger = setup_logging()
+_main_logger.info("🛡️ ATous Secure Network - Módulo Principal Inicializado")
+_main_logger.info(f"📦 Versão: {__version__}")
 
 import os
 import sys
@@ -36,7 +57,13 @@ def _import_federated_model_updater():
     from atous_sec_network.core.model_manager import FederatedModelUpdater
     return FederatedModelUpdater
 
-__version__ = "2.0.0"
+# Configurações globais
+DEFAULT_CONFIG = {
+    "security_level": "high",
+    "ml_enabled": True,
+    "logging_enabled": True,
+    "debug_mode": False
+}
 
 # Define __all__ to explicitly specify what gets imported with 'from atous_sec_network import *'
 __all__ = [
@@ -51,5 +78,7 @@ __all__ = [
     'core',
     'network',
     'security',
-    'ml'
+    'ml',
+    'DEFAULT_CONFIG',
+    'setup_logging'  # Exportar função de logging
 ]

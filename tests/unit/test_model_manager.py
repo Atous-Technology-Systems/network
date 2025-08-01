@@ -226,9 +226,14 @@ class TestModelSecurity(unittest.TestCase):
         model_data = b"model_data"
         signature = b"digital_signature"
         
-        # Testar verificação
+        # Testar verificação sem chave pública (deve retornar False)
         is_valid = self.updater._verify_digital_signature(model_data, signature)
-        self.assertTrue(is_valid)
+        self.assertFalse(is_valid)
+        
+        # Testar com chave pública inválida (deve retornar False)
+        fake_public_key = b"fake_key"
+        is_valid = self.updater._verify_digital_signature(model_data, signature, fake_public_key)
+        self.assertFalse(is_valid)
     
     def test_checksum_validation(self):
         """Testa validação de checksum"""

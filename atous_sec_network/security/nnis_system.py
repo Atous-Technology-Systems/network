@@ -1037,9 +1037,9 @@ class NNISSystem:
             "communication_type": "threat_sharing"
         }
     
-    def test_learning_performance(self) -> float:
+    def evaluate_learning_performance(self) -> float:
         """
-        Testa performance do aprendizado
+        Avalia performance do aprendizado
         
         Returns:
             Score de performance (0-1)
