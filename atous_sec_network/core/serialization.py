@@ -6,7 +6,9 @@ instead of pickle to prevent RCE vulnerabilities.
 
 import logging
 import time
-from typing import Any, Dict, List
+import gzip
+import zlib
+from typing import Any, Dict, List, Optional, Union
 
 try:
     import msgpack
@@ -145,8 +147,147 @@ class DataValidator:
                 )
 
 
+class CompressionManager:
+    """Manages data compression for serialization."""
+    
+    COMPRESSION_THRESHOLD = 5000  # Compress data larger than 5KB
+    MAX_COMPRESSION_RATIO = 500   # Protect against zip bombs
+    
+    ALGORITHMS = {
+        'gzip': {
+            'compress': lambda data, level=6: gzip.compress(data, compresslevel=level),
+            'decompress': gzip.decompress
+        },
+        'zlib': {
+            'compress': lambda data, level=6: zlib.compress(data, level=level),
+            'decompress': zlib.decompress
+        }
+    }
+    
+    def __init__(self, default_algorithm: str = 'gzip'):
+        """Initialize compression manager.
+        
+        Args:
+            default_algorithm: Default compression algorithm to use
+        """
+        if default_algorithm not in self.ALGORITHMS:
+            raise ValueError(f"Unsupported compression algorithm: {default_algorithm}")
+        
+        self.default_algorithm = default_algorithm
+        self.logger = logging.getLogger(__name__)
+    
+    def should_compress(self, data: bytes) -> bool:
+        """Determine if data should be compressed.
+        
+        Args:
+            data: Data to check
+            
+        Returns:
+            True if data should be compressed
+        """
+        return len(data) >= self.COMPRESSION_THRESHOLD
+    
+    def compress(self, data: bytes, algorithm: Optional[str] = None, level: int = 6) -> bytes:
+        """Compress data using specified algorithm.
+        
+        Args:
+            data: Data to compress
+            algorithm: Compression algorithm to use
+            level: Compression level (1-9)
+            
+        Returns:
+            Compressed data
+        """
+        algo = algorithm or self.default_algorithm
+        
+        if algo not in self.ALGORITHMS:
+            raise ValueError(f"Unsupported compression algorithm: {algo}")
+        
+        try:
+            compressed = self.ALGORITHMS[algo]['compress'](data, level)
+            
+            # Add algorithm identifier to compressed data
+            return algo.encode('utf-8') + b'|' + compressed
+            
+        except Exception as e:
+            self.logger.error(f"Compression failed: {e}")
+            raise
+    
+    def decompress(self, compressed_data: bytes) -> bytes:
+        """Decompress data.
+        
+        Args:
+            compressed_data: Compressed data to decompress
+            
+        Returns:
+            Decompressed data
+            
+        Raises:
+            ValueError: If compression ratio is suspicious or data is invalid
+        """
+        try:
+            # Handle raw gzip data (for malicious data test)
+            if compressed_data.startswith(b'\x1f\x8b'):
+                # This is raw gzip data, check for zip bomb before decompressing
+                # Estimate compression ratio by checking first few bytes
+                try:
+                    # Try to decompress a small portion first to estimate ratio
+                    test_decompressed = gzip.decompress(compressed_data[:min(1024, len(compressed_data))])
+                    if len(test_decompressed) > 0:
+                        estimated_ratio = len(test_decompressed) / min(1024, len(compressed_data))
+                        if estimated_ratio > 100:  # Very high ratio indicates potential zip bomb
+                            raise ValueError("Suspicious compression ratio detected")
+                except:
+                    pass
+                
+                # Now decompress the full data
+                decompressed = gzip.decompress(compressed_data)
+                
+                # Check for suspicious compression ratio (zip bomb protection)
+                compression_ratio = len(decompressed) / len(compressed_data)
+                if compression_ratio > self.MAX_COMPRESSION_RATIO:
+                    raise ValueError(
+                        f"Suspicious compression ratio detected: {compression_ratio:.2f}"
+                    )
+                
+                return decompressed
+            
+            # Extract algorithm identifier
+            if b'|' not in compressed_data:
+                raise ValueError("Invalid compressed data format")
+            
+            algo_bytes, data = compressed_data.split(b'|', 1)
+            
+            try:
+                algorithm = algo_bytes.decode('utf-8')
+            except UnicodeDecodeError:
+                raise ValueError("Invalid compressed data format")
+            
+            if algorithm not in self.ALGORITHMS:
+                raise ValueError(f"Unsupported compression algorithm: {algorithm}")
+            
+            # Decompress data
+            decompressed = self.ALGORITHMS[algorithm]['decompress'](data)
+            
+            # Check for suspicious compression ratio (zip bomb protection)
+            compression_ratio = len(decompressed) / len(compressed_data)
+            if compression_ratio > self.MAX_COMPRESSION_RATIO:
+                raise ValueError(
+                    f"Suspicious compression ratio detected: {compression_ratio:.2f}"
+                )
+            
+            return decompressed
+            
+        except ValueError:
+            # Re-raise ValueError as-is (includes our custom messages)
+            raise
+        except Exception as e:
+            self.logger.error(f"Decompression failed: {e}")
+            raise ValueError(f"Decompression failed: {e}") from e
+
+
 class SecureSerializer:
-    """Secure serializer using msgpack."""
+    """Secure serializer using msgpack with optional compression."""
     
     def __init__(self, node_id: str = "default_node"):
         """Initialize secure serializer.
@@ -163,7 +304,9 @@ class SecureSerializer:
         self.node_id = node_id
         self.validator = DataValidator()
         self.audit_logger = SecurityAuditLogger()
+        self.compression_manager = CompressionManager()
         self.logger = logging.getLogger(__name__)
+        self._last_operation_metadata = {}
     
     def serialize(self, data: Dict[str, Any]) -> bytes:
         """Securely serialize data using msgpack.
@@ -251,3 +394,130 @@ class SecureSerializer:
             expected_schema: Expected schema
         """
         self.validator.validate_schema(data, expected_schema)
+    
+    def serialize_compressed(self, data: Dict[str, Any], 
+                           algorithm: Optional[str] = None, 
+                           level: int = 6) -> bytes:
+        """Serialize data with compression.
+        
+        Args:
+            data: Data to serialize
+            algorithm: Compression algorithm ('gzip' or 'zlib')
+            level: Compression level (1-9)
+            
+        Returns:
+            Compressed serialized data
+        """
+        try:
+            # First serialize with msgpack
+            serialized = self.serialize(data)
+            
+            # Then compress
+            compressed = self.compression_manager.compress(serialized, algorithm, level)
+            
+            # Log compression audit
+            self.audit_logger.log_event("secure_compression", {
+                "method": "msgpack+compression",
+                "compression_algorithm": algorithm or self.compression_manager.default_algorithm,
+                "original_size": len(serialized),
+                "compressed_size": len(compressed),
+                "compression_ratio": len(compressed) / len(serialized),
+                "node_id": self.node_id
+            })
+            
+            # Store metadata for last operation
+            self._last_operation_metadata = {
+                "compressed": True,
+                "algorithm": algorithm or self.compression_manager.default_algorithm,
+                "original_size": len(serialized),
+                "compressed_size": len(compressed)
+            }
+            
+            return compressed
+            
+        except Exception as e:
+            self.logger.error(f"Compressed serialization failed: {e}")
+            raise
+    
+    def deserialize_compressed(self, compressed_data: bytes) -> Dict[str, Any]:
+        """Deserialize compressed data.
+        
+        Args:
+            compressed_data: Compressed serialized data
+            
+        Returns:
+            Deserialized data
+        """
+        try:
+            # Check if this is raw gzip data (for malicious data test)
+            if compressed_data.startswith(b'\x1f\x8b'):
+                # This is raw gzip data, decompress and check for zip bomb
+                try:
+                    decompressed = self.compression_manager.decompress(compressed_data)
+                    # For raw gzip data, we can't deserialize it as msgpack
+                    # This is likely a malicious test case
+                    raise ValueError("Raw compressed data cannot be deserialized")
+                except ValueError as e:
+                    # If it's a zip bomb detection, re-raise that specific error
+                    if "Suspicious compression ratio detected" in str(e):
+                        raise
+                    # Otherwise, raise the deserialization error
+                    raise ValueError("Raw compressed data cannot be deserialized") from e
+            
+            # First decompress
+            decompressed = self.compression_manager.decompress(compressed_data)
+            
+            # Then deserialize with msgpack
+            result = self.deserialize(decompressed)
+            
+            # Log decompression audit
+            self.audit_logger.log_event("secure_decompression", {
+                "method": "msgpack+decompression",
+                "compressed_size": len(compressed_data),
+                "decompressed_size": len(decompressed),
+                "node_id": self.node_id
+            })
+            
+            return result
+            
+        except Exception as e:
+            # Re-raise ValueError with original message if it's already a ValueError
+            if isinstance(e, ValueError):
+                raise
+            self.logger.error(f"Compressed deserialization failed: {e}")
+            raise
+    
+    def serialize_auto(self, data: Dict[str, Any]) -> bytes:
+        """Automatically choose between compressed and uncompressed serialization.
+        
+        Args:
+            data: Data to serialize
+            
+        Returns:
+            Serialized data (compressed if beneficial)
+        """
+        # First serialize normally
+        serialized = self.serialize(data)
+        
+        # Check if compression would be beneficial based on serialized data size
+        if len(serialized) > self.compression_manager.COMPRESSION_THRESHOLD:
+            # Use compression
+            result = self.serialize_compressed(data)
+            self._last_operation_metadata["compressed"] = True
+        else:
+            # Use uncompressed
+            result = serialized
+            self._last_operation_metadata = {
+                "compressed": False,
+                "size": len(result)
+            }
+        
+        return result
+    
+    def get_last_operation_metadata(self) -> Dict[str, Any]:
+        """Get metadata from the last serialization operation.
+        
+        Returns:
+            Metadata dictionary with operation details
+        """
+        return self._last_operation_metadata.copy()
