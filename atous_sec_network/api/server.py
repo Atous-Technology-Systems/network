@@ -16,9 +16,9 @@ from datetime import datetime, UTC
 from typing import Dict, Any, Optional
 
 from ..core.logging_config import setup_logging
-# from ..security.abiss_system import ABISSSystem
-# from ..security.nnis_system import NNISSystem
-# from .routes import security
+from ..security.abiss_system import ABISSSystem
+from ..security.nnis_system import NNISSystem
+from .routes import security
 
 # Configurar logging
 setup_logging()
@@ -27,6 +27,39 @@ logger = logging.getLogger(__name__)
 # Instâncias globais dos sistemas de segurança
 abiss_system = None
 nnis_system = None
+
+# Funções para inicialização lazy
+def get_abiss_system():
+    """Obtém a instância do sistema ABISS, inicializando se necessário."""
+    global abiss_system
+    if abiss_system is None:
+        try:
+            logger.info("Inicializando sistema ABISS (lazy loading)...")
+            from ..security.abiss_system import ABISSSystem
+            abiss_system = ABISSSystem(app.state.abiss_config)
+            logger.info("Sistema ABISS inicializado com sucesso")
+            app.state.systems['abiss'] = {'status': 'healthy', 'initialized': True}
+        except Exception as e:
+            logger.exception("Falha na inicialização do ABISS: %s", str(e))
+            app.state.systems['abiss'] = {'status': 'unhealthy', 'initialized': False, 'error': str(e)}
+            raise
+    return abiss_system
+
+def get_nnis_system():
+    """Obtém a instância do sistema NNIS, inicializando se necessário."""
+    global nnis_system
+    if nnis_system is None:
+        try:
+            logger.info("Inicializando sistema NNIS (lazy loading)...")
+            from ..security.nnis_system import NNISSystem
+            nnis_system = NNISSystem(app.state.nnis_config)
+            logger.info("Sistema NNIS inicializado com sucesso")
+            app.state.systems['nnis'] = {'status': 'healthy', 'initialized': True}
+        except Exception as e:
+            logger.exception("Falha na inicialização do NNIS: %s", str(e))
+            app.state.systems['nnis'] = {'status': 'unhealthy', 'initialized': False, 'error': str(e)}
+            raise
+    return nnis_system
 
 # Variável global para rastrear tempo de inicialização
 start_time = time.time()
@@ -40,19 +73,44 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Iniciando aplicação...")
     try:
-        # Por enquanto, não inicializar os sistemas ABISS e NNIS para teste
-        logger.info("Modo de teste - sistemas ABISS e NNIS não inicializados")
-        abiss_system = None
-        nnis_system = None
+        # Configurações padrão para os sistemas
+        abiss_config = {
+            "model_name": "google/gemma-3n-2b",
+            "memory_size": 1000,
+            "threat_threshold": 0.7,
+            "learning_rate": 0.01,
+            "enable_monitoring": True
+        }
         
-        # Inicializar sistemas principais em modo de teste
+        nnis_config = {
+            "model_name": "google/gemma-3n-2b",
+            "memory_size": 1000,
+            "immune_cell_count": 50,
+            "memory_cell_count": 100,
+            "threat_threshold": 0.8
+        }
+        
+        # Inicialização lazy dos sistemas ABISS e NNIS
+        logger.info("Configurando inicialização lazy dos sistemas de segurança...")
+        
+        # Armazenar configurações para inicialização lazy
+        app.state.abiss_config = abiss_config
+        app.state.nnis_config = nnis_config
+        
+        # Inicializar status como 'not_initialized' para lazy loading
+        abiss_status = {'status': 'not_initialized', 'initialized': False}
+        nnis_status = {'status': 'not_initialized', 'initialized': False}
+        
+        logger.info("Sistemas configurados para inicialização lazy")
+        
+        # Inicializar sistemas principais
         app.state.systems = {
-            'abiss': {'status': 'healthy', 'initialized': True},
-            'nnis': {'status': 'healthy', 'initialized': True},
+            'abiss': abiss_status,
+            'nnis': nnis_status,
             'model_manager': {'status': 'healthy', 'initialized': True}
         }
         
-        logger.info("Aplicação inicializada em modo de teste")
+        logger.info("Aplicação inicializada com sistemas ABISS e NNIS")
         
     except Exception as e:
         logger.error("Falha na inicialização da aplicação: %s", str(e))
@@ -81,9 +139,33 @@ app = FastAPI(
     description="API para gerenciamento da rede segura ATous com Federated Learning",
     version="2.0.0",
     docs_url="/docs",
-    redoc_url="/redoc",
-    lifespan=lifespan
+    redoc_url="/redoc"
 )
+
+# Inicializar configurações na criação do app
+app.state.abiss_config = {
+    "model_name": "google/gemma-3n-2b",
+    "memory_size": 1000,
+    "threat_threshold": 0.7,
+    "learning_rate": 0.01,
+    "enable_monitoring": True
+}
+
+app.state.nnis_config = {
+    "model_name": "google/gemma-3n-2b",
+    "memory_size": 1000,
+    "immune_cell_count": 50,
+    "memory_cell_count": 100,
+    "threat_threshold": 0.8
+}
+
+app.state.systems = {
+    'abiss': {'status': 'not_initialized', 'initialized': False},
+    'nnis': {'status': 'not_initialized', 'initialized': False},
+    'model_manager': {'status': 'healthy', 'initialized': True}
+}
+
+logger.info("Aplicação FastAPI criada com configurações lazy loading")
 
 # Middleware de segurança
 app.add_middleware(
@@ -101,7 +183,7 @@ app.add_middleware(
 )
 
 # Incluir routers
-# app.include_router(security.router, prefix="/api/v1/security", tags=["security"])
+app.include_router(security.router, prefix="/api/v1", tags=["security"])
 
 
 # Exception handler global
@@ -254,4 +336,4 @@ def run_server(
 
 
 if __name__ == "__main__":
-    run_server(reload=True)
+    run_server(reload=False)

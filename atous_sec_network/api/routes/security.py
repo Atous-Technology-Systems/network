@@ -23,16 +23,20 @@ router = APIRouter(prefix="/security", tags=["security"])
 
 # Função para obter instâncias dos sistemas
 def get_abiss_system():
-    from ...api.server import abiss_system
-    if abiss_system is None:
-        raise HTTPException(status_code=503, detail="ABISS system not initialized")
-    return abiss_system
+    try:
+        from ...api.server import get_abiss_system as _get_abiss_system
+        return _get_abiss_system()
+    except Exception as e:
+        logger.error(f"Erro ao obter sistema ABISS: {e}")
+        raise HTTPException(status_code=503, detail="ABISS system not available")
 
 def get_nnis_system():
-    from ...api.server import nnis_system
-    if nnis_system is None:
-        raise HTTPException(status_code=503, detail="NNIS system not initialized")
-    return nnis_system
+    try:
+        from ...api.server import get_nnis_system as _get_nnis_system
+        return _get_nnis_system()
+    except Exception as e:
+        logger.error(f"Erro ao obter sistema NNIS: {e}")
+        raise HTTPException(status_code=503, detail="NNIS system not available")
 
 
 @router.get("/abiss/status")
@@ -193,11 +197,8 @@ async def generate_immune_response(threat_data: Dict[str, Any], nnis: NNISSystem
         from ...security.nnis_system import ThreatAntigen
         antigen = ThreatAntigen(
             threat_type=threat_data.get("threat_type", "unknown"),
-            severity=threat_data.get("severity", 0.5),
             confidence=threat_data.get("confidence", 0.5),
-            source_ip=threat_data.get("source_ip", "unknown"),
-            target_ip=threat_data.get("target_ip", "unknown"),
-            description=threat_data.get("description", "Ameaça não especificada")
+            source=threat_data.get("source", "unknown")
         )
         
         # Gerar resposta imune
@@ -209,9 +210,8 @@ async def generate_immune_response(threat_data: Dict[str, Any], nnis: NNISSystem
             "response_generated": True,
             "response_type": immune_response.response_type,
             "intensity": immune_response.intensity,
-            "target_threat": immune_response.target_threat,
             "actions": immune_response.actions,
-            "confidence": immune_response.confidence,
+            "response_id": immune_response.response_id,
             "response_time_ms": round(response_time, 2),
             "timestamp": datetime.now(UTC).isoformat()
         }
