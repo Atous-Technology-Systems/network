@@ -4,6 +4,7 @@ fixed.md
 todo.md
 scripts/
 .gitignore
+backup/
 lora_training
 deployment-guide.md
 failures-detailed.md
