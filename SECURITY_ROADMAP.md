@@ -1,109 +1,162 @@
-# Security Roadmap - ATous Secure Network
+# Security Roadmap - Atous Secure Network
 
-## 🎯 Current Sprint: Phase 1 - Critical Security Fixes
+Este documento detalha o roadmap de implementação de segurança baseado na análise crítica do sistema.
 
-### Sprint Goal
-Eliminate critical security vulnerabilities that pose immediate risk to production deployment.
+## 🚨 **VULNERABILIDADES CRÍTICAS IDENTIFICADAS**
 
-## 📋 Task Tracking
+### 1. **PRIORIDADE MÁXIMA - Correções Imediatas**
 
-### TASK-001: Replace Insecure Pickle Serialization
-- **Status**: ✅ COMPLETED
-- **Priority**: CRITICAL 🚨
-- **Assignee**: Development Team
-- **Estimated Effort**: 2-3 days (COMPLETED)
-- **Files Affected**: 
-  - `atous_sec_network/core/secure_fl.py` (refactored)
-  - `atous_sec_network/core/serialization.py` (new secure module)
-- **Security Risk**: Remote Code Execution (RCE) - ELIMINATED
-- **Description**: ✅ All `pickle.loads()` calls replaced with secure msgpack serialization
-- **Acceptance Criteria**:
-  - [x] All pickle serialization replaced with msgpack
-  - [x] Input validation added for all deserialization
-  - [x] Security tests pass with malicious payloads (13/13 tests passing)
-  - [x] Performance impact < 10% (measured <5%)
-  - [x] Backward compatibility maintained
+#### 1.1 Função `_sign_data` - VULNERABILIDADE CRÍTICA
+- **Arquivo**: `atous_sec_network/core/model_manager.py`
+- **Problema**: Implementação stub que sempre retorna `True`
+- **Risco**: Falsa sensação de segurança, dados não assinados
+- **Status**: 🔴 CRÍTICO - Implementação imediata necessária
 
-**TDD Checklist**:
-- [x] RED: Write failing test for secure serialization
-- [x] GREEN: Implement minimal secure serialization
-- [x] REFACTOR: Optimize and clean code
-- [x] VALIDATE: Run full security test suite (13/13 passing)
-- [x] COMMIT: Conventional commit with security tag (completed)
+#### 1.2 Validação de Assinatura Digital - FALHA DE SEGURANÇA
+- **Arquivo**: `atous_sec_network/core/model_manager.py`
+- **Problema**: `_verify_digital_signature` não implementa verificação real
+- **Risco**: Aceitação de dados corrompidos/maliciosos
+- **Status**: 🔴 CRÍTICO - Implementação imediata necessária
 
----
+#### 1.3 Gerenciamento de Chaves - ✅ CONCLUÍDO
+- **Problema**: Ausência de rotação automática e armazenamento seguro
+- **Risco**: Comprometimento de chaves, ataques de replay
+- **Status**: ✅ CONCLUÍDO - Sistema KeyManager implementado com TDD
 
-### TASK-002: Implement Real Cryptographic Functions
-- **Status**: 🟡 IN PROGRESS
-- **Priority**: CRITICAL 🚨
-- **Assignee**: Security Team
-- **Estimated Effort**: 3-4 days
-- **Files Affected**: 
-  - `atous_sec_network/core/model_manager.py` (lines 794-797)
-  - `atous_sec_network/core/crypto_utils.py` (enhancement needed)
-- **Security Risk**: Data exposure, false security
-- **Description**: Replace stub cryptographic functions with real implementations
-- **Acceptance Criteria**:
-  - [ ] Real AES-GCM encryption implemented
-  - [ ] Digital signature verification working
-  - [ ] Key derivation functions implemented
-  - [ ] Cryptographic tests pass
-  - [ ] Performance benchmarks met
+### 2. **PROBLEMAS DE PERFORMANCE CRÍTICOS**
 
-**TDD Checklist**:
-- [ ] RED: Write failing test for real encryption
-- [ ] GREEN: Implement actual cryptographic functions
-- [ ] REFACTOR: Optimize crypto operations
-- [ ] VALIDATE: Security and performance tests
-- [ ] COMMIT: Conventional commit with security tag
+#### 2.1 Algoritmo de Matching ABISS - PERFORMANCE
+- **Arquivo**: `atous_sec_network/security/abiss_system.py`
+- **Problema**: Complexidade O(n²) na função `_value_matches`
+- **Impacto**: Lentidão com datasets grandes
+- **Status**: 🟡 ALTA - Otimização necessária
 
----
+#### 2.2 Cache Não Otimizado - PERFORMANCE
+- **Arquivo**: `atous_sec_network/ml/llm_integration.py`
+- **Problema**: Sistema de cache sem estratégia de invalidação
+- **Impacto**: Uso excessivo de memória
+- **Status**: 🟢 MÉDIA - Melhoria incremental
 
-### TASK-003: Add Input Validation Framework
-- **Status**: 🔴 NOT STARTED
-- **Priority**: HIGH ⚠️
-- **Assignee**: TBD
-- **Estimated Effort**: 4-5 days
-- **Files Affected**: All security modules
-- **Security Risk**: Injection attacks, data manipulation
-- **Description**: Implement comprehensive input validation across all modules
-- **Acceptance Criteria**:
-  - [ ] Validation decorators implemented
-  - [ ] Schema validation for all inputs
-  - [ ] Sanitization functions created
-  - [ ] Malicious input tests pass
-  - [ ] Performance impact minimal
+## 📋 **PLANO DE IMPLEMENTAÇÃO TDD**
 
-**TDD Checklist**:
-- [ ] RED: Write failing test for input validation
-- [ ] GREEN: Implement validation framework
-- [ ] REFACTOR: Optimize validation logic
-- [ ] VALIDATE: Test with attack vectors
-- [ ] COMMIT: Conventional commit with security tag
+### **SPRINT 1: Correções Críticas de Segurança (1-2 semanas)**
 
----
+#### Task 1.1: Implementar `_sign_data` Real
+- **Branch**: `fix/implement-real-sign-data`
+- **TDD Cycle**:
+  - 🔴 **RED**: Criar teste que falha para assinatura real
+  - 🟢 **GREEN**: Implementar assinatura RSA/ECDSA
+  - 🔵 **REFACTOR**: Otimizar e documentar
+- **Critérios de Aceitação**:
+  - [ ] Assinatura RSA-PSS implementada
+  - [ ] Suporte a ECDSA
+  - [ ] Validação de parâmetros
+  - [ ] Tratamento de erros robusto
+  - [ ] Testes de cobertura 100%
 
-### TASK-004: Secure Key Management System
-- **Status**: 🔴 NOT STARTED
-- **Priority**: HIGH ⚠️
-- **Assignee**: TBD
-- **Estimated Effort**: 5-6 days
-- **Files Affected**: New module `atous_sec_network/security/key_manager.py`
-- **Security Risk**: Key exposure, weak key generation
-- **Description**: Implement secure key lifecycle management
-- **Acceptance Criteria**:
-  - [ ] Secure key generation implemented
-  - [ ] Key rotation mechanism working
-  - [ ] Secure key storage implemented
-  - [ ] Key backup and recovery working
-  - [ ] Audit logging for key operations
+#### Task 1.2: Implementar `_verify_digital_signature` Real
+- **Branch**: `fix/implement-real-signature-verification`
+- **TDD Cycle**:
+  - 🔴 **RED**: Teste que rejeita assinaturas inválidas
+  - 🟢 **GREEN**: Implementar verificação real
+  - 🔵 **REFACTOR**: Melhorar performance
+- **Critérios de Aceitação**:
+  - [ ] Verificação RSA-PSS funcional
+  - [ ] Verificação ECDSA funcional
+  - [ ] Rejeição de assinaturas inválidas
+  - [ ] Proteção contra timing attacks
+  - [ ] Logs de auditoria
 
-**TDD Checklist**:
-- [ ] RED: Write failing test for key management
-- [ ] GREEN: Implement key management system
-- [ ] REFACTOR: Optimize key operations
-- [ ] VALIDATE: Security audit tests
-- [ ] COMMIT: Conventional commit with security tag
+#### Task 1.3: Sistema de Gerenciamento de Chaves ✅ CONCLUÍDO
+- **Branch**: `feat/key-management-system`
+- **TDD Cycle**:
+  - ✅ **RED**: Testes para rotação automática
+  - ✅ **GREEN**: Implementar KeyManager
+  - ✅ **REFACTOR**: Adicionar persistência segura
+- **Critérios de Aceitação**:
+  - [x] Geração segura de chaves
+  - [x] Rotação automática
+  - [x] Armazenamento criptografado
+  - [x] Backup e recuperação
+  - [x] Auditoria de acesso
+- **Implementação**: Sistema KeyManager completo com 13 testes passando
+
+### **SPRINT 2: Otimizações de Performance (1 semana)**
+
+#### Task 2.1: Otimizar Algoritmo ABISS
+- **Branch**: `perf/optimize-abiss-matching`
+- **TDD Cycle**:
+  - 🔴 **RED**: Benchmark de performance atual
+  - 🟢 **GREEN**: Implementar Trie/Bloom filters
+  - 🔵 **REFACTOR**: Paralelização
+- **Critérios de Aceitação**:
+  - [ ] Redução de complexidade para O(log n)
+  - [ ] Suporte a datasets > 1M registros
+  - [ ] Uso de memória otimizado
+  - [ ] Benchmarks automatizados
+
+#### Task 2.2: Sistema de Cache Inteligente
+- **Branch**: `feat/intelligent-cache-system`
+- **TDD Cycle**:
+  - 🔴 **RED**: Testes de invalidação
+  - 🟢 **GREEN**: Implementar LRU + TTL
+  - 🔵 **REFACTOR**: Cache distribuído
+- **Critérios de Aceitação**:
+  - [ ] Estratégia LRU implementada
+  - [ ] TTL configurável
+  - [ ] Invalidação inteligente
+  - [ ] Métricas de hit/miss
+
+### **SPRINT 3: Arquitetura e Consenso (2 semanas)**
+
+#### Task 3.1: Sistema de Consenso Distribuído
+- **Branch**: `feat/distributed-consensus`
+- **TDD Cycle**:
+  - 🔴 **RED**: Testes de consenso Byzantine
+  - 🟢 **GREEN**: Implementar PBFT
+  - 🔵 **REFACTOR**: Otimizar latência
+- **Critérios de Aceitação**:
+  - [ ] Algoritmo PBFT funcional
+  - [ ] Tolerância a 1/3 de nós maliciosos
+  - [ ] Recuperação automática
+  - [ ] Métricas de consenso
+
+#### Task 3.2: Detecção Avançada de Anomalias
+- **Branch**: `feat/advanced-anomaly-detection`
+- **TDD Cycle**:
+  - 🔴 **RED**: Testes de detecção ML
+  - 🟢 **GREEN**: Implementar Isolation Forest
+  - 🔵 **REFACTOR**: Adicionar ensemble methods
+- **Critérios de Aceitação**:
+  - [ ] Modelo ML treinado
+  - [ ] Detecção em tempo real
+  - [ ] Falsos positivos < 5%
+  - [ ] Alertas automatizados
+
+### **SPRINT 4: Monitoramento e Observabilidade (1 semana)**
+
+#### Task 4.1: Sistema de Métricas
+- **Branch**: `feat/metrics-monitoring`
+- **TDD Cycle**:
+  - 🔴 **RED**: Testes de coleta de métricas
+  - 🟢 **GREEN**: Implementar Prometheus
+  - 🔵 **REFACTOR**: Dashboards Grafana
+- **Critérios de Aceitação**:
+  - [ ] Métricas Prometheus
+  - [ ] Dashboards Grafana
+  - [ ] Alertas configurados
+  - [ ] SLA monitoring
+
+## 🎯 **DEFINIÇÃO DE PRONTO (DoD)**
+
+Cada tarefa só será considerada completa quando:
+- [ ] ✅ Todos os testes TDD passando
+- [ ] ✅ Cobertura de código ≥ 90%
+- [ ] ✅ Testes de segurança aprovados
+- [ ] ✅ Documentação atualizada
+- [ ] ✅ Code review aprovado
+- [ ] ✅ Conventional commit realizado
+- [ ] ✅ Branch merged com sucesso
 
 ## 🔄 Development Workflow
 
