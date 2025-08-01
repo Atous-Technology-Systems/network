@@ -539,7 +539,11 @@ class ABISSSystem:
             if pattern_scores:
                 best_pattern_score, best_pattern_type = max(pattern_scores, key=lambda x: x[0])
                 combined_score = (best_pattern_score + ai_score) / 2
-                combined_type = best_pattern_type if best_pattern_score > ai_score else ai_type
+                # Em modo simulação, priorizar padrões aprendidos
+                if self.config.get("simulation_mode", False) and best_pattern_score > 0.5:
+                    combined_type = best_pattern_type
+                else:
+                    combined_type = best_pattern_type if best_pattern_score > ai_score else ai_type
             else:
                 combined_score = ai_score
                 combined_type = ai_type
