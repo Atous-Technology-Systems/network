@@ -1,11 +1,3 @@
-"""TDD Tests for TASK-002: Implementar Funções Criptográficas Reais
-
-Este módulo implementa testes seguindo o fluxo TDD:
-- RED: Testes que falham com implementações stub
-- GREEN: Implementações mínimas para passar nos testes
-- REFACTOR: Otimizações e melhorias
-"""
-
 import pytest
 import os
 from unittest.mock import patch
