@@ -1,3 +1,9 @@
+"""Cryptographic utilities for secure federated learning.
+
+This module provides reusable cryptographic functions to avoid code duplication
+and improve maintainability.
+"""
+
 import hashlib
 import hmac
 import numpy as np

@@ -60,8 +60,25 @@ DEPLOYMENT_READINESS_ANALYSIS.md
 INTEGRATION_TESTING_PLAN.md
 TASK-002-TDD-LOG.md
 TDD_IMPLEMENTATION_PLAN.md
+TASK-002-TDD-LOG.md
 SECURITY_ROADMAP.md
 TASK-002-TDD-LOG.md
+PROJECT_STATUS.md
+DEVELOPMENT_PLAN.md
+LORA_TESTING_README.md
+TASK-002-TDD-LOG.md
+LORA_TESTING_README.md
+PROJECT_STATUS.md
+DEVELOPMENT_PLAN.md
+markdowns/
+simple_attack_test.py
+test_attack_simulation.py
+quick_endpoint_test.py
+quick_endpoint_test.py
+quick_attack_test.py
+final_test.py
+comprehensive_system_test.py
+complete_system_validation.py
 # Coverage reports
 htmlcov/
 .tox/
