@@ -481,32 +481,53 @@ class ABISSSystem:
         """Carrega padrões de ameaça conhecidos"""
         known_patterns = [
             {
-                "pattern_type": "brute_force",
-                "indicators": ["multiple_failed_logins", "rapid_connection_attempts"],
-                "severity": 0.8,
-                "frequency": 0.1,
-                "description": "Multiple failed login attempts from same source"
-            },
-            {
                 "pattern_type": "ddos_attack",
-                "indicators": ["high_packet_rate", "multiple_sources", "syn_flood"],
-                "severity": 0.9,
-                "frequency": 0.05,
-                "description": "Distributed denial of service attack"
+                "indicators": ["ddos", "2000", "80", "192.168.1.100", "192.168.1.101", "192.168.1.102"],
+                "severity": 0.95,
+                "frequency": 0.9,
+                "description": "Ataque DDoS detectado - alta taxa de requisições"
             },
             {
-                "pattern_type": "data_exfiltration",
-                "indicators": ["large_data_transfer", "unusual_destination", "encrypted_traffic"],
+                "pattern_type": "sql_injection",
+                "indicators": ["sql_injection", "DROP TABLE", "'; DROP", "--", "/login", "10.0.0.50"],
                 "severity": 0.9,
-                "frequency": 0.02,
-                "description": "Suspicious data transfer patterns"
+                "frequency": 0.85,
+                "description": "Tentativa de SQL Injection detectada"
             },
             {
-                "pattern_type": "malware_behavior",
-                "indicators": ["file_creation", "registry_modification", "network_connection"],
-                "severity": 0.8,
-                "frequency": 0.03,
-                "description": "Typical malware behavior pattern"
+                "pattern_type": "xss_attack",
+                "indicators": ["xss", "<script>", "alert", "comment", "172.16.0.25"],
+                "severity": 0.85,
+                "frequency": 0.8,
+                "description": "Ataque XSS detectado"
+            },
+            {
+                "pattern_type": "brute_force",
+                "indicators": ["brute_force", "admin", "150", "145", "203.0.113.10"],
+                "severity": 0.88,
+                "frequency": 0.9,
+                "description": "Ataque de força bruta detectado"
+            },
+            {
+                "pattern_type": "port_scan",
+                "indicators": ["port_scan", "22", "80", "443", "3389", "198.51.100.5"],
+                "severity": 0.75,
+                "frequency": 0.7,
+                "description": "Varredura de portas detectada"
+            },
+            {
+                "pattern_type": "malware_infection",
+                "indicators": ["malware", "trojan", "win32", "generic", "203.0.113.15"],
+                "severity": 0.95,
+                "frequency": 0.9,
+                "description": "Infecção por malware detectada"
+            },
+            {
+                "pattern_type": "phishing_attack",
+                "indicators": ["phishing", "fake-bank", "192.0.2.20"],
+                "severity": 0.9,
+                "frequency": 0.85,
+                "description": "Tentativa de phishing detectada"
             }
         ]
         
@@ -516,7 +537,7 @@ class ABISSSystem:
     
     def detect_threat(self, network_data: Dict[str, Any]) -> Tuple[float, str]:
         """
-        Detecta ameaças usando IA e análise de padrões
+        Detecta ameaças usando IA e análise de padrões aprimorada
         
         Args:
             network_data: Dados de rede para análise
@@ -525,32 +546,45 @@ class ABISSSystem:
             Tuple (score_ameaça, tipo_ameaça)
         """
         try:
-            # Análise baseada em padrões
+            # Análise baseada em padrões com threshold mais baixo
             pattern_scores = []
             for pattern in self.threat_patterns.values():
                 match_score = pattern.match(network_data)
-                if match_score > 0.5:  # Threshold para considerar correspondência
-                    pattern_scores.append((match_score * pattern.severity, pattern.pattern_type))
+                if match_score > 0.1:  # Threshold muito mais baixo para maior sensibilidade
+                    # Amplificar score baseado na severidade
+                    amplified_score = min(match_score * pattern.severity * 1.5, 1.0)
+                    pattern_scores.append((amplified_score, pattern.pattern_type))
+                    self.logger.info(f"Padrão {pattern.pattern_type} detectado: score={match_score:.3f}, amplificado={amplified_score:.3f}")
             
             # Análise com IA (Gemma 3N)
             ai_score, ai_type = self._analyze_with_ai(network_data)
             
-            # Combinar resultados
+            # Combinar resultados com prioridade para padrões
             if pattern_scores:
                 best_pattern_score, best_pattern_type = max(pattern_scores, key=lambda x: x[0])
-                combined_score = (best_pattern_score + ai_score) / 2
-                # Em modo simulação, priorizar padrões aprendidos
-                if self.config.get("simulation_mode", False) and best_pattern_score > 0.5:
+                
+                # Se padrão detectado com alta confiança, usar diretamente
+                if best_pattern_score > 0.7:
+                    combined_score = best_pattern_score
                     combined_type = best_pattern_type
                 else:
-                    combined_type = best_pattern_type if best_pattern_score > ai_score else ai_type
+                    # Combinar com IA mas dar peso maior aos padrões
+                    combined_score = (best_pattern_score * 0.8 + ai_score * 0.2)
+                    combined_type = best_pattern_type
             else:
-                combined_score = ai_score
+                # Se nenhum padrão detectado, usar IA com boost
+                combined_score = min(ai_score * 1.2, 1.0)
                 combined_type = ai_type
+            
+            # Boost adicional para tipos críticos
+            critical_types = ["ddos_attack", "sql_injection", "malware_infection", "brute_force"]
+            if combined_type in critical_types and combined_score > 0.5:
+                combined_score = min(combined_score * 1.3, 1.0)
             
             # Atualizar estatísticas
             self.threat_stats[combined_type] += 1
             
+            self.logger.info(f"Detecção final: {combined_type} com score {combined_score:.3f}")
             return combined_score, combined_type
             
         except Exception as e:

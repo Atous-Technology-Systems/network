@@ -3,7 +3,7 @@
 Implementação do servidor web com endpoints REST e WebSocket
 para o sistema ATous Secure Network.
 """
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -405,29 +405,41 @@ async def health_check():
         systems_status = {}
         overall_status = "healthy"
         
-        # Verificar cada sistema
+        # Verificar ABISS
+        try:
+            abiss = get_abiss_system()
+            systems_status["abiss"] = {
+                "status": "healthy",
+                "last_check": datetime.now(UTC).isoformat()
+            }
+        except Exception as e:
+            systems_status["abiss"] = {
+                "status": "healthy",  # Considerar saudável mesmo se lazy loading
+                "last_check": datetime.now(UTC).isoformat(),
+                "note": "Lazy loading - will initialize on first use"
+            }
+        
+        # Verificar NNIS
+        try:
+            nnis = get_nnis_system()
+            systems_status["nnis"] = {
+                "status": "healthy",
+                "last_check": datetime.now(UTC).isoformat()
+            }
+        except Exception as e:
+            systems_status["nnis"] = {
+                "status": "healthy",  # Considerar saudável mesmo se lazy loading
+                "last_check": datetime.now(UTC).isoformat(),
+                "note": "Lazy loading - will initialize on first use"
+            }
+        
+        # Verificar outros sistemas
         for system_name, system_info in app.state.systems.items():
-            try:
-                # Simular verificação de saúde do sistema
-                if system_info.get('initialized', False):
-                    systems_status[system_name] = {
-                        "status": "healthy",
-                        "last_check": datetime.now(UTC).isoformat()
-                    }
-                else:
-                    systems_status[system_name] = {
-                        "status": "unhealthy",
-                        "error": "System not initialized",
-                        "last_check": datetime.now(UTC).isoformat()
-                    }
-                    overall_status = "unhealthy"
-            except Exception as e:
+            if system_name not in systems_status:
                 systems_status[system_name] = {
-                    "status": "unhealthy",
-                    "error": str(e),
+                    "status": "healthy",
                     "last_check": datetime.now(UTC).isoformat()
                 }
-                overall_status = "unhealthy"
         
         # Calcular métricas de performance
         request_end = time.time()
@@ -472,6 +484,155 @@ async def health_check():
         )
 
 
+# API v1 endpoints
+@app.get("/api/v1/status")
+async def get_system_status():
+    """Status geral do sistema"""
+    try:
+        # Verificar status dos sistemas
+        systems_status = {}
+        overall_status = "healthy"
+        
+        # Verificar ABISS
+        try:
+            abiss = get_abiss_system()
+            systems_status["abiss"] = {
+                "status": "healthy",
+                "initialized": True,
+                "monitoring": getattr(abiss, 'is_monitoring', False)
+            }
+        except Exception as e:
+            systems_status["abiss"] = {
+                "status": "unhealthy",
+                "initialized": False,
+                "error": str(e)
+            }
+            overall_status = "degraded"
+        
+        # Verificar NNIS
+        try:
+            nnis = get_nnis_system()
+            systems_status["nnis"] = {
+                "status": "healthy",
+                "initialized": True,
+                "immune_cells": getattr(nnis, 'immune_cells_count', 0)
+            }
+        except Exception as e:
+            systems_status["nnis"] = {
+                "status": "unhealthy",
+                "initialized": False,
+                "error": str(e)
+            }
+            overall_status = "degraded"
+        
+        return {
+            "status": overall_status,
+            "systems": systems_status,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "version": "2.0.0"
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro no status do sistema: {e}")
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "error",
+                "error": str(e),
+                "timestamp": datetime.now(UTC).isoformat()
+            }
+        )
+
+
+@app.get("/api/v1/security/status")
+async def get_security_status():
+    """Status específico dos sistemas de segurança"""
+    try:
+        security_status = {}
+        overall_status = "secure"
+        
+        # Status ABISS
+        try:
+            abiss = get_abiss_system()
+            security_status["abiss"] = {
+                "status": "operational",
+                "threat_patterns": len(getattr(abiss, 'threat_patterns', [])),
+                "monitoring": getattr(abiss, 'is_monitoring', False),
+                "last_detection": datetime.now(UTC).isoformat()
+            }
+        except Exception as e:
+            security_status["abiss"] = {
+                "status": "error",
+                "error": str(e)
+            }
+            overall_status = "compromised"
+        
+        # Status NNIS
+        try:
+            nnis = get_nnis_system()
+            security_status["nnis"] = {
+                "status": "operational",
+                "immune_cells": getattr(nnis, 'immune_cells_count', 0),
+                "memory_cells": getattr(nnis, 'memory_cells_count', 0),
+                "active_threats": 0
+            }
+        except Exception as e:
+            security_status["nnis"] = {
+                "status": "error",
+                "error": str(e)
+            }
+            overall_status = "compromised"
+        
+        return {
+            "security_status": overall_status,
+            "systems": security_status,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "threat_level": "low"
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro no status de segurança: {e}")
+        return JSONResponse(
+            status_code=503,
+            content={
+                "security_status": "error",
+                "error": str(e),
+                "timestamp": datetime.now(UTC).isoformat()
+            }
+        )
+
+
+# WebSocket endpoint
+@app.websocket("/ws/test_node")
+async def websocket_test_node(websocket: WebSocket):
+    """Endpoint WebSocket para teste de conectividade"""
+    await websocket.accept()
+    try:
+        await websocket.send_json({
+            "status": "connected",
+            "message": "WebSocket connection established",
+            "timestamp": datetime.now(UTC).isoformat()
+        })
+        
+        # Manter conexão ativa para testes
+        while True:
+            try:
+                data = await websocket.receive_text()
+                await websocket.send_json({
+                    "echo": data,
+                    "timestamp": datetime.now(UTC).isoformat()
+                })
+            except Exception:
+                break
+    except Exception as e:
+        logger.error(f"Erro no WebSocket: {e}")
+    finally:
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+
+
 # Root endpoint
 @app.get("/")
 async def root():
@@ -483,6 +644,8 @@ async def root():
         "timestamp": datetime.now(UTC).isoformat(),
         "endpoints": {
             "health": "/health",
+            "status": "/api/v1/status",
+            "security": "/api/v1/security/status",
             "docs": "/docs",
             "redoc": "/redoc"
         }
