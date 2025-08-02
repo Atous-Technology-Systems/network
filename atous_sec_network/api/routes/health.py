@@ -1,7 +1,4 @@
-"""Rotas de Health Check para ATous Secure Network API
 
-Endpoints para monitoramento de saúde dos sistemas.
-"""
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 import time
@@ -21,9 +18,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# Variável global para rastrear tempo de inicialização
 start_time = time.time()
-
 
 @router.get("/")
 async def health_check():
