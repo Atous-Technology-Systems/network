@@ -89,6 +89,8 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+test_security_attacks.py
+security_test_report_20250802_233554.json
 
 # Logs
 *.log

@@ -18,7 +18,7 @@ from ...core.logging_config import get_logger
 # Import security middleware for management
 import sys
 import os
-from ...security.security_middleware import SecurityMiddleware as ComprehensiveSecurityMiddleware
+from ...security.security_middleware import ComprehensiveSecurityMiddleware
 from ...security.input_validator import validator, ValidationResult
 
 # Logger
