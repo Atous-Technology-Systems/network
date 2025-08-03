@@ -5,9 +5,23 @@ import json
 import xml.etree.ElementTree as ET
 from typing import Dict, List, Any, Optional
 from urllib.parse import urlparse
+from dataclasses import dataclass
 import logging
 
 logger = logging.getLogger(__name__)
+
+@dataclass
+class ValidationResult:
+    """Result of input validation."""
+    is_valid: bool
+    threats: List[str]
+    risk_score: float
+    message: str = ""
+    details: Dict[str, Any] = None
+    
+    def __post_init__(self):
+        if self.details is None:
+            self.details = {}
 
 class InputValidator:
     """Comprehensive input validation for security threats."""
@@ -181,3 +195,44 @@ def validate_json(json_str: str) -> Dict[str, Any]:
 def validate_filename(filename: str) -> bool:
     """Global function for filename validation."""
     return validator.validate_filename(filename)
+
+def validate_request_data(data: Any, validation_type: str = "general") -> ValidationResult:
+    """Validate request data and return ValidationResult."""
+    if isinstance(data, str):
+        result = validator.validate_input(data, validation_type)
+        return ValidationResult(
+            is_valid=result["is_valid"],
+            threats=result["threats"],
+            risk_score=result["risk_score"],
+            message=result.get("message", ""),
+            details=result
+        )
+    elif isinstance(data, dict):
+        # Validate all string values in the dictionary
+        all_threats = []
+        max_risk_score = 0.0
+        is_valid = True
+        
+        for key, value in data.items():
+            if isinstance(value, str):
+                result = validator.validate_input(value, validation_type)
+                if not result["is_valid"]:
+                    is_valid = False
+                all_threats.extend(result["threats"])
+                max_risk_score = max(max_risk_score, result["risk_score"])
+        
+        return ValidationResult(
+            is_valid=is_valid,
+            threats=list(set(all_threats)),
+            risk_score=max_risk_score,
+            message="Request data validation completed",
+            details={"validated_fields": len(data)}
+        )
+    else:
+        return ValidationResult(
+            is_valid=True,
+            threats=[],
+            risk_score=0.0,
+            message="Non-string data passed validation",
+            details={"data_type": type(data).__name__}
+        )

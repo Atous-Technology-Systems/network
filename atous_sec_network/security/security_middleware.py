@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from input_validator import validator, ValidationResult, validate_request_data
+from .input_validator import validator, ValidationResult, validate_request_data
 
 logger = logging.getLogger(__name__)
 
@@ -258,7 +258,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         try:
             # Validate URL path
             path_validation = validator.validate_input(str(request.url.path), 'url')
-            if path_validation.result == ValidationResult.MALICIOUS:
+            if not path_validation.get('valid', True):
                 logger.warning(f"Malicious path detected from {self._get_client_ip(request)}: {request.url.path}")
                 await self._update_client_stats(self._get_client_ip(request), 'malicious')
                 return JSONResponse(
@@ -266,14 +266,14 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                     content={
                         "error": "Malicious request detected in path",
                         "code": "MALICIOUS_PATH",
-                        "threats": path_validation.threats_detected
+                        "threats": path_validation.get('threats', [])
                     }
                 )
             
             # Validate query parameters
             for key, value in request.query_params.items():
                 param_validation = validator.validate_input(f"{key}={value}", 'url')
-                if param_validation.result == ValidationResult.MALICIOUS:
+                if not param_validation.get('valid', True):
                     logger.warning(f"Malicious query parameter from {self._get_client_ip(request)}: {key}={value}")
                     await self._update_client_stats(self._get_client_ip(request), 'malicious')
                     return JSONResponse(
@@ -281,7 +281,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                         content={
                             "error": "Malicious request detected in query parameters",
                             "code": "MALICIOUS_QUERY",
-                            "threats": param_validation.threats_detected
+                            "threats": param_validation.get('threats', [])
                         }
                     )
             
@@ -289,7 +289,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
             for header_name, header_value in request.headers.items():
                 if header_name.lower() not in ['host', 'user-agent', 'accept', 'content-type', 'content-length', 'authorization']:
                     header_validation = validator.validate_input(header_value, 'general')
-                    if header_validation.result == ValidationResult.MALICIOUS:
+                    if not header_validation.get('valid', True):
                         logger.warning(f"Malicious header from {self._get_client_ip(request)}: {header_name}={header_value}")
                         await self._update_client_stats(self._get_client_ip(request), 'malicious')
                         return JSONResponse(
@@ -297,7 +297,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                             content={
                                 "error": "Malicious request detected in headers",
                                 "code": "MALICIOUS_HEADER",
-                                "threats": header_validation.threats_detected
+                                "threats": header_validation.get('threats', [])
                             }
                         )
             
@@ -312,7 +312,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                             body_str = body.decode('utf-8')
                             json_validation = validator.validate_json(body_str)
                             
-                            if json_validation.result == ValidationResult.MALICIOUS:
+                            if not json_validation.get('valid', True):
                                 logger.warning(f"Malicious JSON from {self._get_client_ip(request)}")
                                 await self._update_client_stats(self._get_client_ip(request), 'malicious')
                                 return JSONResponse(
@@ -320,7 +320,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                                     content={
                                         "error": "Malicious request detected in JSON body",
                                         "code": "MALICIOUS_JSON",
-                                        "threats": json_validation.threats_detected
+                                        "threats": json_validation.get('threats', [])
                                     }
                                 )
                     except Exception as e:
@@ -338,9 +338,9 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                         body = await request.body()
                         if body:
                             body_str = body.decode('utf-8')
-                            xml_validation = validator.validate_xml(body_str)
+                            xml_validation = validator.validate_input(body_str, 'general')
                             
-                            if xml_validation.result == ValidationResult.MALICIOUS:
+                            if not xml_validation.get('valid', True):
                                 logger.warning(f"Malicious XML from {self._get_client_ip(request)}")
                                 await self._update_client_stats(self._get_client_ip(request), 'malicious')
                                 return JSONResponse(
@@ -348,7 +348,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                                     content={
                                         "error": "Malicious request detected in XML body",
                                         "code": "MALICIOUS_XML",
-                                        "threats": xml_validation.threats_detected
+                                        "threats": xml_validation.get('threats', [])
                                     }
                                 )
                     except Exception as e:
