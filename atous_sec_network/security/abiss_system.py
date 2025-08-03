@@ -180,9 +180,18 @@ class ThreatPattern:
         
         for indicator in self.indicators:
             # Verifica tanto nas chaves quanto nos valores
-            if (indicator in data or 
-                any(self._value_matches(v, indicator) for v in data.values())):
-                match_count += 1
+            if isinstance(data, dict):
+                if (indicator in data or 
+                    any(self._value_matches(v, indicator) for v in data.values())):
+                    match_count += 1
+            elif isinstance(data, str):
+                if indicator.lower() in data.lower():
+                    match_count += 1
+            else:
+                # Para outros tipos, tentar converter para string
+                data_str = str(data)
+                if indicator.lower() in data_str.lower():
+                    match_count += 1
         
         return match_count / total_indicators if total_indicators > 0 else 0.0
 

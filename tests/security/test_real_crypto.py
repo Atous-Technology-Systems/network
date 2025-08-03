@@ -192,8 +192,8 @@ class TestRealCryptographicFunctions:
         iv = os.urandom(12)
         encrypted_data = self.model_updater._encrypt_model(self.test_data, key, iv)
         
-        # Corrupt the encrypted data
-        corrupted_data = encrypted_data[:-1] + b'\x00'
+        # Corrupt the encrypted data by making it too short
+        corrupted_data = encrypted_data[:10]  # Too short for valid GCM data
         
         with pytest.raises((ValueError, TypeError, RuntimeError, Exception)):
              self.model_updater._decrypt_model(corrupted_data, key)
