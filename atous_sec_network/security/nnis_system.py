@@ -359,8 +359,15 @@ class NNISSystem:
             Lista de antígenos detectados
         """
         antigens = []
+        # Robustez extra para tipos de dados
+        if not isinstance(network_data, dict):
+            try:
+                # Tenta converter de string JSON para dict
+                import json
+                network_data = json.loads(str(network_data))
+            except Exception:
+                network_data = {'data': str(network_data)}
         data_str = str(network_data).lower()
-        
         try:
             # Detecção direta baseada em padrões específicos
             attack_patterns = {
@@ -372,7 +379,6 @@ class NNISSystem:
                 "malware_infection": ["malware", "trojan", "win32", "203.0.113.15"],
                 "phishing_attack": ["phishing", "fake-bank", "192.0.2.20"]
             }
-            
             # Verificar padrões específicos
             for attack_type, patterns in attack_patterns.items():
                 matches = sum(1 for pattern in patterns if pattern in data_str)
@@ -384,39 +390,28 @@ class NNISSystem:
                         source="pattern_detection"
                     )
                     antigens.append(antigen)
-            
             # Análise baseada em células imunes (como backup)
             for cell in self.immune_cells:
-                # Calcular estímulo baseado na especialização da célula
                 stimulus = self._calculate_stimulus(cell.specialization, network_data)
-                
-                # Ativar célula com threshold mais baixo
-                if stimulus > 0.3:  # Threshold reduzido
+                if stimulus > 0.3:
                     activation_result = cell.activate(stimulus)
-                    
                     if activation_result["activated"]:
-                        # Criar antígeno
                         antigen = ThreatAntigen(
                             threat_type=cell.specialization,
                             confidence=min(0.9, activation_result["response_strength"]),
                             source="immune_cell_detection"
                         )
                         antigens.append(antigen)
-            
             # Análise com IA (Gemma 3N)
             ai_antigens = self._detect_with_ai(network_data)
             antigens.extend(ai_antigens)
-            
             # Verificar células de memória
             memory_antigens = self._check_memory_cells(network_data)
             antigens.extend(memory_antigens)
-            
             # Remover duplicatas e ordenar por confiança
             unique_antigens = self._deduplicate_antigens(antigens)
             unique_antigens.sort(key=lambda x: x.confidence, reverse=True)
-            
             return unique_antigens
-            
         except Exception as e:
             self.logger.error(f"Erro na detecção de antígenos: {e}")
             return []

@@ -22,6 +22,12 @@ from ..security.abiss_system import ABISSSystem
 from ..security.nnis_system import NNISSystem
 from .routes import security
 
+# Import new security middleware
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from security_middleware import SecurityMiddleware as ComprehensiveSecurityMiddleware, RateLimitConfig
+
 # Configurar logging
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -169,39 +175,39 @@ app.state.systems = {
 
 logger.info("Aplicação FastAPI criada com configurações lazy loading")
 
-# Middleware de segurança ABISS/NNIS
-class SecurityMiddleware(BaseHTTPMiddleware):
-    """Middleware que intercepta todas as requisições para análise de segurança"""
+# Enhanced Security Middleware with ABISS/NNIS Integration
+class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
+    """Enhanced middleware that integrates ABISS/NNIS with comprehensive security"""
     
     def __init__(self, app, excluded_paths=None):
         super().__init__(app)
         self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/"]
-        self.logger = logging.getLogger(__name__ + ".SecurityMiddleware")
+        self.logger = logging.getLogger(__name__ + ".ABISSNNISSecurityMiddleware")
     
     async def dispatch(self, request: Request, call_next):
-        """Intercepta e analisa cada requisição"""
+        """Enhanced security analysis with ABISS/NNIS integration"""
         start_time = time.time()
         
-        # Pular análise para endpoints excluídos
+        # Skip analysis for excluded endpoints
         if request.url.path in self.excluded_paths:
             return await call_next(request)
         
         try:
-            # Extrair dados da requisição para análise
+            # Extract request data for analysis
             request_data = await self._extract_request_data(request)
             
-            # Análise ABISS - Detecção de ameaças
+            # ABISS Analysis - Threat Detection
             abiss_result = await self._analyze_with_abiss(request_data)
             
-            # Análise NNIS - Análise comportamental
+            # NNIS Analysis - Behavioral Analysis
             nnis_result = await self._analyze_with_nnis(request_data)
             
-            # Decidir se bloquear a requisição
+            # Decide if request should be blocked
             block_result = self._should_block_request(abiss_result, nnis_result)
             should_block, block_reason = block_result[0], block_result[1]
             
             if should_block:
-                self.logger.warning(f"Requisição bloqueada: {block_reason} - IP: {request.client.host} - Path: {request.url.path}")
+                self.logger.warning(f"Request blocked: {block_reason} - IP: {request.client.host} - Path: {request.url.path}")
                 return JSONResponse(
                     status_code=403,
                     content={
@@ -212,24 +218,24 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                     }
                 )
             
-            # Prosseguir com a requisição se aprovada
+            # Proceed with request if approved
             response = await call_next(request)
             
-            # Log da análise de segurança
+            # Log security analysis
             processing_time = time.time() - start_time
-            self.logger.info(f"Requisição analisada - IP: {request.client.host} - Path: {request.url.path} - Tempo: {processing_time:.3f}s")
+            self.logger.info(f"Request analyzed - IP: {request.client.host} - Path: {request.url.path} - Time: {processing_time:.3f}s")
             
             return response
             
         except Exception as e:
-            self.logger.error(f"Erro no middleware de segurança: {str(e)}")
-            # Em caso de erro, permitir a requisição (fail-open)
+            self.logger.error(f"Security middleware error: {str(e)}")
+            # In case of error, allow request (fail-open)
             return await call_next(request)
     
     async def _extract_request_data(self, request: Request) -> Dict[str, Any]:
-        """Extrai dados relevantes da requisição para análise"""
+        """Extract relevant request data for analysis"""
         try:
-            # Obter corpo da requisição se existir
+            # Get request body if exists
             body = b""
             if request.method in ["POST", "PUT", "PATCH"]:
                 body = await request.body()
@@ -242,21 +248,21 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "client_ip": request.client.host if request.client else "unknown",
                 "user_agent": request.headers.get("user-agent", ""),
                 "body_size": len(body),
-                "body_content": body.decode("utf-8", errors="ignore")[:1000] if body else "",  # Limitar tamanho
+                "body_content": body.decode("utf-8", errors="ignore")[:1000] if body else "",
                 "timestamp": datetime.now(UTC).isoformat()
             }
         except Exception as e:
-            self.logger.error(f"Erro ao extrair dados da requisição: {str(e)}")
+            self.logger.error(f"Error extracting request data: {str(e)}")
             return {}
     
     async def _analyze_with_abiss(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analisa a requisição com o sistema ABISS"""
+        """Analyze request with ABISS system"""
         try:
             abiss = get_abiss_system()
             if not abiss:
                 return {"threat_detected": False, "threat_score": 0.0, "error": "ABISS not available"}
             
-            # Preparar dados para análise ABISS
+            # Prepare data for ABISS analysis
             threat_data = {
                 "source_ip": request_data.get("client_ip", "unknown"),
                 "target_endpoint": request_data.get("path", ""),
@@ -265,10 +271,8 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "method": request_data.get("method", "GET")
             }
             
-            # O método detect_threat pode retornar diferentes formatos
             result = abiss.detect_threat(threat_data)
             
-            # Se o resultado for uma tupla (como analyze_behavior), converter para dict
             if isinstance(result, tuple):
                 threat_score, anomalies = result
                 return {
@@ -276,40 +280,37 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                     "threat_score": threat_score,
                     "anomalies": anomalies
                 }
-            # Se já for um dicionário, retornar como está
             elif isinstance(result, dict):
                 return result
             else:
                 return {"threat_detected": False, "threat_score": 0.0, "error": "Invalid result format"}
             
         except Exception as e:
-            self.logger.error(f"Erro na análise ABISS: {str(e)}")
+            self.logger.error(f"ABISS analysis error: {str(e)}")
             return {"threat_detected": False, "threat_score": 0.0, "error": str(e)}
     
     async def _analyze_with_nnis(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analisa a requisição com o sistema NNIS"""
+        """Analyze request with NNIS system"""
         try:
             nnis = get_nnis_system()
             if not nnis:
                 return {"anomaly_detected": False, "anomaly_score": 0.0, "error": "NNIS not available"}
             
-            # Preparar dados para análise NNIS
+            # Prepare data for NNIS analysis
             network_data = {
                 "source_ip": request_data.get("client_ip", "unknown"),
                 "endpoint": request_data.get("path", ""),
                 "method": request_data.get("method", "GET"),
                 "user_agent": request_data.get("user_agent", ""),
-                "packet_count": 1,  # Uma requisição = um pacote
+                "packet_count": 1,
                 "connection_attempts": 1,
                 "data_transfer_rate": request_data.get("body_size", 0),
                 "payload": request_data.get("body_content", ""),
                 "headers": request_data.get("headers", {})
             }
             
-            # Detectar antígenos usando NNIS
             antigens = nnis.detect_antigens(network_data)
             
-            # Calcular score de anomalia baseado nos antígenos detectados
             if antigens:
                 max_confidence = max(antigen.confidence for antigen in antigens)
                 anomaly_detected = max_confidence > 0.5
@@ -323,35 +324,54 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 return {"anomaly_detected": False, "anomaly_score": 0.0, "antigens_count": 0}
             
         except Exception as e:
-            self.logger.error(f"Erro na análise NNIS: {str(e)}")
+            self.logger.error(f"NNIS analysis error: {str(e)}")
             return {"anomaly_detected": False, "anomaly_score": 0.0, "error": str(e)}
     
     def _should_block_request(self, abiss_result: Dict[str, Any], nnis_result: Dict[str, Any]) -> tuple:
-        """Decide se a requisição deve ser bloqueada baseado nos resultados das análises"""
-        # Verificar se ABISS detectou ameaça
+        """Decide if request should be blocked based on analysis results"""
+        # Check if ABISS detected threat
         if abiss_result.get("threat_detected", False):
             threat_score = abiss_result.get("threat_score", 0.0)
-            if threat_score > 0.7:  # Threshold alto para bloqueio
+            if threat_score > 0.7:
                 return True, f"High threat score detected by ABISS: {threat_score:.2f}"
         
-        # Verificar se NNIS detectou anomalia
+        # Check if NNIS detected anomaly
         if nnis_result.get("anomaly_detected", False):
             anomaly_score = nnis_result.get("anomaly_score", 0.0)
-            if anomaly_score > 0.8:  # Threshold alto para bloqueio
+            if anomaly_score > 0.8:
                 return True, f"High anomaly score detected by NNIS: {anomaly_score:.2f}"
         
-        # Verificar combinação de scores moderados
+        # Check combination of moderate scores
         threat_score = abiss_result.get("threat_score", 0.0)
         anomaly_score = nnis_result.get("anomaly_score", 0.0)
         combined_score = (threat_score + anomaly_score) / 2
         
-        if combined_score > 0.6:  # Threshold combinado
+        if combined_score > 0.6:
             return True, f"Combined security score too high: {combined_score:.2f} (ABISS: {threat_score:.2f}, NNIS: {anomaly_score:.2f})"
         
         return False, ""
 
-# Adicionar middleware de segurança
-app.add_middleware(SecurityMiddleware)
+# Configure comprehensive security middleware
+rate_limit_config = RateLimitConfig(
+    requests_per_minute=60,
+    requests_per_hour=1000,
+    burst_limit=10,
+    block_duration_minutes=15
+)
+
+# Add comprehensive security middleware (input validation, rate limiting, DDoS protection)
+app.add_middleware(
+    ComprehensiveSecurityMiddleware,
+    rate_limit_config=rate_limit_config,
+    enable_input_validation=True,
+    enable_rate_limiting=True,
+    enable_ddos_protection=True,
+    max_request_size=1024 * 1024,  # 1MB
+    blocked_ips=[]
+)
+
+# Add ABISS/NNIS security middleware
+app.add_middleware(ABISSNNISSecurityMiddleware)
 
 # Middleware de segurança de host
 app.add_middleware(
@@ -405,40 +425,49 @@ async def health_check():
         systems_status = {}
         overall_status = "healthy"
         
-        # Verificar ABISS
-        try:
-            abiss = get_abiss_system()
-            systems_status["abiss"] = {
-                "status": "healthy",
-                "last_check": datetime.now(UTC).isoformat()
-            }
-        except Exception as e:
-            systems_status["abiss"] = {
-                "status": "healthy",  # Considerar saudável mesmo se lazy loading
-                "last_check": datetime.now(UTC).isoformat(),
-                "note": "Lazy loading - will initialize on first use"
-            }
-        
-        # Verificar NNIS
-        try:
-            nnis = get_nnis_system()
-            systems_status["nnis"] = {
-                "status": "healthy",
-                "last_check": datetime.now(UTC).isoformat()
-            }
-        except Exception as e:
-            systems_status["nnis"] = {
-                "status": "healthy",  # Considerar saudável mesmo se lazy loading
-                "last_check": datetime.now(UTC).isoformat(),
-                "note": "Lazy loading - will initialize on first use"
-            }
-        
-        # Verificar outros sistemas
+        # Verificar sistemas do app.state primeiro
         for system_name, system_info in app.state.systems.items():
-            if system_name not in systems_status:
-                systems_status[system_name] = {
+            status = system_info.get('status', 'healthy')
+            systems_status[system_name] = {
+                "status": status,
+                "initialized": system_info.get('initialized', True),
+                "last_check": datetime.now(UTC).isoformat()
+            }
+            if system_info.get('error'):
+                systems_status[system_name]["error"] = system_info['error']
+            
+            # Se algum sistema está unhealthy, o status geral é unhealthy
+            if status == 'unhealthy':
+                overall_status = "unhealthy"
+        
+        # Verificar ABISS (se não estiver no app.state)
+        if 'abiss' not in systems_status:
+            try:
+                abiss = get_abiss_system()
+                systems_status["abiss"] = {
                     "status": "healthy",
                     "last_check": datetime.now(UTC).isoformat()
+                }
+            except Exception as e:
+                systems_status["abiss"] = {
+                    "status": "healthy",  # Considerar saudável mesmo se lazy loading
+                    "last_check": datetime.now(UTC).isoformat(),
+                    "note": "Lazy loading - will initialize on first use"
+                }
+        
+        # Verificar NNIS (se não estiver no app.state)
+        if 'nnis' not in systems_status:
+            try:
+                nnis = get_nnis_system()
+                systems_status["nnis"] = {
+                    "status": "healthy",
+                    "last_check": datetime.now(UTC).isoformat()
+                }
+            except Exception as e:
+                systems_status["nnis"] = {
+                    "status": "healthy",  # Considerar saudável mesmo se lazy loading
+                    "last_check": datetime.now(UTC).isoformat(),
+                    "note": "Lazy loading - will initialize on first use"
                 }
         
         # Calcular métricas de performance

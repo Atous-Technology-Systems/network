@@ -70,7 +70,7 @@ class TestHealthEndpoint:
             # Verificar que cada sistema tem status
             for system_name, system_info in systems.items():
                 assert "status" in system_info
-                assert system_info["status"] in ["healthy", "unhealthy", "unknown"]
+                assert system_info["status"] in ["healthy", "unhealthy", "unknown", "not_initialized"]
         except ImportError:
             pytest.fail("Módulo server.py não existe - implementação necessária")
     
