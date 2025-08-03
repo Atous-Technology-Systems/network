@@ -1,48 +1,48 @@
 {
   "test_type": "API Endpoints Test",
-  "timestamp": "2025-08-03T10:56:04.445191",
+  "timestamp": "2025-08-03T12:26:44.934993",
   "summary": {
     "total_endpoints": 4,
-    "successful_endpoints": 0,
-    "failed_endpoints": 4,
-    "success_rate": 0.0
+    "successful_endpoints": 3,
+    "failed_endpoints": 1,
+    "success_rate": 75.0
   },
   "results": [
     {
       "endpoint": "Health Check",
       "url": "http://localhost:8000/health",
-      "status_code": 0,
-      "response_time": 0,
-      "success": false,
-      "error": "Connection refused",
-      "timestamp": "2025-08-03T10:55:52.201949"
+      "status_code": 200,
+      "response_time": 2085.1,
+      "success": true,
+      "content_length": 458,
+      "timestamp": "2025-08-03T12:26:38.790056"
     },
     {
       "endpoint": "Security Status",
       "url": "http://localhost:8000/api/security/status",
-      "status_code": 0,
-      "response_time": 0,
+      "status_code": 403,
+      "response_time": 2048.81,
       "success": false,
-      "error": "Connection refused",
-      "timestamp": "2025-08-03T10:55:56.253206"
+      "content_length": 179,
+      "timestamp": "2025-08-03T12:26:40.838864"
     },
     {
       "endpoint": "Root Endpoint",
       "url": "http://localhost:8000/",
-      "status_code": 0,
-      "response_time": 0,
-      "success": false,
-      "error": "Connection refused",
-      "timestamp": "2025-08-03T10:56:00.398479"
+      "status_code": 200,
+      "response_time": 2062.4,
+      "success": true,
+      "content_length": 251,
+      "timestamp": "2025-08-03T12:26:42.902267"
     },
     {
       "endpoint": "Docs",
       "url": "http://localhost:8000/docs",
-      "status_code": 0,
-      "response_time": 0,
-      "success": false,
-      "error": "Connection refused",
-      "timestamp": "2025-08-03T10:56:04.445191"
+      "status_code": 200,
+      "response_time": 2032.73,
+      "success": true,
+      "content_length": 948,
+      "timestamp": "2025-08-03T12:26:44.934993"
     }
   ]
 }

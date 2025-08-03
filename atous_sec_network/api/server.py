@@ -23,10 +23,7 @@ from ..security.nnis_system import NNISSystem
 from .routes import security
 
 # Import new security middleware
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from security_middleware import SecurityMiddleware as ComprehensiveSecurityMiddleware, RateLimitConfig
+from ..security.security_middleware import ComprehensiveSecurityMiddleware, RateLimitConfig
 
 # Configurar logging
 setup_logging()

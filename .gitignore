@@ -29,6 +29,7 @@ technical-changelog.md
 venv/
 env/
 .env/
+test_env/
 improvements.md
 cacert.pem
 debug_serial.py

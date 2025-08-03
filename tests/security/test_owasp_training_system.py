@@ -11,6 +11,9 @@ import time
 from unittest.mock import Mock, MagicMock
 from typing import Dict, List, Any
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'scripts'))
 from owasp_training_system import OWASPTrainingSystem, OWASPAttackPattern
 from atous_sec_network.security.abiss_system import ThreatPattern
 
