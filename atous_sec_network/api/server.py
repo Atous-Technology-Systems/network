@@ -705,7 +705,133 @@ async def get_security_status():
         )
 
 
-# WebSocket endpoint
+# WebSocket endpoints
+@app.websocket("/ws")
+async def websocket_main(websocket: WebSocket):
+    """Endpoint WebSocket principal"""
+    await websocket.accept()
+    try:
+        await websocket.send_json({
+            "status": "connected",
+            "message": "WebSocket connection established",
+            "endpoint": "/ws",
+            "timestamp": datetime.now(UTC).isoformat()
+        })
+        
+        # Manter conexão ativa para testes
+        while True:
+            try:
+                data = await websocket.receive_text()
+                try:
+                    # Tenta parsear como JSON
+                    json_data = json.loads(data)
+                    await websocket.send_json({
+                        "type": "response",
+                        "echo": json_data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
+                except json.JSONDecodeError:
+                    # Se não for JSON, envia como texto
+                    await websocket.send_json({
+                        "type": "text_echo",
+                        "echo": data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
+            except Exception:
+                break
+    except Exception as e:
+        logger.error(f"Erro no WebSocket /ws: {e}")
+    finally:
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+
+
+@app.websocket("/api/ws")
+async def websocket_api(websocket: WebSocket):
+    """Endpoint WebSocket da API"""
+    await websocket.accept()
+    try:
+        await websocket.send_json({
+            "status": "connected",
+            "message": "API WebSocket connection established",
+            "endpoint": "/api/ws",
+            "timestamp": datetime.now(UTC).isoformat()
+        })
+        
+        # Manter conexão ativa para testes
+        while True:
+            try:
+                data = await websocket.receive_text()
+                try:
+                    # Tenta parsear como JSON
+                    json_data = json.loads(data)
+                    await websocket.send_json({
+                        "type": "api_response",
+                        "echo": json_data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
+                except json.JSONDecodeError:
+                    # Se não for JSON, envia como texto
+                    await websocket.send_json({
+                        "type": "api_text_echo",
+                        "echo": data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
+            except Exception:
+                break
+    except Exception as e:
+        logger.error(f"Erro no WebSocket /api/ws: {e}")
+    finally:
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+
+
+@app.websocket("/websocket")
+async def websocket_generic(websocket: WebSocket):
+    """Endpoint WebSocket genérico"""
+    await websocket.accept()
+    try:
+        await websocket.send_json({
+            "status": "connected",
+            "message": "Generic WebSocket connection established",
+            "endpoint": "/websocket",
+            "timestamp": datetime.now(UTC).isoformat()
+        })
+        
+        # Manter conexão ativa para testes
+        while True:
+            try:
+                data = await websocket.receive_text()
+                try:
+                    # Tenta parsear como JSON
+                    json_data = json.loads(data)
+                    await websocket.send_json({
+                        "type": "generic_response",
+                        "echo": json_data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
+                except json.JSONDecodeError:
+                    # Se não for JSON, envia como texto
+                    await websocket.send_json({
+                        "type": "generic_text_echo",
+                        "echo": data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
+            except Exception:
+                break
+    except Exception as e:
+        logger.error(f"Erro no WebSocket /websocket: {e}")
+    finally:
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+
+
 @app.websocket("/ws/test_node")
 async def websocket_test_node(websocket: WebSocket):
     """Endpoint WebSocket para teste de conectividade"""
@@ -714,6 +840,7 @@ async def websocket_test_node(websocket: WebSocket):
         await websocket.send_json({
             "status": "connected",
             "message": "WebSocket connection established",
+            "endpoint": "/ws/test_node",
             "timestamp": datetime.now(UTC).isoformat()
         })
         
@@ -721,14 +848,25 @@ async def websocket_test_node(websocket: WebSocket):
         while True:
             try:
                 data = await websocket.receive_text()
-                await websocket.send_json({
-                    "echo": data,
-                    "timestamp": datetime.now(UTC).isoformat()
-                })
+                try:
+                    # Tenta parsear como JSON
+                    json_data = json.loads(data)
+                    await websocket.send_json({
+                        "type": "test_response",
+                        "echo": json_data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
+                except json.JSONDecodeError:
+                    # Se não for JSON, envia como texto
+                    await websocket.send_json({
+                        "type": "test_text_echo",
+                        "echo": data,
+                        "timestamp": datetime.now(UTC).isoformat()
+                    })
             except Exception:
                 break
     except Exception as e:
-        logger.error(f"Erro no WebSocket: {e}")
+        logger.error(f"Erro no WebSocket /ws/test_node: {e}")
     finally:
         try:
             await websocket.close()

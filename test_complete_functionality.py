@@ -141,7 +141,7 @@ class ATousTestSuite:
                     uri = f"{self.ws_url}{endpoint}"
                     self.log(f"Tentando conectar ao WebSocket: {uri}")
                     
-                    async with websockets.connect(uri, timeout=5) as websocket:
+                    async with websockets.connect(uri) as websocket:
                         self.log(f"✅ WebSocket conectado: {endpoint}")
                         
                         # Envia mensagem de teste

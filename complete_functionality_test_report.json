@@ -1,62 +1,54 @@
 {
-  "timestamp": "2025-08-04T17:49:14.362334",
+  "timestamp": "2025-08-04T17:52:32.555880",
   "test_results": {
     "endpoints": {
       "/": {
         "status": 200,
-        "response_time_ms": 6.07,
+        "response_time_ms": 6.2,
         "description": "Root endpoint",
         "success": true
       },
       "/health": {
         "status": 200,
-        "response_time_ms": 5.0,
+        "response_time_ms": 5.01,
         "description": "Health check",
         "success": true
       },
       "/docs": {
         "status": 200,
-        "response_time_ms": 5.71,
+        "response_time_ms": 6.02,
         "description": "API Documentation",
         "success": true
       },
       "/openapi.json": {
         "status": 200,
-        "response_time_ms": 14.12,
+        "response_time_ms": 3.7,
         "description": "OpenAPI Schema",
         "success": true
       },
       "/api/info": {
         "status": 403,
-        "response_time_ms": 2.66,
+        "response_time_ms": 8.25,
         "description": "API Info",
         "success": false
       },
       "/api/security/status": {
         "status": 403,
-        "response_time_ms": 11.46,
+        "response_time_ms": 2.81,
         "description": "Security Status",
         "success": false
       },
       "/api/metrics": {
         "status": 403,
-        "response_time_ms": 5.94,
+        "response_time_ms": 16.9,
         "description": "System Metrics",
         "success": false
       }
     },
     "websockets": {
       "/ws": {
-        "connected": false,
-        "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
-      },
-      "/api/ws": {
-        "connected": false,
-        "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
-      },
-      "/websocket": {
-        "connected": false,
-        "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
+        "connected": true,
+        "response": "{\"status\":\"connected\",\"message\":\"WebSocket connection established\",\"endpoint\":\"/ws\",\"timestamp\":\"2025-08-04T20:52:32.296142+00:00\"}"
       }
     },
     "security": {
@@ -82,25 +74,25 @@
       },
       "threat_xss": {
         "blocked": false,
-        "status_code": 400
+        "status_code": 429
       },
       "threat_path_traversal": {
         "blocked": false,
-        "status_code": 400
+        "status_code": 429
       },
       "threat_command_injection": {
         "blocked": false,
-        "status_code": 400
+        "status_code": 429
       }
     },
     "crypto": {},
     "performance": {
       "total_requests": 50,
-      "successful_requests": 40,
-      "success_rate": 80.0,
-      "avg_response_time_ms": 5.42,
+      "successful_requests": 0,
+      "success_rate": 0.0,
+      "avg_response_time_ms": 4.65,
       "min_response_time_ms": 0.0,
-      "max_response_time_ms": 16.52
+      "max_response_time_ms": 15.44
     }
   },
   "summary": {
