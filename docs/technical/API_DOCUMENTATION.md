@@ -4,6 +4,60 @@
 
 ATous Secure Network provides a comprehensive set of APIs for each subsystem. This documentation covers the public interfaces, usage patterns, and examples for all major components.
 
+## Web API Endpoints
+
+### Core Endpoints
+
+#### Root Endpoint
+- **URL**: `GET /`
+- **Description**: Endpoint raiz com informações básicas da API
+- **Response**: JSON com nome, versão, status e lista de endpoints disponíveis
+
+#### Health Check
+- **URL**: `GET /health`
+- **Description**: Verificação de saúde de todos os sistemas
+- **Response**: JSON com status dos sistemas (ABISS, NNIS, Model Manager) e métricas
+
+#### API Information
+- **URL**: `GET /api/info`
+- **Description**: Informações detalhadas da API, features e endpoints
+- **Response**: JSON com detalhes da API, funcionalidades habilitadas e lista completa de endpoints
+
+#### Security Status
+- **URL**: `GET /api/security/status`
+- **Description**: Status dos sistemas de segurança ABISS e NNIS
+- **Response**: JSON com status operacional dos sistemas de segurança
+
+#### System Metrics
+- **URL**: `GET /api/metrics`
+- **Description**: Métricas do sistema incluindo uso de CPU, memória e estatísticas de segurança
+- **Response**: JSON com métricas de sistema, API e segurança
+
+#### Documentation
+- **URL**: `GET /docs`
+- **Description**: Interface Swagger UI para documentação interativa da API
+- **URL**: `GET /redoc`
+- **Description**: Interface ReDoc para documentação da API
+- **URL**: `GET /openapi.json`
+- **Description**: Schema OpenAPI em formato JSON
+
+### Crypto Endpoints
+
+#### Encryption Services
+- **URL**: `POST /api/crypto/encrypt`
+- **URL**: `POST /api/security/encrypt`
+- **URL**: `POST /encrypt`
+- **Description**: Endpoints de criptografia AES-256
+- **Request Body**: JSON com dados para criptografar
+- **Response**: JSON com dados criptografados
+
+### WebSocket Endpoints
+
+#### Real-time Communication
+- **URL**: `WS /ws`
+- **Description**: WebSocket para comunicação em tempo real
+- **Features**: Conexão bidirecional, notificações de eventos de segurança
+
 ## Security APIs
 
 ### ABISS System

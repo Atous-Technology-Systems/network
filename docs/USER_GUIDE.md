@@ -94,6 +94,48 @@ python run_app_lite.py
 python -m atous_sec_network
 ```
 
+### Option 3: API Server Mode
+
+```bash
+# Start the API server
+python -m atous_sec_network.api.server
+
+# The system will be available at http://localhost:8000
+```
+
+#### Testing the API Endpoints
+
+After starting the server, you can test the following endpoints:
+
+**Basic Health Check**
+```bash
+curl http://localhost:8000/health
+```
+
+**API Information**
+```bash
+curl http://localhost:8000/api/info
+```
+
+**Security Status**
+```bash
+curl http://localhost:8000/api/security/status
+```
+
+**System Metrics**
+```bash
+curl http://localhost:8000/api/metrics
+```
+
+**Interactive Documentation**
+Visit `http://localhost:8000/docs` in your browser for Swagger UI documentation.
+
+**Complete Functionality Test**
+Run the comprehensive test suite:
+```bash
+python tests/test_complete_functionality.py
+```
+
 ## Application Modes
 
 ### Lightweight Mode (`--lite`)
