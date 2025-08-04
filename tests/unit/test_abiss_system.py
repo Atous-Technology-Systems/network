@@ -1124,11 +1124,11 @@ class TestThreatPattern(unittest.TestCase):
                 found = False
                 for key, value in test_data.items():
                     if pattern._value_matches(value, indicator):
-                        print(f"✅ Found indicator '{indicator}' in key: {key} = {value}")
+                        print(f"Found indicator '{indicator}' in key: {key} = {value}")
                         found = True
                         break
                 if not found:
-                    print(f"❌ Could not find indicator: '{indicator}'")
+                    print(f"Could not find indicator: '{indicator}'")
             
             # Deve encontrar 4 de 4 indicadores (100% de correspondência)
             match_score = pattern.match(test_data)

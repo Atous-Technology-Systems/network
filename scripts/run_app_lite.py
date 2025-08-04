@@ -21,55 +21,55 @@ def test_basic_imports():
     """
     Test basic imports without heavy ML dependencies.
     """
-    print("🛡️ ATous Secure Network - Lightweight Test")
+    print("ATous Secure Network - Lightweight Test")
     print("=" * 50)
     
     try:
         # Test basic package structure
-        print("📦 Testing basic package imports...")
+        print("Testing basic package imports...")
         
         # Test core package
         import atous_sec_network
-        print("   ✅ atous_sec_network package imported")
+        print("   atous_sec_network package imported")
         
         # Test core subpackages
         import atous_sec_network.core
-        print("   ✅ core subpackage imported")
+        print("   core subpackage imported")
         
         import atous_sec_network.network
-        print("   ✅ network subpackage imported")
+        print("   network subpackage imported")
         
         import atous_sec_network.security
-        print("   ✅ security subpackage imported")
+        print("   security subpackage imported")
         
         import atous_sec_network.ml
-        print("   ✅ ml subpackage imported")
+        print("   ml subpackage imported")
         
-        print("\n🚀 Testing lightweight components...")
+        print("\nTesting lightweight components...")
         print("-" * 50)
         
         # Test network components (should be lightweight)
         try:
             from atous_sec_network.network.p2p_recovery import ChurnMitigation
             p2p = ChurnMitigation()
-            print("   ✅ P2P Recovery System initialized")
+            print("   P2P Recovery System initialized")
         except Exception as e:
-            print(f"   ⚠️ P2P Recovery System: {e}")
+            print(f"   WARNING P2P Recovery System: {e}")
         
         # Test core components
         try:
             from atous_sec_network.core.model_manager_impl import ModelManager
             # Don't initialize to avoid heavy dependencies
-            print("   ✅ Model Manager class imported")
+            print("   Model Manager class imported")
         except Exception as e:
-            print(f"   ⚠️ Model Manager: {e}")
+            print(f"   WARNING Model Manager: {e}")
         
-        print("\n📊 Basic Import Test Results:")
-        print("   ✅ Package structure is valid")
-        print("   ✅ Core modules are accessible")
-        print("   ✅ No critical import errors detected")
+        print("\nBasic Import Test Results:")
+        print("   Package structure is valid")
+        print("   Core modules are accessible")
+        print("   No critical import errors detected")
         
-        print("\n💡 Note: Heavy ML components (ABISS, NNIS, LoRa) were not")
+        print("\nNote: Heavy ML components (ABISS, NNIS, LoRa) were not")
         print("   tested to avoid timeout issues. Use the full application")
         print("   runner for complete system testing.")
         
@@ -77,19 +77,19 @@ def test_basic_imports():
         
     except ImportError as e:
         logger.error(f"Import error: {e}")
-        print(f"❌ Import error: {e}")
+        print(f"Import error: {e}")
         return False
         
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        print(f"❌ Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
         return False
 
 def test_project_structure():
     """
     Test that the project structure is correct.
     """
-    print("\n🏗️ Testing project structure...")
+    print("\nTesting project structure...")
     print("-" * 50)
     
     project_root = Path.cwd()
@@ -108,9 +108,9 @@ def test_project_structure():
     for dir_path in key_dirs:
         full_path = project_root / dir_path
         if full_path.exists():
-            print(f"   ✅ {dir_path}/")
+            print(f"   {dir_path}/")
         else:
-            print(f"   ❌ {dir_path}/ (missing)")
+            print(f"   {dir_path}/ (missing)")
     
     # Check key files
     key_files = [
@@ -124,9 +124,9 @@ def test_project_structure():
     for file_path in key_files:
         full_path = project_root / file_path
         if full_path.exists():
-            print(f"   ✅ {file_path}")
+            print(f"   {file_path}")
         else:
-            print(f"   ❌ {file_path} (missing)")
+            print(f"   {file_path} (missing)")
 
 def main():
     """
@@ -140,18 +140,18 @@ def main():
         success = test_basic_imports()
         
         if success:
-            print("\n🎉 Lightweight test completed successfully!")
-            print("\n🚀 To run the full application with ML components:")
+            print("\nLightweight test completed successfully!")
+            print("\nTo run the full application with ML components:")
             print("   python -m atous_sec_network")
-            print("\n📚 For more information, see the documentation in /docs/")
+            print("\nFor more information, see the documentation in /docs/")
             return 0
         else:
-            print("\n❌ Some tests failed. Check the output above for details.")
+            print("\nSome tests failed. Check the output above for details.")
             return 1
             
     except Exception as e:
         logger.error(f"Test runner error: {e}")
-        print(f"❌ Test runner error: {e}")
+        print(f"Test runner error: {e}")
         return 1
 
 if __name__ == "__main__":

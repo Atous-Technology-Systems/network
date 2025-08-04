@@ -51,7 +51,7 @@ def test_api_endpoints():
             response = requests.get(endpoint['url'], timeout=10)
             response_time = time.time() - start_time
             
-            status = "✅ SUCESSO" if response.status_code < 400 else "❌ ERRO"
+            status = "SUCESSO" if response.status_code < 400 else "ERRO"
             
             result = {
                 "endpoint": endpoint['name'],
@@ -75,7 +75,7 @@ def test_api_endpoints():
             results.append(result)
             
         except requests.exceptions.ConnectionError:
-            print(f"   ❌ ERRO: Não foi possível conectar ao servidor")
+            print(f"   ERRO: Não foi possível conectar ao servidor")
             print(f"   URL: {endpoint['url']}")
             print(f"   Motivo: Servidor não está rodando ou não está acessível")
             
@@ -91,7 +91,7 @@ def test_api_endpoints():
             results.append(result)
             
         except requests.exceptions.Timeout:
-            print(f"   ❌ ERRO: Timeout na requisição")
+            print(f"   ERRO: Timeout na requisição")
             result = {
                 "endpoint": endpoint['name'],
                 "url": endpoint['url'],
@@ -104,7 +104,7 @@ def test_api_endpoints():
             results.append(result)
             
         except Exception as e:
-            print(f"   ❌ ERRO: {str(e)}")
+            print(f"   ERRO: {str(e)}")
             result = {
                 "endpoint": endpoint['name'],
                 "url": endpoint['url'],

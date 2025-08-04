@@ -21,8 +21,8 @@ from .core.logging_config import setup_logging
 
 # Inicializar sistema de logging
 _main_logger = setup_logging()
-_main_logger.info("🛡️ ATous Secure Network - Módulo Principal Inicializado")
-_main_logger.info(f"📦 Versão: {__version__}")
+_main_logger.info("ATous Secure Network - Módulo Principal Inicializado")
+_main_logger.info(f"Versão: {__version__}")
 
 import os
 import sys

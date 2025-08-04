@@ -195,9 +195,9 @@ def setup_logging(log_level: str = None, log_dir: str = None) -> logging.Logger:
         _is_configured = True
         
         # Log inicial do sistema
-        logger.info("🛡️ ATous Secure Network - Sistema de Logging Inicializado")
-        logger.info(f"📁 Diretório de logs: {_logging_config.log_dir}")
-        logger.info(f"📊 Nível de log: {log_level}")
+        logger.info("ATous Secure Network - Sistema de Logging Inicializado")
+        logger.info(f"Diretório de logs: {_logging_config.log_dir}")
+        logger.info(f"Nível de log: {log_level}")
         
         return logger
     
@@ -251,9 +251,9 @@ def log_performance(func_name: str, duration: float, logger: logging.Logger = No
         logger = get_logger("performance")
     
     if duration > 1.0:
-        logger.warning(f"⚠️ Performance: {func_name} levou {duration:.2f}s")
+        logger.warning(f"Performance: {func_name} levou {duration:.2f}s")
     else:
-        logger.debug(f"⏱️ Performance: {func_name} executado em {duration:.3f}s")
+        logger.debug(f"Performance: {func_name} executado em {duration:.3f}s")
 
 
 def log_security_event(event_type: str, details: str, severity: str = "INFO") -> None:
@@ -267,7 +267,7 @@ def log_security_event(event_type: str, details: str, severity: str = "INFO") ->
     """
     security_logger = get_security_logger()
     
-    message = f"🔒 [{event_type}] {details}"
+    message = f"[{event_type}] {details}"
     
     if severity.upper() == "CRITICAL":
         security_logger.critical(message)

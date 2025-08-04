@@ -176,7 +176,7 @@ class AttackSimulator:
                     self.stats['blocked_attacks'] += 1
             # Log do ataque
             if attack_num % 1000 == 0:
-                print(f"🎯 Ataque #{attack_num:05d} - Tipo: {attack_type} - Tempo: {response_time:.3f}s - Detectado: {abiss_result['threat_detected']}")
+                print(f"Ataque #{attack_num:05d} - Tipo: {attack_type} - Tempo: {response_time:.3f}s - Detectado: {abiss_result['threat_detected']}")
             return {
                 'attack_num': attack_num,
                 'attack_type': attack_type,
@@ -188,14 +188,14 @@ class AttackSimulator:
             }
             
         except Exception as e:
-            print(f"❌ Erro no ataque #{attack_num}: {e}")
+            print(f"Erro no ataque #{attack_num}: {e}")
             return None
     
     def run_attack_simulation(self, num_attacks=10000, max_workers=10):
         """Executa simulação de ataques"""
-        print(f"🚀 Iniciando simulação de {num_attacks} ataques...")
-        print(f"🛡️ Sistemas de defesa: ABISS, NNIS, OWASP")
-        print(f"⚡ Workers paralelos: {max_workers}")
+        print(f"Iniciando simulação de {num_attacks} ataques...")
+        print(f"Sistemas de defesa: ABISS, NNIS, OWASP")
+        print(f"Workers paralelos: {max_workers}")
         print("-" * 60)
         
         start_time = time.time()
@@ -221,32 +221,32 @@ class AttackSimulator:
                         if completed_attacks % 1000 == 0:
                             elapsed = time.time() - start_time
                             rate = completed_attacks / elapsed
-                            print(f"📊 Progresso: {completed_attacks}/{num_attacks} ({completed_attacks/num_attacks*100:.1f}%) - Taxa: {rate:.1f} ataques/s")
+                            print(f"Progresso: {completed_attacks}/{num_attacks} ({completed_attacks/num_attacks*100:.1f}%) - Taxa: {rate:.1f} ataques/s")
                             
                 except Exception as e:
-                    print(f"❌ Erro no ataque #{attack_num}: {e}")
+                    print(f"Erro no ataque #{attack_num}: {e}")
         
         # Calcula estatísticas finais
         total_time = time.time() - start_time
         avg_response_time = sum(self.stats['response_times']) / len(self.stats['response_times']) if self.stats['response_times'] else 0
         
         print("\n" + "=" * 60)
-        print("📊 RESULTADOS DA SIMULAÇÃO DE ATAQUES")
+        print("RESULTADOS DA SIMULAÇÃO DE ATAQUES")
         print("=" * 60)
-        print(f"🎯 Total de ataques: {self.stats['total_attacks']}")
-        print(f"🛡️ Ataques detectados: {self.stats['detected_attacks']}")
-        print(f"🚫 Ataques bloqueados: {self.stats['blocked_attacks']}")
-        print(f"⏱️ Tempo total: {total_time:.2f}s")
-        print(f"⚡ Taxa média: {self.stats['total_attacks']/total_time:.1f} ataques/s")
-        print(f"📈 Tempo médio de resposta: {avg_response_time:.3f}s")
+        print(f"Total de ataques: {self.stats['total_attacks']}")
+        print(f"Ataques detectados: {self.stats['detected_attacks']}")
+        print(f"Ataques bloqueados: {self.stats['blocked_attacks']}")
+        print(f"Tempo total: {total_time:.2f}s")
+        print(f"Taxa média: {self.stats['total_attacks']/total_time:.1f} ataques/s")
+        print(f"Tempo médio de resposta: {avg_response_time:.3f}s")
         
         if self.stats['total_attacks'] > 0:
             detection_rate = (self.stats['detected_attacks'] / self.stats['total_attacks']) * 100
             block_rate = (self.stats['blocked_attacks'] / self.stats['total_attacks']) * 100
-            print(f"🎯 Taxa de detecção: {detection_rate:.2f}%")
-            print(f"🚫 Taxa de bloqueio: {block_rate:.2f}%")
+            print(f"Taxa de detecção: {detection_rate:.2f}%")
+            print(f"Taxa de bloqueio: {block_rate:.2f}%")
         
-        print("\n📋 Distribuição por tipo de ataque:")
+        print("\nDistribuição por tipo de ataque:")
         for attack_type, count in sorted(self.stats['attack_types'].items(), key=lambda x: x[1], reverse=True):
             percentage = (count / self.stats['total_attacks']) * 100
             print(f"  • {attack_type}: {count} ({percentage:.1f}%)")
@@ -260,4 +260,4 @@ if __name__ == "__main__":
     # Executa simulação
     stats = simulator.run_attack_simulation(num_attacks=1000, max_workers=4)
     
-    print("\n✅ Simulação concluída!") 
+    print("\nSimulação concluída!")

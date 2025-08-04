@@ -14,68 +14,68 @@ def run_full_app():
     """
     Run the full application with all ML components.
     """
-    print("🚀 Starting ATous Secure Network (Full Version)...")
-    print("⚠️  Note: This may take some time due to ML model loading.\n")
+    print("Starting ATous Secure Network (Full Version)...")
+    print("Note: This may take some time due to ML model loading.\n")
     
     try:
         result = subprocess.run([sys.executable, "-m", "atous_sec_network"], 
                               capture_output=False, text=True, timeout=300)
         return result.returncode
     except subprocess.TimeoutExpired:
-        print("\n⏰ Application startup timed out (5 minutes).")
+        print("\nApplication startup timed out (5 minutes).")
         print("   This is normal for first-time ML model downloads.")
         return 1
     except KeyboardInterrupt:
-        print("\n🛑 Application stopped by user.")
+        print("\nApplication stopped by user.")
         return 0
 
 def run_lite_test():
     """
     Run the lightweight test version.
     """
-    print("🧪 Running ATous Secure Network (Lightweight Test)...\n")
+    print("Running ATous Secure Network (Lightweight Test)...\n")
     
     try:
         result = subprocess.run([sys.executable, "run_app_lite.py"], 
                               capture_output=False, text=True)
         return result.returncode
     except Exception as e:
-        print(f"❌ Error running lite test: {e}")
+        print(f"Error running lite test: {e}")
         return 1
 
 def run_tests():
     """
     Run the test suite.
     """
-    print("🧪 Running ATous Secure Network Test Suite...\n")
+    print("Running ATous Secure Network Test Suite...\n")
     
     try:
         result = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-v"], 
                               capture_output=False, text=True)
         return result.returncode
     except Exception as e:
-        print(f"❌ Error running tests: {e}")
+        print(f"Error running tests: {e}")
         return 1
 
 def run_debug():
     """
     Run the debug import script.
     """
-    print("🔍 Running ATous Secure Network Debug Check...\n")
+    print("Running ATous Secure Network Debug Check...\n")
     
     try:
         result = subprocess.run([sys.executable, "debug_import.py"], 
                               capture_output=False, text=True)
         return result.returncode
     except Exception as e:
-        print(f"❌ Error running debug: {e}")
+        print(f"Error running debug: {e}")
         return 1
 
 def show_status():
     """
     Show application status and available options.
     """
-    print("🛡️ ATous Secure Network - Application Status")
+    print("ATous Secure Network - Application Status")
     print("=" * 60)
     
     # Check if key files exist
@@ -89,20 +89,20 @@ def show_status():
         'Requirements': 'requirements.txt'
     }
     
-    print("\n📁 Project Components:")
+    print("\nProject Components:")
     for name, path in key_files.items():
         full_path = project_root / path
-        status = "✅" if full_path.exists() else "❌"
+        status = "[OK]" if full_path.exists() else "[MISSING]"
         print(f"   {status} {name}: {path}")
     
-    print("\n🚀 Available Commands:")
+    print("\nAvailable Commands:")
     print("   python start_app.py --full      # Run full application")
     print("   python start_app.py --lite      # Run lightweight test")
     print("   python start_app.py --test      # Run test suite")
     print("   python start_app.py --debug     # Run debug check")
     print("   python start_app.py --status    # Show this status")
     
-    print("\n📚 Documentation:")
+    print("\nDocumentation:")
     print("   README.md                       # Project overview")
     print("   PROJECT_STATUS.md               # Current status")
     print("   docs/development/README.md      # Development guide")
@@ -154,7 +154,7 @@ Examples:
         # Default: show status and run lite test
         show_status()
         print("\n" + "=" * 60)
-        print("🧪 Running default lightweight test...\n")
+        print("Running default lightweight test...\n")
         return run_lite_test()
 
 if __name__ == "__main__":

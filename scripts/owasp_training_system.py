@@ -698,7 +698,7 @@ def main():
     # Mostrar resultados
     print("\n=== Resultados do Treinamento ===")
     for pattern_id, success in results.items():
-        status = "✓ Sucesso" if success else "✗ Falhou"
+        status = "Sucesso" if success else "Falhou"
         pattern_name = training_system.owasp_patterns[pattern_id].name
         print(f"{pattern_id}: {pattern_name} - {status}")
     
@@ -726,11 +726,11 @@ def main():
     for attack in test_attacks:
         detected, attack_types = training_system.detect_attack(attack)
         if detected:
-            print(f"🚨 Ataque detectado: {attack} -> {attack_types}")
+            print(f"Ataque detectado: {attack} -> {attack_types}")
             block_result = training_system.block_attack(attack, attack_types)
             print(f"   Bloqueado: {block_result['blocked']}")
         else:
-            print(f"✅ Dados limpos: {attack}")
+            print(f"Dados limpos: {attack}")
 
 
 if __name__ == "__main__":

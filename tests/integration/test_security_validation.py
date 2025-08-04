@@ -161,7 +161,7 @@ def run_security_tests():
             "result": result,
             "correct": is_correct
         })
-        print(f"  {i}. {email} -> {'VÁLIDO' if result else 'INVÁLIDO'} ({'✓' if is_correct else '✗'})")
+        print(f"  {i}. {email} -> {'VÁLIDO' if result else 'INVÁLIDO'} ({'OK' if is_correct else 'ERRO'})")
         test_results["total_tests"] += 1
         if is_correct:
             test_results["passed_tests"] += 1
@@ -191,7 +191,7 @@ def run_security_tests():
             "result": result,
             "correct": is_correct
         })
-        print(f"  {i}. {url} -> {'VÁLIDA' if result else 'INVÁLIDA'} ({'✓' if is_correct else '✗'})")
+        print(f"  {i}. {url} -> {'VÁLIDA' if result else 'INVÁLIDA'} ({'OK' if is_correct else 'ERRO'})")
         test_results["total_tests"] += 1
         if is_correct:
             test_results["passed_tests"] += 1
@@ -216,7 +216,7 @@ def run_security_tests():
     elif success_rate >= 75:
         print("\n🟡 SISTEMA DE SEGURANÇA: BOM")
     else:
-        print("\n🔴 SISTEMA DE SEGURANÇA: NECESSITA MELHORIAS")
+        print("\nSISTEMA DE SEGURANÇA: NECESSITA MELHORIAS")
     
     # Salvar relatório em JSON
     with open('security_test_report.json', 'w', encoding='utf-8') as f:

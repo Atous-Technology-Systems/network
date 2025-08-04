@@ -32,7 +32,7 @@ class StressSecurityTester:
                 "response_time": response_time
             }
             self.results.append(result)
-            status = "🛡️ BLOQUEADO" if blocked else "⚠️ PERMITIDO"
+            status = "BLOQUEADO" if blocked else "PERMITIDO"
             print(f"[{attack_type}] {status} - {details}")
             
     def single_request(self, endpoint: str, method: str = "GET", data: Dict = None, headers: Dict = None) -> Dict:
@@ -81,7 +81,7 @@ class StressSecurityTester:
             
     def test_rate_limiting(self):
         """Testa mecanismos de rate limiting"""
-        print("\n🔍 Testando Rate Limiting...")
+        print("\nTestando Rate Limiting...")
         
         # Teste de rajada de requisições
         num_requests = 50
@@ -123,7 +123,7 @@ class StressSecurityTester:
         avg_response_time = total_response_time / num_requests
         block_rate = (blocked_count / num_requests) * 100
         
-        print(f"\n📊 Resultados do Rate Limiting:")
+        print(f"\nResultados do Rate Limiting:")
         print(f"  Total de requisições: {num_requests}")
         print(f"  Requisições bloqueadas: {blocked_count} ({block_rate:.1f}%)")
         print(f"  Requisições bem-sucedidas: {success_count}")
@@ -139,7 +139,7 @@ class StressSecurityTester:
         
     def test_brute_force_protection(self):
         """Testa proteção contra ataques de força bruta"""
-        print("\n🔍 Testando Proteção contra Força Bruta...")
+        print("\nTestando Proteção contra Força Bruta...")
         
         # Simula tentativas de login com credenciais inválidas
         passwords = [
@@ -172,11 +172,11 @@ class StressSecurityTester:
             time.sleep(0.1)  # Pequeno delay entre tentativas
             
         protection_rate = (blocked_attempts / len(passwords)) * 100
-        print(f"\n📊 Proteção contra Força Bruta: {blocked_attempts}/{len(passwords)} bloqueadas ({protection_rate:.1f}%)")
+        print(f"\nProteção contra Força Bruta: {blocked_attempts}/{len(passwords)} bloqueadas ({protection_rate:.1f}%)")
         
     def test_slowloris_attack(self):
         """Simula ataque Slowloris (conexões lentas)"""
-        print("\n🔍 Testando Proteção contra Slowloris...")
+        print("\nTestando Proteção contra Slowloris...")
         
         # Simula múltiplas conexões que enviam dados muito lentamente
         num_connections = 20
@@ -233,11 +233,11 @@ class StressSecurityTester:
                 )
                 
         protection_rate = (blocked_connections / num_connections) * 100
-        print(f"\n📊 Proteção contra Slowloris: {blocked_connections}/{num_connections} bloqueadas ({protection_rate:.1f}%)")
+        print(f"\nProteção contra Slowloris: {blocked_connections}/{num_connections} bloqueadas ({protection_rate:.1f}%)")
         
     def test_resource_exhaustion(self):
         """Testa proteção contra esgotamento de recursos"""
-        print("\n🔍 Testando Proteção contra Esgotamento de Recursos...")
+        print("\nTestando Proteção contra Esgotamento de Recursos...")
         
         # Testa com payloads grandes
         large_payloads = [
@@ -263,7 +263,7 @@ class StressSecurityTester:
             
     def test_http_flood(self):
         """Testa proteção contra HTTP flood"""
-        print("\n🔍 Testando Proteção contra HTTP Flood...")
+        print("\nTestando Proteção contra HTTP Flood...")
         
         # Envia muitas requisições em um curto período
         num_requests = 100
@@ -308,7 +308,7 @@ class StressSecurityTester:
         total_requests = len(futures)
         block_rate = (blocked_count / total_requests) * 100 if total_requests > 0 else 0
         
-        print(f"\n📊 Proteção contra HTTP Flood:")
+        print(f"\nProteção contra HTTP Flood:")
         print(f"  Requisições enviadas: {total_requests}")
         print(f"  Requisições bloqueadas: {blocked_count} ({block_rate:.1f}%)")
         print(f"  Requisições bem-sucedidas: {success_count}")
@@ -321,20 +321,20 @@ class StressSecurityTester:
         
     def run_stress_tests(self):
         """Executa todos os testes de stress"""
-        print("🛡️ Iniciando Testes de Stress e Força Bruta")
+        print("Iniciando Testes de Stress e Força Bruta")
         print("=" * 50)
         
         # Verificar disponibilidade do servidor
         try:
             result = self.single_request("/health")
             if not result["success"] or result["status_code"] != 200:
-                print(f"❌ Servidor não disponível - Status: {result.get('status_code', 'Error')}")
+                print(f"Servidor não disponível - Status: {result.get('status_code', 'Error')}")
                 return
         except Exception as e:
-            print(f"❌ Erro ao conectar com servidor: {e}")
+            print(f"Erro ao conectar com servidor: {e}")
             return
             
-        print("✅ Servidor disponível")
+        print("Servidor disponível")
         
         # Executar testes de stress
         self.test_rate_limiting()
@@ -348,7 +348,7 @@ class StressSecurityTester:
         
     def generate_stress_report(self):
         """Gera relatório dos testes de stress"""
-        print("\n📊 Relatório de Testes de Stress")
+        print("\nRelatório de Testes de Stress")
         print("=" * 40)
         
         total_tests = len(self.results)
@@ -391,13 +391,13 @@ class StressSecurityTester:
         
         # Avaliação final
         if protection_rate >= 80:
-            print("\n✅ EXCELENTE: Proteções contra ataques volumétricos muito efetivas")
+            print("\nEXCELENTE: Proteções contra ataques volumétricos muito efetivas")
         elif protection_rate >= 60:
-            print("\n✅ BOM: Proteções adequadas contra a maioria dos ataques")
+            print("\nBOM: Proteções adequadas contra a maioria dos ataques")
         elif protection_rate >= 40:
-            print("\n⚠️ MODERADO: Algumas proteções funcionando, mas há vulnerabilidades")
+            print("\nMODERADO: Algumas proteções funcionando, mas há vulnerabilidades")
         else:
-            print("\n❌ CRÍTICO: Proteções insuficientes contra ataques volumétricos")
+            print("\nCRÍTICO: Proteções insuficientes contra ataques volumétricos")
             print("Recomenda-se implementar rate limiting e proteções DDoS.")
 
 
@@ -415,8 +415,8 @@ def main():
     tester = StressSecurityTester(base_url)
     tester.run_stress_tests()
     
-    print("\n🏁 Testes de stress e força bruta concluídos.")
-    print("\n⚠️ AVISO: Estes testes podem impactar a performance do servidor.")
+    print("\nTestes de stress e força bruta concluídos.")
+    print("\nAVISO: Estes testes podem impactar a performance do servidor.")
     print("Use apenas em ambientes de teste controlados.")
 
 

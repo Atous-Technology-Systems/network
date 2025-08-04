@@ -32,12 +32,12 @@ class AdvancedSecurityTester:
             "details": details
         }
         self.results.append(result)
-        status = "✅ DETECTADO" if detected else "❌ NÃO DETECTADO"
+        status = "DETECTADO" if detected else "NÃO DETECTADO"
         print(f"[{attack_type}] {status} - {payload[:50]}...")
         
     def test_advanced_path_traversal(self):
         """Testa técnicas avançadas de path traversal"""
-        print("\n🔍 Testando Path Traversal Avançado...")
+        print("\nTestando Path Traversal Avançado...")
         
         # Técnicas de bypass
         payloads = [
@@ -77,7 +77,7 @@ class AdvancedSecurityTester:
             
     def test_advanced_sql_injection(self):
         """Testa técnicas avançadas de SQL injection"""
-        print("\n🔍 Testando SQL Injection Avançado...")
+        print("\nTestando SQL Injection Avançado...")
         
         payloads = [
             # Time-based blind
@@ -116,7 +116,7 @@ class AdvancedSecurityTester:
             
     def test_advanced_xss(self):
         """Testa técnicas avançadas de XSS"""
-        print("\n🔍 Testando XSS Avançado...")
+        print("\nTestando XSS Avançado...")
         
         payloads = [
             # Filter bypass
@@ -157,7 +157,7 @@ class AdvancedSecurityTester:
             
     def test_deserialization_attacks(self):
         """Testa ataques de deserialização"""
-        print("\n🔍 Testando Ataques de Deserialização...")
+        print("\nTestando Ataques de Deserialização...")
         
         # Python pickle payload (base64 encoded)
         pickle_payload = base64.b64encode(b"cos\nsystem\n(S'id'\ntR.").decode()
@@ -191,7 +191,7 @@ class AdvancedSecurityTester:
             
     def test_ssrf_attacks(self):
         """Testa ataques de Server-Side Request Forgery"""
-        print("\n🔍 Testando SSRF Attacks...")
+        print("\nTestando SSRF Attacks...")
         
         payloads = [
             "http://localhost:22",
@@ -224,7 +224,7 @@ class AdvancedSecurityTester:
             
     def test_header_injection(self):
         """Testa injeção de cabeçalhos HTTP"""
-        print("\n🔍 Testando Header Injection...")
+        print("\nTestando Header Injection...")
         
         payloads = [
             "test\r\nX-Injected: true",
@@ -254,7 +254,7 @@ class AdvancedSecurityTester:
             
     def test_prototype_pollution(self):
         """Testa ataques de Prototype Pollution"""
-        print("\n🔍 Testando Prototype Pollution...")
+        print("\nTestando Prototype Pollution...")
         
         payloads = [
             {"__proto__": {"admin": True}},
@@ -281,20 +281,20 @@ class AdvancedSecurityTester:
             
     def run_advanced_tests(self):
         """Executa todos os testes avançados"""
-        print("🛡️ Iniciando Testes Avançados de Penetração")
+        print("Iniciando Testes Avançados de Penetração")
         print("=" * 50)
         
         # Verificar disponibilidade do servidor
         try:
             response = self.session.get(f"{self.base_url}/health", timeout=5)
             if response.status_code != 200:
-                print(f"❌ Servidor retornou status {response.status_code}")
+                print(f"Servidor retornou status {response.status_code}")
                 return
         except Exception as e:
-            print(f"❌ Erro ao conectar com servidor: {e}")
+            print(f"Erro ao conectar com servidor: {e}")
             return
             
-        print("✅ Servidor disponível")
+        print("Servidor disponível")
         
         # Executar testes avançados
         self.test_advanced_path_traversal()
@@ -310,7 +310,7 @@ class AdvancedSecurityTester:
         
     def generate_advanced_report(self):
         """Gera relatório dos testes avançados"""
-        print("\n📊 Relatório de Testes Avançados")
+        print("\nRelatório de Testes Avançados")
         print("=" * 40)
         
         total_tests = len(self.results)
@@ -353,13 +353,13 @@ class AdvancedSecurityTester:
         
         # Análise de segurança
         if detection_rate >= 90:
-            print("\n✅ EXCELENTE: Defesas muito robustas contra ataques avançados")
+            print("\nEXCELENTE: Defesas muito robustas contra ataques avançados")
         elif detection_rate >= 70:
-            print("\n✅ BOM: Defesas adequadas, mas podem ser melhoradas")
+            print("\nBOM: Defesas adequadas, mas podem ser melhoradas")
         elif detection_rate >= 50:
-            print("\n⚠️ MODERADO: Algumas vulnerabilidades detectadas")
+            print("\nMODERADO: Algumas vulnerabilidades detectadas")
         else:
-            print("\n❌ CRÍTICO: Muitas vulnerabilidades não detectadas")
+            print("\nCRÍTICO: Muitas vulnerabilidades não detectadas")
             print("Recomenda-se implementar controles de segurança adicionais.")
 
 

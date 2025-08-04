@@ -2,7 +2,7 @@
 
 This guide provides comprehensive instructions for installing, testing, and using the ATous Secure Network application.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [System Requirements](#system-requirements)
 - [Installation](#installation)
@@ -13,7 +13,7 @@ This guide provides comprehensive instructions for installing, testing, and usin
 - [Troubleshooting](#troubleshooting)
 - [Advanced Configuration](#advanced-configuration)
 
-## 🖥️ System Requirements
+## System Requirements
 
 ### Minimum Requirements
 - **Python**: 3.8 or higher
@@ -27,7 +27,7 @@ This guide provides comprehensive instructions for installing, testing, and usin
 - **Storage**: 10GB free space
 - **GPU**: CUDA-compatible (optional, for ML acceleration)
 
-## 🚀 Installation
+## Installation
 
 ### Step 1: Clone the Repository
 
@@ -94,7 +94,7 @@ python run_app_lite.py
 python -m atous_sec_network
 ```
 
-## 🎯 Application Modes
+## Application Modes
 
 ### Lightweight Mode (`--lite`)
 
@@ -105,11 +105,11 @@ python -m atous_sec_network
 - Systems with limited resources
 
 **Features:**
-- ✅ Fast startup (< 10 seconds)
-- ✅ Basic functionality testing
-- ✅ Package structure validation
-- ❌ No ML model loading
-- ❌ Limited security features
+- Fast startup (< 10 seconds)
+- Basic functionality testing
+- Package structure validation
+- No ML model loading
+- Limited security features
 
 **Usage:**
 ```bash
@@ -125,12 +125,12 @@ python start_app.py --lite
 - Full capability demonstration
 
 **Features:**
-- ✅ Complete system initialization
-- ✅ All security systems active
-- ✅ ML model loading
-- ✅ Production-ready
-- ⚠️ Longer startup time (2-5 minutes first time)
-- ⚠️ Higher resource usage
+- Complete system initialization
+- All security systems active
+- ML model loading
+- Production-ready
+- Longer startup time (2-5 minutes first time)
+- Higher resource usage
 
 **Usage:**
 ```bash
@@ -172,9 +172,9 @@ python -m pytest tests/ --cov=atous_sec_network --cov-report=html
 
 ### Test Results Interpretation
 
-**✅ All tests passing**: System is ready for use
-**⚠️ Some tests skipped**: Normal (hardware-dependent tests)
-**❌ Tests failing**: Check troubleshooting section
+**All tests passing**: System is ready for use
+**Some tests skipped**: Normal (hardware-dependent tests)
+**Tests failing**: Check troubleshooting section
 
 ## 📖 Usage Examples
 
@@ -220,7 +220,7 @@ python start_app.py --test
 python start_app.py --full
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -300,7 +300,7 @@ python start_app.py --debug
    - Application logs are displayed in console
    - Test logs available with `-v` flag
 
-## ⚙️ Advanced Configuration
+## Advanced Configuration
 
 ### Environment Variables
 
@@ -355,7 +355,7 @@ python -m pytest tests/unit/test_specific.py
 # Enable GPU if available
 ```
 
-## 📊 Monitoring and Logs
+## Monitoring and Logs
 
 ### Application Logs
 
@@ -401,4 +401,4 @@ For additional support:
 - **Development**: See `docs/development/README.md`
 - **API Reference**: See `api-contracts.md`
 
-**Happy using ATous Secure Network! 🛡️**
+**Happy using ATous Secure Network!**

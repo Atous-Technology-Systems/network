@@ -195,7 +195,7 @@ class TestLoggingIntegrationTDD:
         
         # Simular uso no módulo principal
         main_logger = get_logger("main")
-        main_logger.info("🛡️ ATous Secure Network - Starting Application...")
+        main_logger.info("ATous Secure Network - Starting Application...")
         main_logger.info("=" * 60)
         
         # Forçar flush dos handlers

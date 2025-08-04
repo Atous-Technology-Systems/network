@@ -22,9 +22,9 @@ def test_api_attacks():
     # Verificar se o servidor está rodando
     try:
         response = requests.get(f"{base_url}/health", timeout=5)
-        print(f"✅ Servidor está rodando - Status: {response.status_code}")
+        print(f"Servidor está rodando - Status: {response.status_code}")
     except requests.exceptions.RequestException as e:
-        print(f"❌ Erro ao conectar com o servidor: {e}")
+        print(f"Erro ao conectar com o servidor: {e}")
         return
     
     # Testes de SQL Injection
@@ -52,18 +52,18 @@ def test_api_attacks():
             )
             
             if response.status_code == 403:
-                print(f"  {i}. {payload[:30]}... -> 🛡️ BLOQUEADO (403)")
+                print(f"  {i}. {payload[:30]}... -> BLOQUEADO (403)")
             elif response.status_code == 200:
                 result = response.json()
                 if not result.get('valid', True):
-                    print(f"  {i}. {payload[:30]}... -> 🛡️ DETECTADO E BLOQUEADO")
+                    print(f"  {i}. {payload[:30]}... -> DETECTADO E BLOQUEADO")
                 else:
-                    print(f"  {i}. {payload[:30]}... -> ⚠️ NÃO DETECTADO")
+                    print(f"  {i}. {payload[:30]}... -> NÃO DETECTADO")
             else:
                 print(f"  {i}. {payload[:30]}... -> ❓ Status: {response.status_code}")
                 
         except requests.exceptions.RequestException as e:
-            print(f"  {i}. {payload[:30]}... -> ❌ Erro: {e}")
+            print(f"  {i}. {payload[:30]}... -> Erro: {e}")
         
         time.sleep(0.1)
     
@@ -92,18 +92,18 @@ def test_api_attacks():
             )
             
             if response.status_code == 403:
-                print(f"  {i}. {payload[:30]}... -> 🛡️ BLOQUEADO (403)")
+                print(f"  {i}. {payload[:30]}... -> BLOQUEADO (403)")
             elif response.status_code == 200:
                 result = response.json()
                 if not result.get('valid', True):
-                    print(f"  {i}. {payload[:30]}... -> 🛡️ DETECTADO E BLOQUEADO")
+                    print(f"  {i}. {payload[:30]}... -> DETECTADO E BLOQUEADO")
                 else:
-                    print(f"  {i}. {payload[:30]}... -> ⚠️ NÃO DETECTADO")
+                    print(f"  {i}. {payload[:30]}... -> NÃO DETECTADO")
             else:
                 print(f"  {i}. {payload[:30]}... -> ❓ Status: {response.status_code}")
                 
         except requests.exceptions.RequestException as e:
-            print(f"  {i}. {payload[:30]}... -> ❌ Erro: {e}")
+            print(f"  {i}. {payload[:30]}... -> Erro: {e}")
         
         time.sleep(0.1)
     
@@ -132,18 +132,18 @@ def test_api_attacks():
             )
             
             if response.status_code == 403:
-                print(f"  {i}. {payload[:30]}... -> 🛡️ BLOQUEADO (403)")
+                print(f"  {i}. {payload[:30]}... -> BLOQUEADO (403)")
             elif response.status_code == 200:
                 result = response.json()
                 if not result.get('valid', True):
-                    print(f"  {i}. {payload[:30]}... -> 🛡️ DETECTADO E BLOQUEADO")
+                    print(f"  {i}. {payload[:30]}... -> DETECTADO E BLOQUEADO")
                 else:
-                    print(f"  {i}. {payload[:30]}... -> ⚠️ NÃO DETECTADO")
+                    print(f"  {i}. {payload[:30]}... -> NÃO DETECTADO")
             else:
                 print(f"  {i}. {payload[:30]}... -> ❓ Status: {response.status_code}")
                 
         except requests.exceptions.RequestException as e:
-            print(f"  {i}. {payload[:30]}... -> ❌ Erro: {e}")
+            print(f"  {i}. {payload[:30]}... -> Erro: {e}")
         
         time.sleep(0.1)
     
@@ -163,16 +163,16 @@ def test_api_attacks():
             pass
     
     if blocked_count > 0:
-        print(f"  🛡️ Rate limiting ativo - {blocked_count}/20 requisições bloqueadas")
+        print(f"  Rate limiting ativo - {blocked_count}/20 requisições bloqueadas")
     else:
-        print(f"  ℹ️ Rate limiting não ativado ou limite não atingido")
+        print(f"  Rate limiting não ativado ou limite não atingido")
     
     print("\n" + "=" * 80)
     print("TESTE DE ATAQUES CONCLUÍDO")
     print("=" * 80)
-    print("\n✅ Todos os testes de ataque foram executados.")
-    print("📊 Verifique os logs do servidor para detalhes das detecções.")
-    print("🔒 O sistema demonstrou suas capacidades de defesa.")
+    print("\nTodos os testes de ataque foram executados.")
+    print("Verifique os logs do servidor para detalhes das detecções.")
+    print("O sistema demonstrou suas capacidades de defesa.")
 
 if __name__ == "__main__":
     test_api_attacks()
