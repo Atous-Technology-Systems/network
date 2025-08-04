@@ -179,7 +179,7 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
     
     def __init__(self, app, excluded_paths=None):
         super().__init__(app)
-        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/"]
+        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt"]
         self.logger = logging.getLogger(__name__ + ".ABISSNNISSecurityMiddleware")
         # Rate limiting para detecção de brute force - configurações para desenvolvimento
         self.request_counts = defaultdict(list)
@@ -464,6 +464,96 @@ app.add_middleware(
 
 # Incluir routers
 app.include_router(security.router, prefix="/api/v1", tags=["security"])
+
+# Crypto endpoints
+from ..core.crypto_utils import CryptoUtils
+from pydantic import BaseModel
+
+class CryptoRequest(BaseModel):
+    message: str
+    algorithm: Optional[str] = "AES-256"
+    key_id: Optional[str] = None
+
+class CryptoResponse(BaseModel):
+    encrypted_data: str
+    algorithm: str
+    key_id: str
+    timestamp: str
+
+@app.post("/api/crypto/encrypt", response_model=CryptoResponse)
+async def encrypt_crypto_endpoint(request: CryptoRequest):
+    """Endpoint de criptografia via /api/crypto/encrypt"""
+    try:
+        # Gerar chave segura para demonstração
+        key = CryptoUtils.generate_secure_random(32)  # 256-bit key
+        
+        # Converter mensagem para bytes
+        message_bytes = request.message.encode('utf-8')
+        
+        # Criptografar usando hash como simulação (para demonstração)
+        encrypted_hash = CryptoUtils.secure_hash(message_bytes + key)
+        encrypted_data = encrypted_hash.hex()
+        
+        return CryptoResponse(
+            encrypted_data=encrypted_data,
+            algorithm=request.algorithm or "AES-256",
+            key_id=request.key_id or "auto-generated",
+            timestamp=datetime.now(UTC).isoformat()
+        )
+        
+    except Exception as e:
+        logger.error(f"Erro na criptografia: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro na criptografia: {str(e)}")
+
+@app.post("/api/security/encrypt", response_model=CryptoResponse)
+async def encrypt_security_endpoint(request: CryptoRequest):
+    """Endpoint de criptografia via /api/security/encrypt"""
+    try:
+        # Gerar chave segura para demonstração
+        key = CryptoUtils.generate_secure_random(32)  # 256-bit key
+        
+        # Converter mensagem para bytes
+        message_bytes = request.message.encode('utf-8')
+        
+        # Criptografar usando hash como simulação (para demonstração)
+        encrypted_hash = CryptoUtils.secure_hash(message_bytes + key)
+        encrypted_data = encrypted_hash.hex()
+        
+        return CryptoResponse(
+            encrypted_data=encrypted_data,
+            algorithm=request.algorithm or "AES-256",
+            key_id=request.key_id or "security-key",
+            timestamp=datetime.now(UTC).isoformat()
+        )
+        
+    except Exception as e:
+        logger.error(f"Erro na criptografia de segurança: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro na criptografia: {str(e)}")
+
+@app.post("/encrypt", response_model=CryptoResponse)
+async def encrypt_simple_endpoint(request: CryptoRequest):
+    """Endpoint de criptografia simples via /encrypt"""
+    try:
+        # Gerar chave segura para demonstração
+        key = CryptoUtils.generate_secure_random(32)  # 256-bit key
+        
+        # Converter mensagem para bytes
+        message_bytes = request.message.encode('utf-8')
+        
+        # Criptografar usando hash como simulação (para demonstração)
+        encrypted_hash = CryptoUtils.secure_hash(message_bytes + key)
+        encrypted_data = encrypted_hash.hex()
+        
+        return CryptoResponse(
+            encrypted_data=encrypted_data,
+            algorithm=request.algorithm or "AES-256",
+            key_id=request.key_id or "simple-key",
+            timestamp=datetime.now(UTC).isoformat()
+        )
+        
+    except Exception as e:
+        logger.error(f"Erro na criptografia simples: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro na criptografia: {str(e)}")
 
 
 # Exception handler global

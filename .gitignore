@@ -47,6 +47,8 @@ cacert.pem
 debug_serial.py
 .pytest_cache/
 test_output.TXT
+test_crypto_endpoints_fix.py
+crypto_endpoints_test_results.json
 # Python
 __pycache__/
 *.py[cod]

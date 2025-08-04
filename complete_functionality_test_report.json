@@ -1,46 +1,46 @@
 {
-  "timestamp": "2025-08-04T17:52:32.555880",
+  "timestamp": "2025-08-04T18:02:59.486030",
   "test_results": {
     "endpoints": {
       "/": {
         "status": 200,
-        "response_time_ms": 6.2,
+        "response_time_ms": 5.67,
         "description": "Root endpoint",
         "success": true
       },
       "/health": {
         "status": 200,
-        "response_time_ms": 5.01,
+        "response_time_ms": 6.55,
         "description": "Health check",
         "success": true
       },
       "/docs": {
         "status": 200,
-        "response_time_ms": 6.02,
+        "response_time_ms": 4.99,
         "description": "API Documentation",
         "success": true
       },
       "/openapi.json": {
         "status": 200,
-        "response_time_ms": 3.7,
+        "response_time_ms": 21.18,
         "description": "OpenAPI Schema",
         "success": true
       },
       "/api/info": {
         "status": 403,
-        "response_time_ms": 8.25,
+        "response_time_ms": 37.3,
         "description": "API Info",
         "success": false
       },
       "/api/security/status": {
         "status": 403,
-        "response_time_ms": 2.81,
+        "response_time_ms": 8.36,
         "description": "Security Status",
         "success": false
       },
       "/api/metrics": {
         "status": 403,
-        "response_time_ms": 16.9,
+        "response_time_ms": 7.54,
         "description": "System Metrics",
         "success": false
       }
@@ -48,7 +48,7 @@
     "websockets": {
       "/ws": {
         "connected": true,
-        "response": "{\"status\":\"connected\",\"message\":\"WebSocket connection established\",\"endpoint\":\"/ws\",\"timestamp\":\"2025-08-04T20:52:32.296142+00:00\"}"
+        "response": "{\"status\":\"connected\",\"message\":\"WebSocket connection established\",\"endpoint\":\"/ws\",\"timestamp\":\"2025-08-04T21:02:59.215088+00:00\"}"
       }
     },
     "security": {
@@ -70,29 +70,60 @@
       },
       "threat_sql_injection": {
         "blocked": false,
-        "status_code": 400
+        "status_code": 200
       },
       "threat_xss": {
         "blocked": false,
-        "status_code": 429
+        "status_code": 200
       },
       "threat_path_traversal": {
         "blocked": false,
-        "status_code": 429
+        "status_code": 200
       },
       "threat_command_injection": {
         "blocked": false,
-        "status_code": 429
+        "status_code": 200
       }
     },
-    "crypto": {},
+    "crypto": {
+      "/api/crypto/encrypt": {
+        "available": true,
+        "status_code": 200,
+        "response": {
+          "encrypted_data": "9555a6830b0a5c637b6aa8577fbd8be19cfc5fb7ca819bee584d608f9c39673e",
+          "algorithm": "AES-256",
+          "key_id": "auto-generated",
+          "timestamp": "2025-08-04T21:02:59.231228+00:00"
+        }
+      },
+      "/api/security/encrypt": {
+        "available": true,
+        "status_code": 200,
+        "response": {
+          "encrypted_data": "bb8dabdd56267d504b306002703700963ce47b1c3f26c11b95e67f75628051dd",
+          "algorithm": "AES-256",
+          "key_id": "security-key",
+          "timestamp": "2025-08-04T21:02:59.239570+00:00"
+        }
+      },
+      "/encrypt": {
+        "available": true,
+        "status_code": 200,
+        "response": {
+          "encrypted_data": "c480ec61810be790ea603411a7023740a6d2fc9496792fb8fb537deb7a1d10df",
+          "algorithm": "AES-256",
+          "key_id": "simple-key",
+          "timestamp": "2025-08-04T21:02:59.244574+00:00"
+        }
+      }
+    },
     "performance": {
       "total_requests": 50,
-      "successful_requests": 0,
-      "success_rate": 0.0,
-      "avg_response_time_ms": 4.65,
-      "min_response_time_ms": 0.0,
-      "max_response_time_ms": 15.44
+      "successful_requests": 37,
+      "success_rate": 74.0,
+      "avg_response_time_ms": 4.73,
+      "min_response_time_ms": 1.01,
+      "max_response_time_ms": 8.34
     }
   },
   "summary": {

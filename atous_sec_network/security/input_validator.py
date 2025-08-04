@@ -201,9 +201,9 @@ def validate_request_data(data: Any, validation_type: str = "general") -> Valida
     if isinstance(data, str):
         result = validator.validate_input(data, validation_type)
         return ValidationResult(
-            is_valid=result["is_valid"],
+            is_valid=result["valid"],
             threats=result["threats"],
-            risk_score=result["risk_score"],
+            risk_score=len(result["threats"]) * 0.25,  # Calculate risk score based on threats
             message=result.get("message", ""),
             details=result
         )
@@ -216,10 +216,10 @@ def validate_request_data(data: Any, validation_type: str = "general") -> Valida
         for key, value in data.items():
             if isinstance(value, str):
                 result = validator.validate_input(value, validation_type)
-                if not result["is_valid"]:
+                if not result["valid"]:
                     is_valid = False
                 all_threats.extend(result["threats"])
-                max_risk_score = max(max_risk_score, result["risk_score"])
+                max_risk_score = max(max_risk_score, len(result["threats"]) * 0.25)
         
         return ValidationResult(
             is_valid=is_valid,

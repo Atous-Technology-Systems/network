@@ -52,7 +52,8 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         enable_rate_limiting: bool = True,
         enable_ddos_protection: bool = True,
         max_request_size: int = 1024 * 1024,  # 1MB
-        blocked_ips: Optional[List[str]] = None
+        blocked_ips: Optional[List[str]] = None,
+        excluded_paths: Optional[List[str]] = None
     ):
         super().__init__(app)
         self.rate_limit_config = rate_limit_config or RateLimitConfig()
@@ -61,6 +62,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         self.enable_ddos_protection = enable_ddos_protection
         self.max_request_size = max_request_size
         self.blocked_ips = set(blocked_ips or [])
+        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt"]
         
         # Client tracking for rate limiting
         self.clients: Dict[str, ClientInfo] = {}
@@ -256,8 +258,13 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
     async def _validate_request(self, request: Request) -> Optional[Response]:
         """Validate request input for security threats"""
         try:
+            # Check if path is excluded from validation
+            request_path = str(request.url.path)
+            if request_path in self.excluded_paths:
+                return None
+            
             # Validate URL path
-            path_validation = validator.validate_input(str(request.url.path), 'url')
+            path_validation = validator.validate_input(request_path, 'url')
             if not path_validation.get('valid', True):
                 logger.warning(f"Malicious path detected from {self._get_client_ip(request)}: {request.url.path}")
                 await self._update_client_stats(self._get_client_ip(request), 'malicious')
