@@ -49,8 +49,385 @@ class TestABISSSystem(unittest.TestCase):
             "memory_size": 1000,
             "region": "BR"
         }
+        
+        # Create ABISSSystem instance for testing
+        with patch('atous_sec_network.security.abiss_system.AutoTokenizer') as mock_tokenizer, \
+             patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM') as mock_model, \
+             patch('atous_sec_network.security.abiss_system.pipeline') as mock_pipeline:
+            
+            mock_tokenizer.from_pretrained.return_value = Mock()
+            mock_model.from_pretrained.return_value = Mock()
+            mock_pipeline.return_value = Mock()
+            
+            self.abiss = ABISSSystem(self.config)
+        
+    def test_from_pretrained_method_exists(self):
+        """Test that from_pretrained method exists and is callable"""
+        # Arrange
+        model_name = "google/gemma-3n-2b"
+        
+        # Act & Assert
+        self.assertTrue(hasattr(ABISSSystem, 'from_pretrained'))
+        self.assertTrue(callable(getattr(ABISSSystem, 'from_pretrained')))
+        
+    def test_from_pretrained_returns_abiss_instance(self):
+        """Test that from_pretrained returns a properly initialized ABISSSystem instance"""
+        # Arrange
+        model_name = "google/gemma-3n-2b"
+        config = {"threat_threshold": 0.8, "region": "US"}
+        
+        # Act
+        with patch('atous_sec_network.security.abiss_system.AutoTokenizer') as mock_tokenizer, \
+             patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM') as mock_model:
+            
+            mock_tokenizer.from_pretrained.return_value = Mock()
+            mock_model.from_pretrained.return_value = Mock()
+            
+            abiss_instance = ABISSSystem.from_pretrained(model_name, **config)
+        
+        # Assert
+        self.assertIsInstance(abiss_instance, ABISSSystem)
+        self.assertEqual(abiss_instance.model_name, model_name)
+        self.assertEqual(abiss_instance.config['threat_threshold'], 0.8)
+        self.assertEqual(abiss_instance.config['region'], "US")
+        
+    def test_from_pretrained_with_default_config(self):
+        """Test that from_pretrained works with default configuration"""
+        # Arrange
+        model_name = "google/gemma-3n-2b"
+        
+        # Act
+        with patch('atous_sec_network.security.abiss_system.AutoTokenizer') as mock_tokenizer, \
+             patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM') as mock_model:
+            
+            mock_tokenizer.from_pretrained.return_value = Mock()
+            mock_model.from_pretrained.return_value = Mock()
+            
+            abiss_instance = ABISSSystem.from_pretrained(model_name)
+        
+        # Assert
+        self.assertIsInstance(abiss_instance, ABISSSystem)
+        self.assertEqual(abiss_instance.model_name, model_name)
+        self.assertIn('threat_threshold', abiss_instance.config)
+        self.assertIn('memory_size', abiss_instance.config)
+        
+    def test_from_pretrained_initializes_model_components(self):
+        """Test that from_pretrained properly initializes model components"""
+        # Arrange
+        model_name = "google/gemma-3n-2b"
+        
+        # Act
+        with patch('atous_sec_network.security.abiss_system.AutoTokenizer') as mock_tokenizer, \
+             patch('atous_sec_network.security.abiss_system.AutoModelForCausalLM') as mock_model, \
+             patch('atous_sec_network.security.abiss_system.pipeline') as mock_pipeline:
+            
+            mock_tokenizer_instance = Mock()
+            mock_model_instance = Mock()
+            mock_pipeline_instance = Mock()
+            mock_tokenizer.from_pretrained.return_value = mock_tokenizer_instance
+            mock_model.from_pretrained.return_value = mock_model_instance
+            mock_pipeline.return_value = mock_pipeline_instance
+            
+            abiss_instance = ABISSSystem.from_pretrained(model_name)
+        
+        # Assert
+        mock_tokenizer.from_pretrained.assert_called_once_with(model_name)
+        mock_model.from_pretrained.assert_called_once()
+        self.assertEqual(abiss_instance.tokenizer, mock_tokenizer_instance)
+        self.assertEqual(abiss_instance.model, mock_model_instance)
+        self.assertEqual(abiss_instance.pipeline, mock_pipeline_instance)
+        
         self.abiss = ABISSSystem(self.config)
 
+    def test_call_method_exists(self):
+        """Test that __call__ method exists on ABISSSystem"""
+        self.assertTrue(hasattr(ABISSSystem, '__call__'))
+        self.assertTrue(callable(self.abiss))
+    
+    def test_call_method_with_network_data(self):
+        """Test that __call__ method processes network data for threat detection"""
+        network_data = {
+            "source_ip": "192.168.1.100",
+            "destination_ip": "10.0.0.1",
+            "port": 22,
+            "protocol": "TCP",
+            "payload_size": 1024
+        }
+        
+        result = self.abiss(network_data)
+        
+        # Should return a dictionary with threat analysis
+        self.assertIsInstance(result, dict)
+        self.assertIn('threat_score', result)
+        self.assertIn('threat_type', result)
+        self.assertIn('analysis_timestamp', result)
+        
+    def test_call_method_with_user_behavior(self):
+        """Test that __call__ method processes user behavior data"""
+        behavior_data = {
+            "user_id": "user123",
+            "login_time": "14:30",
+            "failed_logins": 0,
+            "data_access_count": 15,
+            "network_usage": 50000000
+        }
+        
+        result = self.abiss(behavior_data)
+        
+        # Should return a dictionary with behavior analysis
+        self.assertIsInstance(result, dict)
+        self.assertIn('threat_score', result)
+        self.assertIn('anomalies', result)
+        self.assertIn('analysis_timestamp', result)
+        
+    def test_call_method_with_invalid_data(self):
+        """Test that __call__ method handles invalid data gracefully"""
+        invalid_data = "not a dictionary"
+        
+        result = self.abiss(invalid_data)
+        
+        # Should return error information
+        self.assertIsInstance(result, dict)
+        self.assertIn('error', result)
+        self.assertIn('analysis_timestamp', result)
+    
+    def test_is_network_data_method(self):
+        """Test that _is_network_data correctly identifies network data"""
+        # Test with valid network data
+        network_data = {
+            "source_ip": "192.168.1.100",
+            "destination_ip": "10.0.0.1",
+            "port": 22
+        }
+        self.assertTrue(self.abiss._is_network_data(network_data))
+        
+        # Test with non-network data
+        behavior_data = {
+            "user_id": "user123",
+            "login_time": "14:30"
+        }
+        self.assertFalse(self.abiss._is_network_data(behavior_data))
+        
+        # Test with empty data
+        self.assertFalse(self.abiss._is_network_data({}))
+    
+    def test_is_behavior_data_method(self):
+        """Test that _is_behavior_data correctly identifies behavior data"""
+        # Test with valid behavior data
+        behavior_data = {
+            "user_id": "user123",
+            "login_time": "14:30",
+            "failed_logins": 0
+        }
+        self.assertTrue(self.abiss._is_behavior_data(behavior_data))
+        
+        # Test with non-behavior data
+        network_data = {
+            "source_ip": "192.168.1.100",
+            "port": 22
+        }
+        self.assertFalse(self.abiss._is_behavior_data(network_data))
+        
+        # Test with empty data
+        self.assertFalse(self.abiss._is_behavior_data({}))
+    
+    def test_perform_security_analysis_method(self):
+        """Test that _perform_security_analysis delegates correctly"""
+        timestamp = time.time()
+        
+        # Test with network data
+        network_data = {
+            "source_ip": "192.168.1.100",
+            "destination_ip": "10.0.0.1",
+            "port": 22
+        }
+        result = self.abiss._perform_security_analysis(network_data, timestamp)
+        self.assertIsInstance(result, dict)
+        self.assertIn('threat_score', result)
+        self.assertIn('threat_type', result)
+        
+        # Test with behavior data
+        behavior_data = {
+            "user_id": "user123",
+            "login_time": "14:30",
+            "failed_logins": 0
+        }
+        result = self.abiss._perform_security_analysis(behavior_data, timestamp)
+        self.assertIsInstance(result, dict)
+        self.assertIn('threat_score', result)
+        self.assertIn('anomalies', result)
+    
+    def test_analyze_network_threat_method(self):
+        """Test that _analyze_network_threat returns proper structure"""
+        timestamp = time.time()
+        network_data = {
+            "source_ip": "192.168.1.100",
+            "destination_ip": "10.0.0.1",
+            "port": 22
+        }
+        
+        result = self.abiss._analyze_network_threat(network_data, timestamp)
+        
+        self.assertIsInstance(result, dict)
+        self.assertIn('threat_score', result)
+        self.assertIn('threat_type', result)
+        self.assertIn('analysis_timestamp', result)
+        self.assertEqual(result['analysis_timestamp'], timestamp)
+    
+    def test_analyze_user_behavior_method(self):
+        """Test that _analyze_user_behavior returns proper structure"""
+        timestamp = time.time()
+        behavior_data = {
+            "user_id": "user123",
+            "login_time": "14:30",
+            "failed_logins": 0
+        }
+        
+        result = self.abiss._analyze_user_behavior(behavior_data, timestamp)
+        
+        self.assertIsInstance(result, dict)
+        self.assertIn('threat_score', result)
+        self.assertIn('anomalies', result)
+        self.assertIn('analysis_timestamp', result)
+        self.assertEqual(result['analysis_timestamp'], timestamp)
+    
+    def test_create_generic_response_method(self):
+        """Test that _create_generic_response returns proper structure"""
+        timestamp = time.time()
+        
+        result = self.abiss._create_generic_response(timestamp)
+        
+        self.assertIsInstance(result, dict)
+        self.assertIn('threat_score', result)
+        self.assertIn('analysis_timestamp', result)
+        self.assertEqual(result['threat_score'], 0.0)
+        self.assertEqual(result['analysis_timestamp'], timestamp)
+    
+    def test_create_error_response_method(self):
+        """Test that _create_error_response returns proper structure"""
+        timestamp = time.time()
+        error_message = "Test error message"
+        
+        result = self.abiss._create_error_response(error_message, timestamp)
+        
+        self.assertIsInstance(result, dict)
+        self.assertIn('error', result)
+        self.assertIn('analysis_timestamp', result)
+        self.assertEqual(result['error'], error_message)
+        self.assertEqual(result['analysis_timestamp'], timestamp)
+    
+    def test_detect_threat_method(self):
+        """Test that detect_threat method works correctly"""
+        network_data = {
+            "source_ip": "192.168.1.100",
+            "destination_ip": "10.0.0.1",
+            "port": 22,
+            "protocol": "TCP"
+        }
+        
+        threat_score, threat_type = self.abiss.detect_threat(network_data)
+        
+        self.assertIsInstance(threat_score, float)
+        self.assertIsInstance(threat_type, str)
+        self.assertGreaterEqual(threat_score, 0.0)
+        self.assertLessEqual(threat_score, 1.0)
+    
+    def test_analyze_behavior_method(self):
+        """Test that analyze_behavior method works correctly"""
+        behavior_data = {
+            "user_id": "user123",
+            "login_time": "14:30",
+            "failed_logins": 0,
+            "data_access_count": 15,
+            "network_usage": 50000000
+        }
+        
+        threat_score, anomalies = self.abiss.analyze_behavior(behavior_data)
+        
+        self.assertIsInstance(threat_score, float)
+        self.assertIsInstance(anomalies, list)
+        self.assertGreaterEqual(threat_score, 0.0)
+        self.assertLessEqual(threat_score, 1.0)
+    
+    def test_generate_adaptive_response_method(self):
+        """Test that generate_adaptive_response creates proper response"""
+        threat_data = {
+            "threat_score": 0.8,
+            "threat_type": "suspicious_login",
+            "source_ip": "192.168.1.100"
+        }
+        
+        response = self.abiss.generate_adaptive_response(threat_data)
+        
+        self.assertIsInstance(response, AdaptiveResponse)
+        self.assertIsInstance(response.action, str)
+        self.assertIsInstance(response.priority, int)
+        self.assertIsInstance(response.parameters, dict)
+        self.assertGreater(response.priority, 0)
+    
+    def test_learn_threat_pattern_method(self):
+        """Test that learn_threat_pattern creates and stores patterns"""
+        pattern_data = {
+            "pattern_type": "brute_force",
+            "indicators": ["failed_login", "multiple_attempts"],
+            "severity": 0.9,
+            "frequency": 0.5,  # Add required frequency parameter
+            "description": "Brute force attack pattern"
+        }
+        
+        pattern_id = self.abiss.learn_threat_pattern(pattern_data)
+        
+        self.assertIsInstance(pattern_id, str)
+        self.assertGreater(len(pattern_id), 0)
+        
+        # Verify pattern was stored
+        stored_pattern = self.abiss.get_threat_pattern(pattern_id)
+        self.assertIsNotNone(stored_pattern)
+        self.assertEqual(stored_pattern.pattern_type, "brute_force")
+    
+    def test_get_threat_pattern_method(self):
+        """Test that get_threat_pattern retrieves stored patterns"""
+        # First create a pattern
+        pattern_data = {
+            "pattern_type": "test_pattern",
+            "indicators": ["test_indicator"],
+            "severity": 0.5,
+            "frequency": 0.3  # Add required frequency parameter
+        }
+        pattern_id = self.abiss.learn_threat_pattern(pattern_data)
+        
+        # Then retrieve it
+        retrieved_pattern = self.abiss.get_threat_pattern(pattern_id)
+        
+        self.assertIsNotNone(retrieved_pattern)
+        self.assertIsInstance(retrieved_pattern, ThreatPattern)
+        self.assertEqual(retrieved_pattern.pattern_type, "test_pattern")
+        
+        # Test with non-existent pattern
+        non_existent = self.abiss.get_threat_pattern("non_existent_id")
+        self.assertIsNone(non_existent)
+    
+    def test_get_model_info_method(self):
+        """Test that get_model_info returns proper model information"""
+        model_info = self.abiss.get_model_info()
+        
+        self.assertIsInstance(model_info, dict)
+        self.assertIn('model_name', model_info)
+        self.assertIn('model_loaded', model_info)
+        self.assertEqual(model_info['model_name'], self.config['model_name'])
+    
+    def test_run_model_inference_method(self):
+        """Test that run_model_inference processes input correctly"""
+        input_text = "Test security analysis input"
+        
+        result = self.abiss.run_model_inference(input_text)
+        
+        self.assertIsInstance(result, dict)
+        self.assertIn('analysis', result)
+        self.assertIn('confidence', result)
+        # Should handle the case where transformers is not available
+        self.assertIsInstance(result['confidence'], (int, float))
+ 
     def tearDown(self):
         """Stop patches"""
         self._transformers_patch.stop()
@@ -304,40 +681,46 @@ class TestABISSSystem(unittest.TestCase):
         # Lower threshold to ensure detection
         self.abiss.config["threat_threshold"] = 0.1
         
-        # Simulate multiple interactions
-        for i in range(10):
-            # Simulate suspicious network data
-            network_data = {
-                "packet_count": 10000 + i * 1000,  # High packet volume
-                "connection_attempts": 50 + i * 10,  # Many attempts
-                "data_transfer_rate": 10000000 + i * 1000000,  # High transfer rate
-                "source_ips": [f"192.168.1.{100 + i}"],
-                "destination_ports": [22, 3389, 445]  # Suspicious ports
-            }
+        # Mock the pipeline to return proper structure
+        with patch.object(self.abiss, 'pipeline') as mock_pipeline:
+            mock_pipeline.return_value = [
+                {"generated_text": "THREAT_SCORE: 0.8\nTHREAT_TYPE: ddos_attack\nCONFIDENCE: 0.9"}
+            ]
             
-            # Detect threats
-            threat_score, threat_type = self.abiss.detect_threat(network_data)
-            
-            # Generate response if needed
-            if threat_score > self.abiss.config["threat_threshold"]:
-                threat_data = {
-                    "threat_score": threat_score,
-                    "threat_type": threat_type,
-                    "source_ip": network_data["source_ips"][0],
-                    "timestamp": time.time()
-                }
-                response = self.abiss.generate_adaptive_response(threat_data)
-                
-                # Simulate outcome
-                outcome = {
-                    "threat_stopped": threat_score > 0.8,
-                    "false_positive": threat_score < 0.3,
-                    "response_time": 1.0 + i * 0.1,
-                    "collateral_damage": 0.05
+            # Simulate multiple interactions
+            for i in range(10):
+                # Simulate suspicious network data
+                network_data = {
+                    "packet_count": 10000 + i * 1000,  # High packet volume
+                    "connection_attempts": 50 + i * 10,  # Many attempts
+                    "data_transfer_rate": 10000000 + i * 1000000,  # High transfer rate
+                    "source_ips": [f"192.168.1.{100 + i}"],
+                    "destination_ports": [22, 3389, 445]  # Suspicious ports
                 }
                 
-                # Learn from the outcome
-                self.abiss.learn_from_outcome(response, outcome)
+                # Detect threats
+                threat_score, threat_type = self.abiss.detect_threat(network_data)
+                
+                # Generate response if needed
+                if threat_score > self.abiss.config["threat_threshold"]:
+                    threat_data = {
+                        "threat_score": threat_score,
+                        "threat_type": threat_type,
+                        "source_ip": network_data["source_ips"][0],
+                        "timestamp": time.time()
+                    }
+                    response = self.abiss.generate_adaptive_response(threat_data)
+                    
+                    # Simulate outcome
+                    outcome = {
+                        "threat_stopped": threat_score > 0.8,
+                        "false_positive": threat_score < 0.3,
+                        "response_time": 1.0 + i * 0.1,
+                        "collateral_damage": 0.05
+                    }
+                    
+                    # Learn from the outcome
+                    self.abiss.learn_from_outcome(response, outcome)
         
         # Verificar que o sistema aprendeu
         self.assertGreater(len(self.abiss.learning_history), 0)

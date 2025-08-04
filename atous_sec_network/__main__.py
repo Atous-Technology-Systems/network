@@ -52,12 +52,22 @@ def main():
         
         # Initialize ABISS System
         logger.info("🔒 Initializing ABISS Security System...")
-        abiss = ABISSSystem()
+        abiss_config = {
+            "model_name": "google/gemma-3n-2b",
+            "memory_size": 1000,
+            "threat_threshold": 0.7,
+            "simulation_mode": True
+        }
+        abiss = ABISSSystem(abiss_config)
         logger.info("   ✅ ABISS System ready")
         
         # Initialize NNIS System
         logger.info("🧠 Initializing NNIS Immune System...")
-        nnis = NNISSystem()
+        nnis_config = {
+            "simulation_mode": True,
+            "memory_size": 1000
+        }
+        nnis = NNISSystem(nnis_config)
         logger.info("   ✅ NNIS System ready")
         
         # Initialize LoRa Optimizer
@@ -67,7 +77,8 @@ def main():
         
         # Initialize P2P Recovery
         logger.info("🌐 Initializing P2P Recovery System...")
-        p2p = ChurnMitigation()
+        node_list = ["node1", "node2", "node3", "node4", "node5"]  # Simulation nodes
+        p2p = ChurnMitigation(node_list)
         logger.info("   ✅ P2P Recovery System ready")
         
         # Initialize Model Manager
@@ -77,7 +88,13 @@ def main():
         
         # Initialize Cognitive Pipeline
         logger.info("🤖 Initializing Cognitive Pipeline...")
-        cognitive = CognitivePipeline()
+        cognitive_config = {
+            "slm_model": "distilbert-base-uncased",
+            "llm_endpoint": "http://localhost:8000/llm",
+            "hardware_class": "low",
+            "simulation_mode": True
+        }
+        cognitive = CognitivePipeline(cognitive_config)
         logger.info("   ✅ Cognitive Pipeline ready")
         
         logger.info("\n🎉 All systems initialized successfully!")

@@ -314,6 +314,125 @@ class ABISSSystem:
         if _attr not in globals():
             globals()[_attr] = _DummyObject if "_DummyObject" in globals() else lambda *a, **k: None
 
+    @classmethod
+    def from_pretrained(cls, model_name: str, **kwargs) -> 'ABISSSystem':
+        """
+        Cria uma instância do ABISSSystem com um modelo pré-treinado
+        
+        Args:
+            model_name: Nome do modelo pré-treinado (ex: "google/gemma-3n-2b")
+            **kwargs: Configurações adicionais para o sistema
+            
+        Returns:
+            ABISSSystem: Instância inicializada do sistema ABISS
+        """
+        # Configuração padrão
+        default_config = {
+            "model_name": model_name,
+            "learning_rate": 0.001,
+            "threat_threshold": 0.7,
+            "adaptation_speed": 0.1,
+            "memory_size": 1000,
+            "region": "BR"
+        }
+        
+        # Mesclar configurações fornecidas com as padrões
+        config = {**default_config, **kwargs}
+        
+        # Criar e retornar a instância
+        instance = cls(config)
+        
+        return instance
+
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Permite que a instância ABISSSystem seja chamada diretamente para análise de segurança.
+        
+        Args:
+            data: Dados para análise (dados de rede ou comportamento do usuário)
+            
+        Returns:
+            Dict contendo resultado da análise de segurança
+            
+        Raises:
+            TypeError: Se data não for um dicionário
+        """
+        import time
+        
+        timestamp = time.time()
+        
+        # Validação de entrada
+        if not isinstance(data, dict):
+            return self._create_error_response(
+                "Invalid input: data must be a dictionary", 
+                timestamp
+            )
+        
+        try:
+            return self._perform_security_analysis(data, timestamp)
+        except Exception as e:
+            self.logger.error(f"Error during security analysis: {str(e)}")
+            return self._create_error_response(
+                f"Analysis failed: {str(e)}", 
+                timestamp
+            )
+    
+    def _perform_security_analysis(self, data: Dict[str, Any], timestamp: float) -> Dict[str, Any]:
+        """Executa análise de segurança baseada no tipo de dados."""
+        if self._is_network_data(data):
+            return self._analyze_network_threat(data, timestamp)
+        elif self._is_behavior_data(data):
+            return self._analyze_user_behavior(data, timestamp)
+        else:
+            return self._create_generic_response(timestamp)
+    
+    def _analyze_network_threat(self, data: Dict[str, Any], timestamp: float) -> Dict[str, Any]:
+        """Analisa dados de rede para detecção de ameaças."""
+        threat_score, threat_type = self.detect_threat(data)
+        return {
+            "threat_score": threat_score,
+            "threat_type": threat_type,
+            "analysis_timestamp": timestamp,
+            "data_type": "network"
+        }
+    
+    def _analyze_user_behavior(self, data: Dict[str, Any], timestamp: float) -> Dict[str, Any]:
+        """Analisa comportamento do usuário para detecção de anomalias."""
+        behavior_score, anomalies = self.analyze_behavior(data)
+        return {
+            "threat_score": behavior_score,
+            "anomalies": anomalies,
+            "analysis_timestamp": timestamp,
+            "data_type": "behavior"
+        }
+    
+    def _create_generic_response(self, timestamp: float) -> Dict[str, Any]:
+        """Cria resposta para dados não reconhecidos especificamente."""
+        return {
+            "threat_score": 0.0,
+            "threat_type": "unknown",
+            "analysis_timestamp": timestamp,
+            "data_type": "generic",
+            "message": "Data type not specifically recognized, no threat detected"
+        }
+    
+    def _create_error_response(self, error_message: str, timestamp: float) -> Dict[str, Any]:
+        """Cria resposta padronizada para erros."""
+        return {
+            "error": error_message,
+            "analysis_timestamp": timestamp
+        }
+    
+    def _is_network_data(self, data: Dict[str, Any]) -> bool:
+        """Verifica se os dados são de rede"""
+        network_fields = {"source_ip", "destination_ip", "port", "protocol", "payload_size"}
+        return bool(network_fields.intersection(data.keys()))
+    
+    def _is_behavior_data(self, data: Dict[str, Any]) -> bool:
+        """Verifica se os dados são de comportamento do usuário"""
+        behavior_fields = {"user_id", "login_time", "failed_logins", "data_access_count", "network_usage"}
+        return bool(behavior_fields.intersection(data.keys()))
+
     def learn_threat_pattern(self, pattern_data: Dict[str, Any]) -> str:
         """
         Aprende um novo padrão de ameaça
