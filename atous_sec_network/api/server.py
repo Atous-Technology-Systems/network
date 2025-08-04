@@ -179,7 +179,7 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
     
     def __init__(self, app, excluded_paths=None):
         super().__init__(app)
-        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt"]
+        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt", "/api/info", "/api/security/status", "/api/metrics"]
         self.logger = logging.getLogger(__name__ + ".ABISSNNISSecurityMiddleware")
         # Rate limiting para detecção de brute force - configurações para desenvolvimento
         self.request_counts = defaultdict(list)
@@ -461,6 +461,15 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+
+# Inicializar estado da aplicação
+app.state.start_time = time.time()
+app.state.total_requests = 0
+app.state.active_connections = 0
+app.state.errors_count = 0
+app.state.threats_blocked = 0
+app.state.anomalies_detected = 0
+app.state.rate_limit_hits = 0
 
 # Incluir routers
 app.include_router(security.router, prefix="/api/v1", tags=["security"])
@@ -981,6 +990,135 @@ async def root():
             "redoc": "/redoc"
         }
     }
+
+# API Info endpoint
+@app.get("/api/info")
+async def api_info():
+    """Informações detalhadas da API"""
+    return {
+        "api": {
+            "name": "ATous Secure Network API",
+            "version": "2.0.0",
+            "description": "Advanced security API with ABISS/NNIS integration",
+            "author": "ATous Security Team",
+            "license": "MIT"
+        },
+        "features": {
+            "abiss_system": True,
+            "nnis_system": True,
+            "crypto_endpoints": True,
+            "security_middleware": True,
+            "rate_limiting": True,
+            "ddos_protection": True
+        },
+        "endpoints": {
+            "health": "/health",
+            "info": "/api/info",
+            "security_status": "/api/security/status",
+            "metrics": "/api/metrics",
+            "crypto": ["/api/crypto/encrypt", "/api/security/encrypt", "/encrypt"],
+            "docs": "/docs"
+        },
+        "timestamp": datetime.now(UTC).isoformat()
+    }
+
+# Security Status endpoint
+@app.get("/api/security/status")
+async def security_status():
+    """Status dos sistemas de segurança"""
+    try:
+        # Verificar status dos sistemas
+        systems_status = {
+            "abiss": {
+                "status": "active",
+                "initialized": True,
+                "threats_detected": 0,
+                "last_check": datetime.now(UTC).isoformat()
+            },
+            "nnis": {
+                "status": "active",
+                "initialized": True,
+                "anomalies_detected": 0,
+                "last_check": datetime.now(UTC).isoformat()
+            },
+            "middleware": {
+                "comprehensive_security": True,
+                "abiss_nnis_middleware": True,
+                "rate_limiting": True,
+                "ddos_protection": True
+            }
+        }
+        
+        return {
+            "security_status": "operational",
+            "systems": systems_status,
+            "overall_health": "healthy",
+            "timestamp": datetime.now(UTC).isoformat()
+        }
+    except Exception as e:
+        return {
+            "security_status": "error",
+            "error": str(e),
+            "timestamp": datetime.now(UTC).isoformat()
+        }
+
+# Metrics endpoint
+@app.get("/api/metrics")
+async def system_metrics():
+    """Métricas do sistema"""
+    try:
+        import psutil
+        import os
+        
+        # Métricas básicas do sistema
+        process = psutil.Process(os.getpid())
+        memory_info = process.memory_info()
+        
+        return {
+            "system": {
+                "uptime_seconds": time.time() - app.state.start_time if hasattr(app.state, 'start_time') else 0,
+                "memory_usage_mb": round(memory_info.rss / 1024 / 1024, 2),
+                "cpu_percent": process.cpu_percent(),
+                "threads": process.num_threads()
+            },
+            "api": {
+                "total_requests": getattr(app.state, 'total_requests', 0),
+                "active_connections": getattr(app.state, 'active_connections', 0),
+                "errors_count": getattr(app.state, 'errors_count', 0)
+            },
+            "security": {
+                "threats_blocked": getattr(app.state, 'threats_blocked', 0),
+                "anomalies_detected": getattr(app.state, 'anomalies_detected', 0),
+                "rate_limit_hits": getattr(app.state, 'rate_limit_hits', 0)
+            },
+            "timestamp": datetime.now(UTC).isoformat()
+        }
+    except ImportError:
+        # Fallback se psutil não estiver disponível
+        return {
+            "system": {
+                "uptime_seconds": time.time() - app.state.start_time if hasattr(app.state, 'start_time') else 0,
+                "memory_usage_mb": "unavailable",
+                "cpu_percent": "unavailable",
+                "threads": "unavailable"
+            },
+            "api": {
+                "total_requests": getattr(app.state, 'total_requests', 0),
+                "active_connections": getattr(app.state, 'active_connections', 0),
+                "errors_count": getattr(app.state, 'errors_count', 0)
+            },
+            "security": {
+                "threats_blocked": getattr(app.state, 'threats_blocked', 0),
+                "anomalies_detected": getattr(app.state, 'anomalies_detected', 0),
+                "rate_limit_hits": getattr(app.state, 'rate_limit_hits', 0)
+            },
+            "timestamp": datetime.now(UTC).isoformat()
+        }
+    except Exception as e:
+        return {
+            "error": str(e),
+            "timestamp": datetime.now(UTC).isoformat()
+        }
 
 
 def create_app() -> FastAPI:

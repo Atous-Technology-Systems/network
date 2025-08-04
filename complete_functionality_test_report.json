@@ -1,54 +1,54 @@
 {
-  "timestamp": "2025-08-04T18:02:59.486030",
+  "timestamp": "2025-08-04T18:06:38.866908",
   "test_results": {
     "endpoints": {
       "/": {
         "status": 200,
-        "response_time_ms": 5.67,
+        "response_time_ms": 9.53,
         "description": "Root endpoint",
         "success": true
       },
       "/health": {
         "status": 200,
-        "response_time_ms": 6.55,
+        "response_time_ms": 5.27,
         "description": "Health check",
         "success": true
       },
       "/docs": {
         "status": 200,
-        "response_time_ms": 4.99,
+        "response_time_ms": 6.0,
         "description": "API Documentation",
         "success": true
       },
       "/openapi.json": {
         "status": 200,
-        "response_time_ms": 21.18,
+        "response_time_ms": 35.57,
         "description": "OpenAPI Schema",
         "success": true
       },
       "/api/info": {
-        "status": 403,
-        "response_time_ms": 37.3,
+        "status": 200,
+        "response_time_ms": 7.28,
         "description": "API Info",
-        "success": false
+        "success": true
       },
       "/api/security/status": {
-        "status": 403,
-        "response_time_ms": 8.36,
+        "status": 200,
+        "response_time_ms": 7.79,
         "description": "Security Status",
-        "success": false
+        "success": true
       },
       "/api/metrics": {
-        "status": 403,
-        "response_time_ms": 7.54,
+        "status": 200,
+        "response_time_ms": 15.53,
         "description": "System Metrics",
-        "success": false
+        "success": true
       }
     },
     "websockets": {
       "/ws": {
         "connected": true,
-        "response": "{\"status\":\"connected\",\"message\":\"WebSocket connection established\",\"endpoint\":\"/ws\",\"timestamp\":\"2025-08-04T21:02:59.215088+00:00\"}"
+        "response": "{\"status\":\"connected\",\"message\":\"WebSocket connection established\",\"endpoint\":\"/ws\",\"timestamp\":\"2025-08-04T21:06:38.561349+00:00\"}"
       }
     },
     "security": {
@@ -90,30 +90,30 @@
         "available": true,
         "status_code": 200,
         "response": {
-          "encrypted_data": "9555a6830b0a5c637b6aa8577fbd8be19cfc5fb7ca819bee584d608f9c39673e",
+          "encrypted_data": "7543ca183515b08628b365199c17fcd77d930b62a04e4382e4611224a0464ff0",
           "algorithm": "AES-256",
           "key_id": "auto-generated",
-          "timestamp": "2025-08-04T21:02:59.231228+00:00"
+          "timestamp": "2025-08-04T21:06:38.569355+00:00"
         }
       },
       "/api/security/encrypt": {
         "available": true,
         "status_code": 200,
         "response": {
-          "encrypted_data": "bb8dabdd56267d504b306002703700963ce47b1c3f26c11b95e67f75628051dd",
+          "encrypted_data": "b73d70cf25d218df024422d8fe2a27d43d21975eb6055fc51586119e9798f6fd",
           "algorithm": "AES-256",
           "key_id": "security-key",
-          "timestamp": "2025-08-04T21:02:59.239570+00:00"
+          "timestamp": "2025-08-04T21:06:38.576198+00:00"
         }
       },
       "/encrypt": {
         "available": true,
         "status_code": 200,
         "response": {
-          "encrypted_data": "c480ec61810be790ea603411a7023740a6d2fc9496792fb8fb537deb7a1d10df",
+          "encrypted_data": "afd984d40070cedbcfee17d2ae2ead69dc3bfaf997dc61a012467d409be33fbf",
           "algorithm": "AES-256",
           "key_id": "simple-key",
-          "timestamp": "2025-08-04T21:02:59.244574+00:00"
+          "timestamp": "2025-08-04T21:06:38.583717+00:00"
         }
       }
     },
@@ -121,14 +121,14 @@
       "total_requests": 50,
       "successful_requests": 37,
       "success_rate": 74.0,
-      "avg_response_time_ms": 4.73,
-      "min_response_time_ms": 1.01,
-      "max_response_time_ms": 8.34
+      "avg_response_time_ms": 5.54,
+      "min_response_time_ms": 4.0,
+      "max_response_time_ms": 8.0
     }
   },
   "summary": {
     "total_endpoints_tested": 7,
-    "successful_endpoints": 4,
-    "endpoint_success_rate": 57.14285714285714
+    "successful_endpoints": 7,
+    "endpoint_success_rate": 100.0
   }
 }

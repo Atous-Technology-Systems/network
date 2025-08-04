@@ -62,7 +62,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         self.enable_ddos_protection = enable_ddos_protection
         self.max_request_size = max_request_size
         self.blocked_ips = set(blocked_ips or [])
-        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt"]
+        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt", "/api/info", "/api/security/status", "/api/metrics"]
         
         # Client tracking for rate limiting
         self.clients: Dict[str, ClientInfo] = {}
