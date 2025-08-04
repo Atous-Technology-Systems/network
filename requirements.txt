@@ -23,6 +23,10 @@ httpx==0.28.1
 cryptography>=3.4.0
 pycryptodome>=3.10.0
 certifi>=2021.5.30
+PyJWT>=2.4.0
+bcrypt>=3.2.0
+pydantic>=1.8.0
+msgpack>=1.0.0
 
 # LoRa & Hardware
 pyserial>=3.5
