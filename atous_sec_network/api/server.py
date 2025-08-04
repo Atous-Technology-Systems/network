@@ -181,12 +181,12 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/"]
         self.logger = logging.getLogger(__name__ + ".ABISSNNISSecurityMiddleware")
-        # Rate limiting para detecção de brute force
+        # Rate limiting para detecção de brute force - configurações para desenvolvimento
         self.request_counts = defaultdict(list)
         self.blocked_ips = set()
-        self.max_requests_per_minute = 50  # Aumentado para permitir testes
-        self.max_requests_per_5_minutes = 100  # Aumentado para permitir testes
-        self.block_duration = 300  # 5 minutos
+        self.max_requests_per_minute = 200  # Aumentado significativamente para desenvolvimento
+        self.max_requests_per_5_minutes = 500  # Aumentado significativamente para desenvolvimento
+        self.block_duration = 60  # 1 minuto para desenvolvimento
     
     async def dispatch(self, request: Request, call_next):
         """Enhanced security analysis with ABISS/NNIS integration"""
@@ -425,12 +425,12 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
         
         return False, ""
 
-# Configure comprehensive security middleware
+# Configure comprehensive security middleware with development-friendly settings
 rate_limit_config = RateLimitConfig(
-    requests_per_minute=60,
-    requests_per_hour=1000,
-    burst_limit=10,
-    block_duration_minutes=15
+    requests_per_minute=300,  # Increased for development/testing
+    requests_per_hour=5000,   # Increased for development/testing
+    burst_limit=50,           # Increased for development/testing
+    block_duration_minutes=1  # Reduced for development/testing
 )
 
 # Add comprehensive security middleware (input validation, rate limiting, DDoS protection)

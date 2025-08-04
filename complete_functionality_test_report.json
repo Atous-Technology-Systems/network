@@ -1,46 +1,46 @@
 {
-  "timestamp": "2025-08-04T21:55:37.492336",
+  "timestamp": "2025-08-04T17:49:14.362334",
   "test_results": {
     "endpoints": {
       "/": {
         "status": 200,
-        "response_time_ms": 7.03,
+        "response_time_ms": 6.07,
         "description": "Root endpoint",
         "success": true
       },
       "/health": {
         "status": 200,
-        "response_time_ms": 5.01,
+        "response_time_ms": 5.0,
         "description": "Health check",
         "success": true
       },
       "/docs": {
         "status": 200,
-        "response_time_ms": 6.0,
+        "response_time_ms": 5.71,
         "description": "API Documentation",
         "success": true
       },
       "/openapi.json": {
         "status": 200,
-        "response_time_ms": 18.25,
+        "response_time_ms": 14.12,
         "description": "OpenAPI Schema",
         "success": true
       },
       "/api/info": {
         "status": 403,
-        "response_time_ms": 29.72,
+        "response_time_ms": 2.66,
         "description": "API Info",
         "success": false
       },
       "/api/security/status": {
         "status": 403,
-        "response_time_ms": 12.32,
+        "response_time_ms": 11.46,
         "description": "Security Status",
         "success": false
       },
       "/api/metrics": {
         "status": 403,
-        "response_time_ms": 7.04,
+        "response_time_ms": 5.94,
         "description": "System Metrics",
         "success": false
       }
@@ -98,9 +98,9 @@
       "total_requests": 50,
       "successful_requests": 40,
       "success_rate": 80.0,
-      "avg_response_time_ms": 5.29,
+      "avg_response_time_ms": 5.42,
       "min_response_time_ms": 0.0,
-      "max_response_time_ms": 12.44
+      "max_response_time_ms": 16.52
     }
   },
   "summary": {
