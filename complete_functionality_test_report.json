@@ -1,0 +1,111 @@
+{
+  "timestamp": "2025-08-04T21:43:28.926160",
+  "test_results": {
+    "endpoints": {
+      "/": {
+        "status": 200,
+        "response_time_ms": 17.73,
+        "description": "Root endpoint",
+        "success": true
+      },
+      "/health": {
+        "status": 200,
+        "response_time_ms": 4.99,
+        "description": "Health check",
+        "success": true
+      },
+      "/docs": {
+        "status": 200,
+        "response_time_ms": 3.84,
+        "description": "API Documentation",
+        "success": true
+      },
+      "/openapi.json": {
+        "status": 200,
+        "response_time_ms": 28.43,
+        "description": "OpenAPI Schema",
+        "success": true
+      },
+      "/api/info": {
+        "status": 403,
+        "response_time_ms": 6.17,
+        "description": "API Info",
+        "success": false
+      },
+      "/api/security/status": {
+        "status": 403,
+        "response_time_ms": 8.85,
+        "description": "Security Status",
+        "success": false
+      },
+      "/api/metrics": {
+        "status": 403,
+        "response_time_ms": 7.29,
+        "description": "System Metrics",
+        "success": false
+      }
+    },
+    "websockets": {
+      "/ws": {
+        "connected": false,
+        "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
+      },
+      "/api/ws": {
+        "connected": false,
+        "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
+      },
+      "/websocket": {
+        "connected": false,
+        "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
+      }
+    },
+    "security": {
+      "rate_limiting": {
+        "requests_sent": 10,
+        "responses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "blocked_count": 0
+      },
+      "threat_sql_injection": {
+        "blocked": false,
+        "status_code": 400
+      },
+      "threat_xss": {
+        "blocked": false,
+        "status_code": 400
+      },
+      "threat_path_traversal": {
+        "blocked": false,
+        "status_code": 400
+      },
+      "threat_command_injection": {
+        "blocked": false,
+        "status_code": 400
+      }
+    },
+    "crypto": {},
+    "performance": {
+      "total_requests": 50,
+      "successful_requests": 41,
+      "success_rate": 82.0,
+      "avg_response_time_ms": 7.65,
+      "min_response_time_ms": 0.0,
+      "max_response_time_ms": 28.19
+    }
+  },
+  "summary": {
+    "total_endpoints_tested": 7,
+    "successful_endpoints": 4,
+    "endpoint_success_rate": 57.14285714285714
+  }
+}

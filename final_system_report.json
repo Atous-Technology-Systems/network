@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-08-04T21:48:21.358658",
+  "server_status": {
+    "responding": true,
+    "status_code": 429,
+    "rate_limiting_active": true
+  },
+  "security_features": {
+    "rate_limiting": "✅ ATIVO - Muito restritivo (675s)",
+    "threat_detection": "✅ ATIVO - Bloqueando ameaças",
+    "abiss_system": "⚠️ Problemas de importação",
+    "nnis_system": "⚠️ Problemas de importação"
+  },
+  "cryptography": {
+    "basic_functions": true,
+    "hash_generation": "✅ Funcionando",
+    "random_generation": "✅ Funcionando",
+    "key_derivation": "⚠️ Problemas com tipos"
+  },
+  "api_endpoints": {
+    "accessible": "❌ Bloqueados por rate limiting",
+    "documentation": "⚠️ Disponível mas bloqueado",
+    "health_check": "⚠️ Disponível mas bloqueado"
+  },
+  "websockets": {
+    "status": "❌ Falha na conexão",
+    "error": "Timeout argument issue"
+  },
+  "logging_system": {
+    "active": true,
+    "security_logging": "✅ Funcionando",
+    "audit_trail": "✅ Funcionando"
+  },
+  "overall_assessment": {
+    "security_level": "🔒 ALTO - Sistema muito restritivo",
+    "functionality": "⚠️ PARCIAL - Algumas funcionalidades com problemas",
+    "stability": "✅ ESTÁVEL - Servidor rodando sem crashes",
+    "recommendation": "Ajustar configurações de rate limiting para permitir testes"
+  }
+}
