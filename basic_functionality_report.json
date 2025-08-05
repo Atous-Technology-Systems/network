@@ -1,33 +1,33 @@
 {
-  "timestamp": "2025-08-04T21:47:13.171585",
+  "timestamp": "2025-08-04T21:51:37.642461",
   "endpoints": [
     {
       "endpoint": "/",
       "description": "Página Principal",
       "status_code": 429,
       "success": false,
-      "response_time": 0.009273
+      "response_time": 0.009804
     },
     {
       "endpoint": "/health",
       "description": "Health Check",
       "status_code": 429,
       "success": false,
-      "response_time": 0.00578
+      "response_time": 0.005486
     },
     {
       "endpoint": "/docs",
       "description": "Documentação Swagger",
       "status_code": 429,
       "success": false,
-      "response_time": 0.005599
+      "response_time": 0.005562
     },
     {
       "endpoint": "/openapi.json",
       "description": "OpenAPI Schema",
       "status_code": 429,
       "success": false,
-      "response_time": 0.004905
+      "response_time": 0.021725
     }
   ],
   "crypto_working": false,
