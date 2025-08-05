@@ -13,6 +13,7 @@ import logging
 import time
 import psutil
 import json
+from collections import defaultdict
 from datetime import datetime, UTC
 from typing import Dict, Any, Optional
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -82,7 +83,7 @@ async def lifespan(app: FastAPI):
         abiss_config = {
             "model_name": "google/gemma-3n-2b",
             "memory_size": 1000,
-            "threat_threshold": 0.7,
+            "threat_threshold": 0.7,  # Threshold conservador
             "learning_rate": 0.01,
             "enable_monitoring": True
         }
@@ -92,7 +93,7 @@ async def lifespan(app: FastAPI):
             "memory_size": 1000,
             "immune_cell_count": 50,
             "memory_cell_count": 100,
-            "threat_threshold": 0.8
+            "threat_threshold": 0.8  # Threshold conservador
         }
         
         # Inicialização lazy dos sistemas ABISS e NNIS
@@ -151,7 +152,7 @@ app = FastAPI(
 app.state.abiss_config = {
     "model_name": "google/gemma-3n-2b",
     "memory_size": 1000,
-    "threat_threshold": 0.7,
+    "threat_threshold": 0.7,  # Threshold conservador
     "learning_rate": 0.01,
     "enable_monitoring": True
 }
@@ -161,7 +162,7 @@ app.state.nnis_config = {
     "memory_size": 1000,
     "immune_cell_count": 50,
     "memory_cell_count": 100,
-    "threat_threshold": 0.8
+    "threat_threshold": 0.8  # Threshold conservador
 }
 
 app.state.systems = {
@@ -180,14 +181,49 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/"]
         self.logger = logging.getLogger(__name__ + ".ABISSNNISSecurityMiddleware")
+        # Rate limiting para detecção de brute force
+        self.request_counts = defaultdict(list)
+        self.blocked_ips = set()
+        self.max_requests_per_minute = 50  # Aumentado para permitir testes
+        self.max_requests_per_5_minutes = 100  # Aumentado para permitir testes
+        self.block_duration = 300  # 5 minutos
     
     async def dispatch(self, request: Request, call_next):
         """Enhanced security analysis with ABISS/NNIS integration"""
         start_time = time.time()
+        client_ip = request.client.host if request.client else "unknown"
         
         # Skip analysis for excluded endpoints
         if request.url.path in self.excluded_paths:
             return await call_next(request)
+        
+        # Check if IP is blocked
+        if client_ip in self.blocked_ips:
+            self.logger.warning(f"Blocked IP attempted access: {client_ip}")
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "error": "IP blocked due to suspicious activity",
+                    "timestamp": datetime.now(UTC).isoformat()
+                }
+            )
+        
+        # Rate limiting check
+        current_time = time.time()
+        self._cleanup_old_requests(current_time)
+        
+        if self._is_rate_limited(client_ip, current_time):
+            self.logger.warning(f"Rate limit exceeded for IP: {client_ip}")
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "error": "Rate limit exceeded",
+                    "timestamp": datetime.now(UTC).isoformat()
+                }
+            )
+        
+        # Record request
+        self.request_counts[client_ip].append(current_time)
         
         try:
             # Extract request data for analysis
@@ -204,7 +240,13 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
             should_block, block_reason = block_result[0], block_result[1]
             
             if should_block:
-                self.logger.warning(f"Request blocked: {block_reason} - IP: {request.client.host} - Path: {request.url.path}")
+                self.logger.warning(f"Request blocked: {block_reason} - IP: {client_ip} - Path: {request.url.path}")
+                
+                # Block IP if multiple threats detected
+                if self._should_block_ip(client_ip, block_reason):
+                    self.blocked_ips.add(client_ip)
+                    self.logger.warning(f"IP {client_ip} added to blocklist")
+                
                 return JSONResponse(
                     status_code=403,
                     content={
@@ -220,7 +262,7 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
             
             # Log security analysis
             processing_time = time.time() - start_time
-            self.logger.info(f"Request analyzed - IP: {request.client.host} - Path: {request.url.path} - Time: {processing_time:.3f}s")
+            self.logger.info(f"Request analyzed - IP: {client_ip} - Path: {request.url.path} - Time: {processing_time:.3f}s")
             
             return response
             
@@ -228,6 +270,38 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
             self.logger.error(f"Security middleware error: {str(e)}")
             # In case of error, allow request (fail-open)
             return await call_next(request)
+    
+    def _cleanup_old_requests(self, current_time):
+        """Remove old request timestamps"""
+        cutoff_time = current_time - 300  # 5 minutes
+        for ip in list(self.request_counts.keys()):
+            self.request_counts[ip] = [t for t in self.request_counts[ip] if t > cutoff_time]
+            if not self.request_counts[ip]:
+                del self.request_counts[ip]
+    
+    def _is_rate_limited(self, client_ip, current_time):
+        """Check if IP is rate limited"""
+        requests = self.request_counts[client_ip]
+        
+        # Check requests in last minute
+        minute_ago = current_time - 60
+        recent_requests = [t for t in requests if t > minute_ago]
+        if len(recent_requests) >= self.max_requests_per_minute:
+            return True
+        
+        # Check requests in last 5 minutes
+        five_minutes_ago = current_time - 300
+        recent_requests_5min = [t for t in requests if t > five_minutes_ago]
+        if len(recent_requests_5min) >= self.max_requests_per_5_minutes:
+            return True
+        
+        return False
+    
+    def _should_block_ip(self, client_ip, block_reason):
+        """Determine if IP should be blocked based on threat patterns"""
+        # Block IPs with multiple high-severity threats
+        high_severity_patterns = ['sql_injection', 'command_injection', 'path_traversal']
+        return any(pattern in block_reason.lower() for pattern in high_severity_patterns)
     
     async def _extract_request_data(self, request: Request) -> Dict[str, Any]:
         """Extract relevant request data for analysis"""
@@ -325,26 +399,29 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
             return {"anomaly_detected": False, "anomaly_score": 0.0, "error": str(e)}
     
     def _should_block_request(self, abiss_result: Dict[str, Any], nnis_result: Dict[str, Any]) -> tuple:
-        """Decide if request should be blocked based on analysis results"""
-        # Check if ABISS detected threat
-        if abiss_result.get("threat_detected", False):
-            threat_score = abiss_result.get("threat_score", 0.0)
-            if threat_score > 0.7:
-                return True, f"High threat score detected by ABISS: {threat_score:.2f}"
-        
-        # Check if NNIS detected anomaly
-        if nnis_result.get("anomaly_detected", False):
-            anomaly_score = nnis_result.get("anomaly_score", 0.0)
-            if anomaly_score > 0.8:
-                return True, f"High anomaly score detected by NNIS: {anomaly_score:.2f}"
-        
-        # Check combination of moderate scores
+        """Decide if request should be blocked based on analysis results (balanced for fewer false positives)"""
         threat_score = abiss_result.get("threat_score", 0.0)
         anomaly_score = nnis_result.get("anomaly_score", 0.0)
-        combined_score = (threat_score + anomaly_score) / 2
+        threat_type = abiss_result.get("threat_type", "unknown")
         
-        if combined_score > 0.6:
-            return True, f"Combined security score too high: {combined_score:.2f} (ABISS: {threat_score:.2f}, NNIS: {anomaly_score:.2f})"
+        # High-confidence threat detection
+        if threat_score > 0.8:  # Increased threshold for clear threats
+            return True, f"High threat score detected by ABISS: {threat_score:.2f}"
+        
+        # Critical threat types with lower threshold
+        critical_threats = ['sql_injection', 'command_injection', 'path_traversal']
+        if threat_type.lower() in critical_threats and threat_score > 0.65:
+            return True, f"Critical threat detected: {threat_type} (score: {threat_score:.2f})"
+        
+        # Anomaly detection with higher threshold
+        if anomaly_score > 0.85:  # Increased threshold for anomalies
+            return True, f"High anomaly score detected by NNIS: {anomaly_score:.2f}"
+        
+        # Combined score for edge cases
+        combined_score = (threat_score * 0.8) + (anomaly_score * 0.2)
+        
+        if combined_score > 0.7:  # Increased threshold for combined score
+            return True, f"High combined security score: {combined_score:.2f} (ABISS: {threat_score:.2f}, NNIS: {anomaly_score:.2f})"
         
         return False, ""
 

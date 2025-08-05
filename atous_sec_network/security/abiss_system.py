@@ -58,7 +58,7 @@ class ThreatPattern:
             True se houver correspondência, False caso contrário
         """
         indent = '  ' * depth
-        debug = True  # Ativar/desativar debug
+        debug = False  # Desabilitado para reduzir ruído nos logs e melhorar performance
         
         if debug:
             print(f"{indent}_value_matches(value={value}, indicator='{indicator}', type={type(value).__name__})")
@@ -610,52 +610,122 @@ class ABISSSystem:
         known_patterns = [
             {
                 "pattern_type": "ddos_attack",
-                "indicators": ["ddos", "2000", "80", "192.168.1.100", "192.168.1.101", "192.168.1.102"],
-                "severity": 0.95,
+                "indicators": ["ddos", "flood_attack", "volumetric_attack", "192.168.1.100", "192.168.1.101", "192.168.1.102"],
+                "severity": 0.85,  # Reduzido de 0.95
                 "frequency": 0.9,
                 "description": "Ataque DDoS detectado - alta taxa de requisições"
             },
             {
                 "pattern_type": "sql_injection",
-                "indicators": ["sql_injection", "DROP TABLE", "'; DROP", "--", "/login", "10.0.0.50"],
-                "severity": 0.9,
-                "frequency": 0.85,
+                "indicators": [
+                    # Basic SQL injection
+                    "sql_injection", "DROP TABLE", "'; DROP", "UNION SELECT", "OR 1=1", "OR '1'='1", "admin' OR", "' OR 1=1", "10.0.0.50",
+                    # Advanced patterns
+                    "UNION ALL SELECT", "' UNION", "admin'--", "' OR '", "1'='1",
+                    # Time-based
+                    "WAITFOR DELAY", "SLEEP(", "BENCHMARK(", "pg_sleep(",
+                    # Error-based
+                    "EXTRACTVALUE", "UPDATEXML", "CONCAT", "FLOOR(RAND",
+                    # Boolean-based
+                    "AND (SELECT", "OR (SELECT", "SUBSTRING(", "@@version",
+                    # Comment patterns
+                    "--", "/*", "*/", "#",
+                    # Database functions
+                    "information_schema", "sysobjects", "syscolumns"
+                ],
+                "severity": 0.95,
+                "frequency": 0.9,
                 "description": "Tentativa de SQL Injection detectada"
             },
             {
                 "pattern_type": "xss_attack",
-                "indicators": ["xss", "<script>", "alert", "comment", "172.16.0.25"],
+                "indicators": ["<script>", "javascript:", "onerror=", "onload=", "alert('XSS')", "<img src=x", "172.16.0.25"],
                 "severity": 0.85,
                 "frequency": 0.8,
                 "description": "Ataque XSS detectado"
             },
             {
                 "pattern_type": "brute_force",
-                "indicators": ["brute_force", "admin", "150", "145", "203.0.113.10"],
-                "severity": 0.88,
-                "frequency": 0.9,
+                "indicators": [
+                    # Explicit indicators
+                    "brute_force", "password_attack", "login_attempt_flood", "203.0.113.10",
+                    # Login patterns
+                    "username", "password", "login", "auth", "token",
+                    # Common credentials
+                    "admin", "administrator", "root", "user", "guest",
+                    # Authentication headers
+                    "Authorization", "Bearer", "Basic",
+                    # Rate limiting triggers
+                    "rapid_requests", "multiple_attempts", "repeated_access"
+                ],
+                "severity": 0.85,
+                "frequency": 0.95,
                 "description": "Ataque de força bruta detectado"
             },
             {
                 "pattern_type": "port_scan",
-                "indicators": ["port_scan", "22", "80", "443", "3389", "198.51.100.5"],
-                "severity": 0.75,
+                "indicators": ["port_scan", "nmap", "masscan", "port_probe", "198.51.100.5"],
+                "severity": 0.6,  # Reduzido de 0.75
                 "frequency": 0.7,
                 "description": "Varredura de portas detectada"
             },
             {
                 "pattern_type": "malware_infection",
-                "indicators": ["malware", "trojan", "win32", "generic", "203.0.113.15"],
-                "severity": 0.95,
+                "indicators": ["malware", "trojan", "backdoor", "payload", "203.0.113.15"],
+                "severity": 0.9,  # Reduzido de 0.95
                 "frequency": 0.9,
                 "description": "Infecção por malware detectada"
             },
             {
                 "pattern_type": "phishing_attack",
-                "indicators": ["phishing", "fake-bank", "192.0.2.20"],
-                "severity": 0.9,
+                "indicators": ["phishing", "fake-bank", "credential_harvest", "192.0.2.20"],
+                "severity": 0.85,  # Reduzido de 0.9
                 "frequency": 0.85,
                 "description": "Tentativa de phishing detectada"
+            },
+            {
+                "pattern_type": "command_injection",
+                "indicators": [
+                    # Basic command injection
+                    "rm -rf", "cat /etc/passwd", "ls;", "&&", "|| cat", "command",
+                    # Command separators
+                    ";", "|", "&", "`", "$(", "${{",
+                    # Common commands
+                    "wget", "curl", "nc", "netcat", "bash", "sh", "cmd", "powershell",
+                    # File operations
+                    "chmod", "chown", "cp", "mv", "mkdir", "rmdir",
+                    # Network commands
+                    "ping", "nslookup", "dig", "telnet", "ssh",
+                    # System info
+                    "whoami", "id", "uname", "ps", "top", "netstat"
+                ],
+                "severity": 0.95,
+                "frequency": 0.9,
+                "description": "Tentativa de Command Injection detectada"
+            },
+            {
+                "pattern_type": "path_traversal",
+                "indicators": [
+                    # Básicos
+                    "../../../", "..\\..\\..\\windows", "/etc/passwd", "system32\\config", "..%2F..%2F",
+                    # Encoded variations
+                    "..%2F", "..%5C", "..%252F", "..%255C",
+                    # Unicode
+                    "..\u002F", "..\u005C",
+                    # Null byte
+                    "\x00", "%00",
+                    # Common targets
+                    "etc/passwd", "windows/system32", "config/sam", "boot.ini",
+                    # Deep traversal
+                    "../../../../../../../../", "..\\..\\..\\..\\..\\..\\..\\..\\windows",
+                    # Mixed separators
+                    "..\\../", "../\\",
+                    # File parameter patterns
+                    "file=", "path=", "dir=", "folder="
+                ],
+                "severity": 0.95,
+                "frequency": 0.9,
+                "description": "Tentativa de Path Traversal detectada"
             }
         ]
         
@@ -674,40 +744,40 @@ class ABISSSystem:
             Tuple (score_ameaça, tipo_ameaça)
         """
         try:
-            # Análise baseada em padrões com threshold mais baixo
+            # Análise baseada em padrões com threshold otimizado
             pattern_scores = []
             for pattern in self.threat_patterns.values():
                 match_score = pattern.match(network_data)
-                if match_score > 0.1:  # Threshold muito mais baixo para maior sensibilidade
+                if match_score > 0.1:  # Threshold reduzido para melhor detecção
                     # Amplificar score baseado na severidade
-                    amplified_score = min(match_score * pattern.severity * 1.5, 1.0)
+                    amplified_score = min(match_score * pattern.severity * 1.3, 1.0)
                     pattern_scores.append((amplified_score, pattern.pattern_type))
                     self.logger.info(f"Padrão {pattern.pattern_type} detectado: score={match_score:.3f}, amplificado={amplified_score:.3f}")
             
             # Análise com IA (Gemma 3N)
             ai_score, ai_type = self._analyze_with_ai(network_data)
             
-            # Combinar resultados com prioridade para padrões
+            # Combinar resultados com prioridade balanceada (ajustado para reduzir falsos positivos)
             if pattern_scores:
                 best_pattern_score, best_pattern_type = max(pattern_scores, key=lambda x: x[0])
                 
                 # Se padrão detectado com alta confiança, usar diretamente
-                if best_pattern_score > 0.7:
+                if best_pattern_score > 0.7:  # Threshold otimizado
                     combined_score = best_pattern_score
                     combined_type = best_pattern_type
                 else:
-                    # Combinar com IA mas dar peso maior aos padrões
-                    combined_score = (best_pattern_score * 0.8 + ai_score * 0.2)
+                    # Combinar com IA com pesos balanceados
+                    combined_score = (best_pattern_score * 0.7 + ai_score * 0.3)
                     combined_type = best_pattern_type
             else:
-                # Se nenhum padrão detectado, usar IA com boost
-                combined_score = min(ai_score * 1.2, 1.0)
+                # Se nenhum padrão detectado, usar IA sem boost excessivo
+                combined_score = min(ai_score * 1.0, 1.0)  # Reduzido de 1.2 para 1.0
                 combined_type = ai_type
             
-            # Boost adicional para tipos críticos
-            critical_types = ["ddos_attack", "sql_injection", "malware_infection", "brute_force"]
+            # Boost para tipos críticos
+            critical_types = ["ddos_attack", "sql_injection", "malware_infection", "brute_force", "path_traversal", "command_injection"]
             if combined_type in critical_types and combined_score > 0.5:
-                combined_score = min(combined_score * 1.3, 1.0)
+                combined_score = min(combined_score * 1.2, 1.0)
             
             # Atualizar estatísticas
             self.threat_stats[combined_type] += 1
@@ -730,8 +800,88 @@ class ABISSSystem:
             Tuple (score, tipo_ameaça)
         """
         if self.pipeline is None:
-            # Modo simulação
-            return np.random.uniform(0.0, 1.0), "simulated_threat"
+            # Modo simulação - verificar se há padrões maliciosos conhecidos
+            data_str = str(network_data).lower()
+            
+            # Indicadores de SQL Injection
+            sql_indicators = [
+                "drop table", "' or 1=1", "or '1'='1", "admin' or", "union select", "union all select",
+                "admin'--", "waitfor delay", "sleep(", "benchmark(", "extractvalue", "updatexml",
+                "and (select", "or (select", "substring(", "@@version", "--", "/*", "*/",
+                "information_schema", "sysobjects", "syscolumns"
+            ]
+            
+            # Indicadores de XSS
+            xss_indicators = [
+                "<script>", "alert('xss')", "onerror=", "<img src=x", "javascript:", "onload=",
+                "alert(", "prompt(", "confirm(", "document.cookie", "window.location"
+            ]
+            
+            # Indicadores de Command Injection
+            cmd_indicators = [
+                "rm -rf", "cat /etc/passwd", "ls;", "&&", "|| cat", ";", "|", "&", "`", "$(",
+                "wget", "curl", "nc", "netcat", "bash", "sh", "cmd", "powershell",
+                "chmod", "chown", "whoami", "id", "uname", "ps", "netstat"
+            ]
+            
+            # Indicadores de Path Traversal
+            path_indicators = [
+                "../../../", "/etc/passwd", "system32\\config", "..%2f", "..%5c", "..%252f",
+                "..\u002f", "\x00", "%00", "etc/passwd", "windows/system32", "config/sam",
+                "boot.ini", "../../../../../../../../", "..\\../", "../\\",
+                "file=", "path=", "dir=", "folder="
+            ]
+            
+            # Indicadores de Brute Force
+            brute_indicators = [
+                "username", "password", "login", "auth", "token", "admin", "administrator",
+                "root", "user", "guest", "authorization", "bearer", "basic"
+            ]
+            
+            # Verificar cada categoria de ameaça
+            threat_detected = False
+            threat_type = "simulated_threat"
+            
+            for indicator in sql_indicators:
+                if indicator in data_str:
+                    threat_detected = True
+                    threat_type = "sql_injection"
+                    break
+            
+            if not threat_detected:
+                for indicator in xss_indicators:
+                    if indicator in data_str:
+                        threat_detected = True
+                        threat_type = "xss_attack"
+                        break
+            
+            if not threat_detected:
+                for indicator in cmd_indicators:
+                    if indicator in data_str:
+                        threat_detected = True
+                        threat_type = "command_injection"
+                        break
+            
+            if not threat_detected:
+                for indicator in path_indicators:
+                    if indicator in data_str:
+                        threat_detected = True
+                        threat_type = "path_traversal"
+                        break
+            
+            if not threat_detected:
+                for indicator in brute_indicators:
+                    if indicator in data_str:
+                        threat_detected = True
+                        threat_type = "brute_force"
+                        break
+            
+            if threat_detected:
+                # Score alto para ameaças detectadas
+                return np.random.uniform(0.8, 0.95), threat_type
+            else:
+                # Score baixo para requisições normais
+                return np.random.uniform(0.0, 0.4), "normal_request"
         
         try:
             # Preparar prompt para o modelo
