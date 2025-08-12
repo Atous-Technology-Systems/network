@@ -22,7 +22,7 @@ def main():
     This function demonstrates the core functionality of all subsystems
     in simulation mode, suitable for development and testing.
     """
-    logger.info("ATous Secure Network - Starting Application...")
+    logger.info("ATous Secure Network - Starting Application")
     logger.info("=" * 60)
     
     try:
@@ -127,7 +127,7 @@ def main():
         
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        logger.error("Unexpected error occurred")}]}
+        logger.error("Unexpected error occurred")
         return 1
 
 if __name__ == "__main__":
