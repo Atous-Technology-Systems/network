@@ -125,3 +125,5 @@ Thumbs.db
 .coverage
 coverage.xml
 
+.crush/
+.kiro/
