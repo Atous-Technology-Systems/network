@@ -213,33 +213,31 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph Edge ["Dispositivo de Borda (Edge Device)"]
-        A["1. Dados Brutos<br/>(ex: logs de rede)"]
-        B["2. SLM<br/>(Modelo Pequeno) local"]
-        C["3. Geração de<br/>Contexto Cognitivo"]
-        D["Payload Compacto<br/>e Anonimizado"]
+    subgraph Edge ["Dispositivo de Borda"]
+        A["1. Dados Brutos"]
+        B["2. SLM Local"]
+        C["3. Contexto Cognitivo"]
+        D["Payload Compacto"]
     end
 
-    subgraph Cloud ["Servidor Central / Nuvem"]
-        E["5. Agregação<br/>de Contextos"]
-        F["6. LLM (Modelo Grande)<br/>Análise Profunda"]
-        G["7. Geração de Insights<br/>e Atualizações"]
-        H["8. Novas Assinaturas /<br/>Otimizações de Modelo"]
+    subgraph Cloud ["Servidor Central"]
+        E["5. Agregação"]
+        F["6. LLM Grande"]
+        G["7. Insights"]
+        H["8. Otimizações"]
     end
 
     A -->|"Processa"| B
-    B -->|"Extrai Embeddings<br/>e Gera Resumo"| C
-    C -->|"{embeddings, summary,<br/>metadata}"| D
-    D -->|"4. Transmissão Segura<br/>(LoRa/Wi-Fi)"| E
-    E -->|"Cria Prompt para<br/>Análise Agregada"| F
-    F -->|"Identifica<br/>Padrões Globais"| G
-    G -->|"Envia para o<br/>Model Manager"| H
-    H -->|"9. Distribuição via<br/>OTA para os Nós"| A
+    B -->|"Extrai Embeddings"| C
+    C -->|"Gera Metadata"| D
+    D -->|"4. Transmissão LoRa"| E
+    E -->|"Análise Agregada"| F
+    F -->|"Padrões Globais"| G
+    G -->|"Model Manager"| H
+    H -->|"9. Distribuição OTA"| A
 
-    %% Styling
     classDef edge fill:#cce5ff,stroke:#0066cc,stroke-width:2px
     classDef cloud fill:#fff2cc,stroke:#ff9900,stroke-width:2px
-    classDef subgraphStyle fill:#f9f9f9,stroke:#333,stroke-width:2px
     
     class A,B,C,D edge
     class E,F,G,H cloud
