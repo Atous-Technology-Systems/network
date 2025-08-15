@@ -170,33 +170,41 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    A[Início: Monitor de Saúde P2P] --> B{Nó 'N' responde ao Ping?};
-    B -- "Sim" --> C[Atualiza Status: Nó 'N' Saudável];
-    C --> A;
-    B -- "Não" --> D[Incrementa Contador de Falhas para 'N'];
-    D --> E{Contador > Max_Falhas?};
-    E -- "Não" --> A;
-    E -- "Sim" --> F[**Nó 'N' Declarado como Falho**];
-    F --> G[Remove 'N' da Lista de Nós Ativos];
-    G --> H[Aciona Redistribuição de Dados];
-    H --> I[Nós vizinhos assumem os shards de dados de 'N'];
-    G --> J[Aciona Reatribuição de Serviços];
-    J --> K[Outro nó assume os serviços que 'N' executava];
-    G --> L[Atualiza Tabelas de Roteamento da Rede];
-    L --> M[Nós passam a ignorar 'N' nas rotas];
-    M --> N[Fim: Rede Estabilizada sem o Nó 'N'];
-    I --> N;
-    K --> N;
-
-    subgraph "Loop de Verificação de Recuperação"
-        direction LR
-        R1[Nó 'N' está na lista de falhos] --> R2{Tentar Ping novamente após Timeout?};
-        R2 -- "Sim" --> R3{Nó 'N' responde?};
-        R3 -- "Sim" --> R4[Nó 'N' Recuperado: Adiciona de volta aos ativos];
-        R3 -- "Não" --> R5[Mantém na lista de falhos];
-    end
-
-    F --> R1;
+    A[Início: Monitor de Saúde P2P] --> B{Nó 'N' responde ao Ping?}
+    B -->|"Sim"| C[Atualiza Status: Nó 'N' Saudável]
+    C --> A
+    B -->|"Não"| D[Incrementa Contador de Falhas para 'N']
+    D --> E{Contador > Max_Falhas?}
+    E -->|"Não"| A
+    E -->|"Sim"| F[Nó 'N' Declarado como Falho]
+    F --> G[Remove 'N' da Lista de Nós Ativos]
+    G --> H[Aciona Redistribuição de Dados]
+    G --> J[Aciona Reatribuição de Serviços]
+    G --> L[Atualiza Tabelas de Roteamento da Rede]
+    H --> I[Nós vizinhos assumem os shards de dados de 'N']
+    J --> K[Outro nó assume os serviços que 'N' executava]
+    L --> M[Nós passam a ignorar 'N' nas rotas]
+    I --> N[Fim: Rede Estabilizada sem o Nó 'N']
+    K --> N
+    M --> N
+    
+    %% Loop de Verificação de Recuperação
+    F --> R1[Inicia Verificação de Recuperação]
+    R1 --> R2{Tentar Ping após Timeout?}
+    R2 -->|"Sim"| R3{Nó 'N' responde?}
+    R3 -->|"Sim"| R4[Nó 'N' Recuperado: Adiciona de volta aos ativos]
+    R3 -->|"Não"| R5[Mantém na lista de falhos]
+    R4 --> A
+    R5 --> R2
+    
+    %% Styling
+    classDef failureNode fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef recoveryNode fill:#ccffcc,stroke:#00ff00,stroke-width:2px
+    classDef processNode fill:#cce5ff,stroke:#0066cc,stroke-width:2px
+    
+    class F,G failureNode
+    class R4 recoveryNode
+    class H,I,J,K,L,M processNode
 ```
 
 #### **Diagrama 5: Diagrama de Fluxo de Dados da Pipeline Cognitiva (LLM-SLM) - CORRIGIDO**
