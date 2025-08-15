@@ -213,36 +213,29 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph Edge ["Dispositivo de Borda"]
-        A["1. Dados Brutos"]
-        B["2. SLM Local"]
-        C["3. Contexto Cognitivo"]
-        D["Payload Compacto"]
+    subgraph Edge [Dispositivo de Borda]
+        A[Dados Brutos]
+        B[SLM Local]
+        C[Contexto Cognitivo]
+        D[Payload Compacto]
     end
-
-    subgraph Cloud ["Servidor Central"]
-        E["5. Agregação"]
-        F["6. LLM Grande"]
-        G["7. Insights"]
-        H["8. Otimizações"]
-    end
-
-    A -->|"Processa"| B
-    B -->|"Extrai Embeddings"| C
-    C -->|"Gera Metadata"| D
-    D -->|"4. Transmissão LoRa"| E
-    E -->|"Análise Agregada"| F
-    F -->|"Padrões Globais"| G
-    G -->|"Model Manager"| H
-    H -->|"9. Distribuição OTA"| A
-
-    classDef edge fill:#cce5ff,stroke:#0066cc,stroke-width:2px
-    classDef cloud fill:#fff2cc,stroke:#ff9900,stroke-width:2px
     
-    class A,B,C,D edge
-    class E,F,G,H cloud
+    subgraph Cloud [Servidor Central]
+        E[Agregacao]
+        F[LLM Grande]
+        G[Insights]
+        H[Otimizacoes]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> A
 ```
-
 -----
 
 ### 🚀 **Início Rápido (Getting Started)**
