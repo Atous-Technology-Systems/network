@@ -38,35 +38,54 @@ Atous Secure Network is a secure, distributed network system designed for robust
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.8+ (3.10+ recommended)
 - pip (Python package manager)
 - Git
+- Virtual environment (recommended)
 
-### Installation
+### Quick Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/atous-secure-network.git
-cd atous-secure-network
+git clone https://github.com/devrodts/Atous-Sec-Network.git
+cd Atous-Sec-Network
 
-# Create a virtual environment (recommended)
+# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Windows: venv\Scripts\activate
+# Linux/macOS: source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### Configuration
+### Quick Start
 
-Create a `.env` file in the project root with the following variables:
+```bash
+# Test installation
+python start_app.py --lite
 
-```env
-NODE_ID=node1
-MODEL_PATH=./models/current_model.bin
-STORAGE_PATH=./storage
-MAX_VERSIONS=5
+# Start web server
+python start_server.py
+
+# Access API documentation
+# Visit: http://localhost:8000/docs
 ```
+
+### 📚 Essential Guides
+
+- **[🚀 Startup Guide](STARTUP_GUIDE.md)** - **START HERE** - Clear instructions for running the application
+- **[📖 User Guide](USER_GUIDE.md)** - Comprehensive usage instructions
+- **[🏁 Getting Started](getting-started/README.md)** - Detailed setup and first steps
+
+### ⚠️ Important Notes
+
+**The application has different modes:**
+- `python start_app.py --lite` - Tests imports only (exits immediately)
+- `python start_app.py --full` - Shows system demo (exits after demo)
+- `python start_server.py` - **Starts the actual web server** (continuous operation)
+
+**For API access, WebSockets, and web endpoints, you MUST use `python start_server.py`**
 
 ## Architecture
 

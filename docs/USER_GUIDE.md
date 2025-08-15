@@ -71,36 +71,52 @@ If successful, you should see:
 
 ## ⚡ Quick Start
 
-### Option 1: Application Starter (Recommended)
+### ⚠️ IMPORTANT: Understanding Application Modes
+
+The ATous Secure Network has different execution modes. **Not all modes start the web server!**
+
+| Mode | Command | Web Server | Purpose |
+|------|---------|------------|---------|
+| **Import Test** | `python start_app.py --lite` | ❌ No | Tests imports only |
+| **Demo Mode** | `python start_app.py --full` | ❌ No | Shows system status |
+| **Web Server** | `python start_server.py` | ✅ Yes | Runs API endpoints |
+
+### Option 1: Quick Testing (No Web Server)
 
 ```bash
 # Check system status
 python start_app.py --status
 
-# Quick test (lightweight, fast)
+# Quick import test (DOES NOT start server)
 python start_app.py --lite
 
-# Full application (complete system)
+# System demonstration (DOES NOT start server)
 python start_app.py --full
 ```
 
-### Option 2: Direct Execution
+### Option 2: Start Web Server (Recommended for API Access)
 
 ```bash
-# Lightweight test
-python run_app_lite.py
+# Start the FastAPI web server
+python start_server.py
 
-# Full application
-python -m atous_sec_network
+# Or with custom options
+python start_server.py --host 0.0.0.0 --port 8000 --reload
+
+# Or using uvicorn directly
+python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Option 3: API Server Mode
+**📡 After starting the server, access:**
+- **Main API**: http://localhost:8000
+- **Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+### Option 3: Direct Module Execution (Demo Only)
 
 ```bash
-# Start the API server
-python -m atous_sec_network.api.server
-
-# The system will be available at http://localhost:8000
+# System demonstration (DOES NOT start web server)
+python -m atous_sec_network
 ```
 
 #### Testing the API Endpoints
@@ -138,47 +154,76 @@ python tests/test_complete_functionality.py
 
 ## Application Modes
 
-### Lightweight Mode (`--lite`)
+### 🧪 Import Test Mode (`--lite`)
+
+**⚠️ DOES NOT START WEB SERVER**
 
 **Best for:**
 - First-time users
 - Development and testing
 - Quick functionality verification
-- Systems with limited resources
+- CI/CD pipelines
 
 **Features:**
 - Fast startup (< 10 seconds)
-- Basic functionality testing
+- Tests module imports only
 - Package structure validation
 - No ML model loading
-- Limited security features
+- Exits immediately after testing
 
 **Usage:**
 ```bash
 python start_app.py --lite
 ```
 
-### Full Mode (`--full`)
+### 🎯 Demo Mode (`--full`)
+
+**⚠️ DOES NOT START WEB SERVER**
 
 **Best for:**
-- Production deployment
+- System verification
 - Complete system testing
-- ML-powered security features
-- Full capability demonstration
+- ML-powered security features demonstration
+- Status checking
 
 **Features:**
 - Complete system initialization
 - All security systems active
 - ML model loading
-- Production-ready
-- Longer startup time (2-5 minutes first time)
-- Higher resource usage
+- Shows system status
+- Exits after demonstration
 
 **Usage:**
 ```bash
 python start_app.py --full
 # or
 python -m atous_sec_network
+```
+
+### 🌐 Web Server Mode (Production)
+
+**✅ STARTS WEB SERVER WITH ALL ENDPOINTS**
+
+**Best for:**
+- Production deployment
+- API access
+- WebSocket connections
+- Security endpoint testing
+- Real application usage
+
+**Features:**
+- FastAPI web server
+- All REST endpoints active
+- WebSocket support
+- Security middleware active
+- Swagger documentation
+- Continuous operation
+
+**Usage:**
+```bash
+python start_server.py
+# or
+python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000
 ```
 
 ## 🧪 Testing

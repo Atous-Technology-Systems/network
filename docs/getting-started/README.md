@@ -1,240 +1,305 @@
-# Getting Started with Atous Secure Network
+# Getting Started with ATous Secure Network
 
 ## Table of Contents
 
 1. [Quick Start](#quick-start)
 2. [Installation](#installation)
    - [Prerequisites](#prerequisites)
-   - [Installation Methods](#installation-methods)
-3. [Configuration](#configuration)
-   - [Basic Configuration](#basic-configuration)
-   - [Advanced Configuration](#advanced-configuration)
-4. [Your First Network](#your-first-network)
-   - [Starting a Coordinator Node](#starting-a-coordinator-node)
-   - [Adding Worker Nodes](#adding-worker-nodes)
+   - [Installation Steps](#installation-steps)
+3. [Application Modes](#application-modes)
+   - [Understanding Different Modes](#understanding-different-modes)
+   - [When to Use Each Mode](#when-to-use-each-mode)
+4. [Starting the Application](#starting-the-application)
+   - [Testing Mode](#testing-mode)
+   - [Demo Mode](#demo-mode)
+   - [Web Server Mode](#web-server-mode)
 5. [Basic Operations](#basic-operations)
-   - [Checking Node Status](#checking-node-status)
-   - [Managing Models](#managing-models)
-   - [Viewing Logs](#viewing-logs)
+   - [Checking System Status](#checking-system-status)
+   - [Testing Security Features](#testing-security-features)
+   - [Using API Endpoints](#using-api-endpoints)
 6. [Next Steps](#next-steps)
 
 ## Quick Start
 
 ### For the Impatient
 
-1. Install the package:
+1. Clone and install:
    ```bash
-   pip install atous-secure-network
+   git clone https://github.com/devrodts/Atous-Sec-Network.git
+   cd Atous-Sec-Network
+   pip install -r requirements.txt
    ```
 
-2. Start a coordinator node:
+2. Test the installation:
    ```bash
-   atous start --role coordinator --port 8000
+   python start_app.py --lite
    ```
 
-3. In another terminal, start a worker node:
+3. Start the web server:
    ```bash
-   atous start --role worker --coordinator http://localhost:8000
+   python start_server.py
    ```
 
-4. Verify the connection:
+4. Verify the system is running:
    ```bash
-   curl http://localhost:8000/status
+   curl http://localhost:8000/health
    ```
+
+5. Access the documentation:
+   Open http://localhost:8000/docs in your browser
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip (Python package manager)
-- Git (for development installation)
-- (Optional) Virtual environment (recommended)
+- **Python**: 3.8 or higher (3.10+ recommended)
+- **pip**: Python package manager
+- **Git**: For cloning the repository
+- **Virtual Environment**: Highly recommended
+- **RAM**: 4GB minimum (8GB+ recommended for ML features)
+- **Storage**: 2GB free space (additional for ML models)
 
-### Installation Methods
+### Installation Steps
 
-#### Using pip (Recommended)
-
-```bash
-pip install atous-secure-network
-```
-
-#### From Source
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/atous-secure-network.git
-   cd atous-secure-network
-   ```
-
-2. Install in development mode:
-   ```bash
-   pip install -e .
-   ```
-
-#### Using Docker
+#### Step 1: Clone the Repository
 
 ```bash
-docker pull yourusername/atous-network:latest
-docker run -p 8000:8000 yourusername/atous-network
+git clone https://github.com/devrodts/Atous-Sec-Network.git
+cd Atous-Sec-Network
 ```
 
-## Configuration
+#### Step 2: Create Virtual Environment
 
-### Basic Configuration
-
-Create a `config.yaml` file in your working directory:
-
-```yaml
-# Node Configuration
-node:
-  id: node1
-  role: coordinator  # or 'worker'
-  port: 8000
-  host: 0.0.0.0
-
-# Model Configuration
-model:
-  path: ./models/current_model.bin
-  storage_path: ./storage
-  max_versions: 5
-
-# Network Configuration
-network:
-  bootstrap_nodes:
-    - 192.168.1.100:8000
-    - 192.168.1.101:8000
-  discovery_interval: 60  # seconds
-
-# Security Configuration
-security:
-  enable_encryption: true
-  enable_auth: true
-  auth_token: your-secure-token
+**Windows:**
+```cmd
+python -m venv venv
+venv\Scripts\activate
 ```
 
-### Advanced Configuration
-
-#### Database Configuration
-
-```yaml
-database:
-  type: postgresql  # or 'sqlite', 'mysql'
-  host: localhost
-  port: 5432
-  name: atous_network
-  user: postgres
-  password: your-secure-password
-  pool_size: 10
+**Linux/macOS:**
+```bash
+python -m venv venv
+source venv/bin/activate
 ```
 
-#### Redis Configuration (for caching)
+#### Step 3: Install Dependencies
 
-```yaml
-redis:
-  host: localhost
-  port: 6379
-  db: 0
-  password: your-redis-password
-  max_connections: 20
+```bash
+# For Windows development
+pip install -r requirements-dev-windows.txt
+
+# For Linux/Production
+pip install -r requirements.txt
 ```
 
-## Your First Network
+#### Step 4: Verify Installation
 
-### Starting a Coordinator Node
+```bash
+python start_app.py --debug
+```
 
-1. Create a configuration file (`coordinator.yaml`):
-   ```yaml
-   node:
-     id: coordinator-1
-     role: coordinator
-     port: 8000
-   
-   model:
-     path: ./models/coordinator_model.bin
-     storage_path: ./coordinator_storage
-   ```
+You should see:
+```
+✓ All imports successful
+✓ Package structure validated
+✓ Dependencies satisfied
+```
 
-2. Start the coordinator:
-   ```bash
-   atous start --config coordinator.yaml
-   ```
+## Application Modes
 
-### Adding Worker Nodes
+### Understanding Different Modes
 
-1. Create a configuration file for the worker (`worker1.yaml`):
-   ```yaml
-   node:
-     id: worker-1
-     role: worker
-     port: 8001
-   
-   network:
-     bootstrap_nodes:
-       - localhost:8000  # Coordinator address
-   
-   model:
-     path: ./models/worker1_model.bin
-     storage_path: ./worker1_storage
-   ```
+ATous Secure Network has three distinct execution modes:
 
-2. Start the worker:
-   ```bash
-   atous start --config worker1.yaml
-   ```
+| Mode | Command | Web Server | Duration | Purpose |
+|------|---------|------------|----------|---------|
+| **🧪 Import Test** | `python start_app.py --lite` | ❌ No | ~10 seconds | Test imports only |
+| **🎯 Demo Mode** | `python start_app.py --full` | ❌ No | ~30 seconds | System demonstration |
+| **🌐 Web Server** | `python start_server.py` | ✅ Yes | Continuous | Production usage |
+
+### When to Use Each Mode
+
+#### Import Test Mode (`--lite`)
+- **Use for**: First-time setup, CI/CD, quick validation
+- **Features**: Fast import testing, no ML models, exits immediately
+- **Best for**: Developers, automated testing
+
+#### Demo Mode (`--full`)
+- **Use for**: System verification, status checking, demonstrations
+- **Features**: Full system initialization, shows status, exits after demo
+- **Best for**: Verification, troubleshooting, presentations
+
+#### Web Server Mode
+- **Use for**: Production, development, API access, testing endpoints
+- **Features**: FastAPI server, all endpoints, WebSockets, continuous operation
+- **Best for**: Real usage, API testing, production deployment
+
+## Starting the Application
+
+### Testing Mode (Quick Validation)
+
+```bash
+# Check system status
+python start_app.py --status
+
+# Test imports (fast, exits immediately)
+python start_app.py --lite
+
+# Debug any issues
+python start_app.py --debug
+```
+
+**Expected Output:**
+```
+ATous Secure Network - Lightweight Mode
+==========================================
+Testing Core Imports...
+   ✓ atous_sec_network imported successfully
+Testing Security Modules...
+   ✓ ABISS System available
+   ✓ NNIS System available
+Lightweight test completed successfully!
+```
+
+### Demo Mode (System Verification)
+
+```bash
+# Full system demonstration (exits after showing status)
+python start_app.py --full
+# or
+python -m atous_sec_network
+```
+
+**Expected Output:**
+```
+ATous Secure Network - Starting Application
+============================================================
+✓ Security systems imported successfully
+✓ Network systems imported successfully
+✓ All systems initialized successfully!
+
+System Status Summary:
+   ✓ ABISS Security: Active
+   ✓ NNIS Immune: Active
+   ✓ LoRa Network: Active (Simulation)
+   ✓ P2P Recovery: Active
+   ✓ Model Manager: Active
+   ✓ Cognitive AI: Active
+
+ATous Secure Network is ready for operation!
+```
+
+### Web Server Mode (Production Usage)
+
+```bash
+# Start the FastAPI web server
+python start_server.py
+
+# Or with custom options
+python start_server.py --host 0.0.0.0 --port 8000 --reload
+
+# Or using uvicorn directly
+python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**Expected Output:**
+```
+🚀 Starting ATous Secure Network Server...
+📡 Server will be available at: http://127.0.0.1:8000
+📖 API Documentation: http://127.0.0.1:8000/docs
+🔍 Health Check: http://127.0.0.1:8000/health
+🔒 Security Status: http://127.0.0.1:8000/api/security/status
+============================================================
+INFO:     Started server process [12345]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000
+```
 
 ## Basic Operations
 
-### Checking Node Status
+### Checking System Status
 
 ```bash
-# Using the CLI
-atous status
+# Check application status
+python start_app.py --status
 
-# Or via HTTP API
-curl http://localhost:8000/api/v1/status
+# Quick health check (if server is running)
+curl http://localhost:8000/health
+
+# Detailed security status
+curl http://localhost:8000/api/security/status
+
+# System metrics
+curl http://localhost:8000/api/metrics
 ```
 
-### Managing Models
-
-#### List Available Models
+### Testing Security Features
 
 ```bash
-atous model list
+# Test cryptography endpoints
+curl -X POST "http://localhost:8000/api/crypto/encrypt" \
+     -H "Content-Type: application/json" \
+     -d '{"message": "Hello World", "algorithm": "AES-256"}'
+
+# Test security detection (should be blocked)
+curl "http://localhost:8000/api/v1/test?id=1' OR '1'='1"
 ```
 
-#### Download a Model
+### Using API Endpoints
+
+#### Health and Status Endpoints
 
 ```bash
-atous model download --source http://example.com/model.bin --version 1.0.0
+# Basic health check
+curl http://localhost:8000/health
+
+# API information
+curl http://localhost:8000/api/info
+
+# Security system status
+curl http://localhost:8000/api/security/status
+
+# System performance metrics
+curl http://localhost:8000/api/metrics
 ```
 
-#### Rollback to Previous Version
+#### Cryptography Endpoints
 
 ```bash
-atous model rollback --version 0.9.0
+# Encrypt data via crypto endpoint
+curl -X POST "http://localhost:8000/api/crypto/encrypt" \
+     -H "Content-Type: application/json" \
+     -d '{"message": "Secret data", "algorithm": "AES-256"}'
+
+# Encrypt via security endpoint
+curl -X POST "http://localhost:8000/api/security/encrypt" \
+     -H "Content-Type: application/json" \
+     -d '{"message": "Confidential info", "algorithm": "AES-256"}'
 ```
 
-### Viewing Logs
+#### Interactive Documentation
 
-#### View Application Logs
+Visit http://localhost:8000/docs in your browser for:
+- Complete API documentation
+- Interactive endpoint testing
+- Request/response examples
+- Authentication details
 
-```bash
-# Follow logs in real-time
-tail -f logs/atous.log
-
-# Filter logs by level
-cat logs/atous.log | grep -i error
-```
-
-#### View System Metrics
+### Running Comprehensive Tests
 
 ```bash
-# Using the CLI
-atous metrics
+# Run all functionality tests
+python test_complete_functionality.py
 
-# Or via HTTP API
-curl http://localhost:8000/metrics
+# Test WebSocket connections
+python test_websocket_fix.py
+
+# Test security systems
+python test_security_final.py
+
+# Generate final system report
+python test_final_summary.py
 ```
 
 ## Next Steps

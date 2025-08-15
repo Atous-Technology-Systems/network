@@ -282,15 +282,42 @@ python start_app.py --status
 
 #### **3. Executando a Aplicação**
 
-```bash
-# Teste rápido (modo leve, sem modelos ML)
-python start_app.py --lite
+O ATous Secure Network oferece diferentes modos de execução:
 
-# Aplicação completa (inclui componentes ML)
+##### **🧪 Modo de Teste (Import Test)**
+```bash
+# Teste rápido de importação - NÃO inicia servidor
+python start_app.py --lite
+```
+*Este comando apenas testa se os módulos podem ser importados e sai imediatamente.*
+
+##### **🎯 Modo Demonstração (Demo Mode)**
+```bash
+# Demonstração dos sistemas - NÃO inicia servidor web
 python start_app.py --full
 # ou
 python -m atous_sec_network
 ```
+*Este comando inicializa todos os sistemas, mostra o status e sai. Ideal para verificar se tudo está funcionando.*
+
+##### **🌐 Modo Servidor Web (Production Mode)**
+```bash
+# INICIA o servidor web FastAPI com todos os endpoints
+python start_server.py
+
+# Ou com opções personalizadas
+python start_server.py --host 0.0.0.0 --port 8000 --reload
+
+# Ou usando uvicorn diretamente
+python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**📡 Após iniciar o servidor, acesse:**
+- **API Principal:** http://localhost:8000
+- **Documentação:** http://localhost:8000/docs
+- **Health Check:** http://localhost:8000/health
+- **Status de Segurança:** http://localhost:8000/api/security/status
+- **Métricas:** http://localhost:8000/api/metrics
 
 #### **4. Executando os Testes**
 
@@ -311,42 +338,74 @@ python -m pytest tests/security/ -v      # Testes de segurança
 python -m pytest --cov=atous_sec_network --cov-report=html
 ```
 
-#### **5. Modos de Operação**
+#### **5. Modos de Operação Detalhados**
 
-**Modo Leve** (recomendado para desenvolvimento):
-- Inicialização rápida
-- Sem carregamento de modelos ML pesados
-- Testa funcionalidades básicas
-- Perfeito para desenvolvimento e CI/CD
+| Modo | Comando | Servidor Web | Descrição | Uso Recomendado |
+|------|---------|--------------|-----------|-----------------|
+| **🧪 Teste de Importação** | `python start_app.py --lite` | ❌ Não | Testa apenas importações e sai | Verificação rápida, CI/CD |
+| **🎯 Demonstração** | `python start_app.py --full` | ❌ Não | Inicializa sistemas e mostra status | Verificação de funcionalidade |
+| **🌐 Servidor Web** | `python start_server.py` | ✅ Sim | Inicia FastAPI com todos os endpoints | Desenvolvimento e produção |
+| **🔧 Debug** | `python start_app.py --debug` | ❌ Não | Verifica problemas de importação | Troubleshooting |
+| **🧪 Testes** | `python start_app.py --test` | ❌ Não | Executa suite de testes | Validação de código |
 
-**Modo Completo** (produção):
-- Inicialização completa dos modelos ML
-- Todos os sistemas de segurança ativos
-- Pode demorar no primeiro uso (download de modelos)
-- Use para implantação em produção
+**⚠️ IMPORTANTE:** Para acessar a API web, WebSockets, endpoints de criptografia e sistemas de segurança, você DEVE usar o **Modo Servidor Web**.
 
-#### **6. Fluxo de Desenvolvimento**
+#### **6. Fluxo de Desenvolvimento Recomendado**
 
 ```bash
-# 1. Verifique o ambiente
-python debug_import.py
+# 1. Verifique o ambiente e dependências
+python start_app.py --debug
 
-# 2. Execute os testes
-python -m pytest tests/ -v
-
-# 3. Teste suas alterações
+# 2. Teste importações básicas
 python start_app.py --lite
 
-# 4. Teste o sistema completo
+# 3. Execute a suite de testes
+python start_app.py --test
+
+# 4. Verifique inicialização dos sistemas
 python start_app.py --full
+
+# 5. Inicie o servidor para desenvolvimento
+python start_server.py --reload
+
+# 6. Teste os endpoints (em outro terminal)
+curl http://localhost:8000/health
+curl http://localhost:8000/api/security/status
 ```
 
-Você deverá ver uma saída indicando que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS**.
+#### **7. Verificação de Funcionalidade Completa**
+
+Para testar todas as funcionalidades do sistema:
+
+```bash
+# 1. Inicie o servidor
+python start_server.py
+
+# 2. Execute testes de funcionalidade (em outro terminal)
+python test_complete_functionality.py
+
+# 3. Teste WebSockets
+python test_websocket_fix.py
+
+# 4. Teste segurança
+python test_security_final.py
+```
+
+Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS** incluindo:
+- ✅ API REST endpoints
+- ✅ WebSocket connections  
+- ✅ Sistemas de segurança ABISS/NNIS
+- ✅ Criptografia e autenticação
+- ✅ Rate limiting e proteção DDoS
 
 ### 📚 **Documentação Completa**
 
+#### 🚨 **IMPORTANTE - Leia Primeiro**
+- 🚀 **[Guia de Inicialização](docs/STARTUP_GUIDE.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
+
 #### Links Rápidos
-- 🚀 **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
+- 📖 **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
+- 🏁 **[Getting Started](docs/getting-started/README.md)** - Configuração detalhada e primeiros passos
 - 🛠️ **[Guia de Desenvolvimento](docs/development/README.md)** - Configuração e fluxo de trabalho para desenvolvedores
 - 📊 **[Status do Projeto](PROJECT_STATUS.md)** - Status atual de desenvolvimento e resultados de testes
 - 📋 **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
