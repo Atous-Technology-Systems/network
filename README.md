@@ -1,4 +1,4 @@
-# ATous Secure Network 🛡️
+# Matrix Secure Network 🛡️
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
