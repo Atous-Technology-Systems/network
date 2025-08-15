@@ -207,39 +207,42 @@ graph TD
     class H,I,J,K,L,M processNode
 ```
 
-#### **Diagrama 5: Diagrama de Fluxo de Dados da Pipeline Cognitiva (LLM-SLM) - CORRIGIDO**
+#### **Diagrama 5: Diagrama de Fluxo de Dados da Pipeline Cognitiva (LLM-SLM)**
 
 *Ilustra a transferência de contexto entre os modelos de linguagem na borda e na nuvem para aprendizado aprimorado.*
 
 ```mermaid
 graph TD
-    subgraph "Dispositivo de Borda (Edge Device)"
-        A["1. Dados Brutos (ex: logs de rede)"]
-        B["2. SLM (Modelo Pequeno) local"]
-        C["3. Geração de Contexto Cognitivo"]
-        D["Payload Compacto e Anonimizado"]
+    subgraph Edge ["Dispositivo de Borda (Edge Device)"]
+        A["1. Dados Brutos<br/>(ex: logs de rede)"]
+        B["2. SLM<br/>(Modelo Pequeno) local"]
+        C["3. Geração de<br/>Contexto Cognitivo"]
+        D["Payload Compacto<br/>e Anonimizado"]
     end
 
-    subgraph "Servidor Central / Nuvem"
-        E["5. Agregação de Contextos"]
-        F["6. LLM (Modelo Grande) - Análise Profunda"]
-        G["7. Geração de Insights e Atualizações"]
-        H["8. Novas Assinaturas / Otimizações de Modelo"]
+    subgraph Cloud ["Servidor Central / Nuvem"]
+        E["5. Agregação<br/>de Contextos"]
+        F["6. LLM (Modelo Grande)<br/>Análise Profunda"]
+        G["7. Geração de Insights<br/>e Atualizações"]
+        H["8. Novas Assinaturas /<br/>Otimizações de Modelo"]
     end
 
-    A -- "Processa" --> B
-    B -- "Extrai Embeddings e Gera Resumo" --> C
-    C -- "{embeddings, summary, metadata}" --> D
-    D -- "4. Transmissão Segura (LoRa/Wi-Fi)" --> E
-    E -- "Cria Prompt para Análise Agregada" --> F
-    F -- "Identifica Padrões Globais" --> G
-    G -- "Envia para o Model Manager" --> H
-    H -- "9. Distribuição via OTA para os Nós" --> A
+    A -->|"Processa"| B
+    B -->|"Extrai Embeddings<br/>e Gera Resumo"| C
+    C -->|"{embeddings, summary,<br/>metadata}"| D
+    D -->|"4. Transmissão Segura<br/>(LoRa/Wi-Fi)"| E
+    E -->|"Cria Prompt para<br/>Análise Agregada"| F
+    F -->|"Identifica<br/>Padrões Globais"| G
+    G -->|"Envia para o<br/>Model Manager"| H
+    H -->|"9. Distribuição via<br/>OTA para os Nós"| A
 
-    classDef edge fill:#cce5ff,stroke:#333;
-    class A,B,C,D edge;
-    classDef cloud fill:#fff2cc,stroke:#333;
-    class E,F,G,H cloud;
+    %% Styling
+    classDef edge fill:#cce5ff,stroke:#0066cc,stroke-width:2px
+    classDef cloud fill:#fff2cc,stroke:#ff9900,stroke-width:2px
+    classDef subgraphStyle fill:#f9f9f9,stroke:#333,stroke-width:2px
+    
+    class A,B,C,D edge
+    class E,F,G,H cloud
 ```
 
 -----
