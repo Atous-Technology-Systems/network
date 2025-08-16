@@ -19,17 +19,10 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
 from .input_validator import validator, ValidationResult, validate_request_data
-from .security_presets import get_security_preset, SecurityPreset
+from .config import RateLimitConfig, SecurityPreset
+from .security_presets import get_security_preset
 
 logger = logging.getLogger(__name__)
-
-@dataclass
-class RateLimitConfig:
-    """Configuration for rate limiting"""
-    requests_per_minute: int = 60
-    requests_per_hour: int = 1000
-    burst_limit: int = 10
-    block_duration_minutes: int = 15
 
 @dataclass
 class ClientInfo:
