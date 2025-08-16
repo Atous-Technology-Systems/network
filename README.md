@@ -248,33 +248,43 @@ graph TD
 
 #### **1. Instalação**
 
+#### 1. Clone o repositório
+
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/devrodts/Atous-Sec-Network.git
 cd Atous-Sec-Network
+```
 
-# 2. Crie e ative o ambiente virtual
-# No Windows
+#### 2. Crie e ative o ambiente virtual
+
+#### No Windows
+
+```bash
 python -m venv venv
 .\\venv\\Scripts\\Activate.ps1
+```
 
-# No Linux/macOS
+#### No Linux/macOS
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-# 3. Instale as dependências
+#### 3. Instale as dependências
+bash```
 pip install -r requirements.txt
 ```
 
 #### **2. Verificação da Instalação**
-
 Verifique se tudo está configurado corretamente:
 
 ##### Verifique problemas de importação
 ```bash
 python debug_import.py
 ```
-# Verifique o status da aplicação
+
+#### Verifique o status da aplicação
+
 ```bash
 python start_app.py --status
 ```
