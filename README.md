@@ -1,21 +1,21 @@
-# ATous Secure Network 🛡️
+# Matrix Network 
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
 📋 [Project Status](docs/test_summary_report.md) | 📦 [Requirements](requirements.txt) | 📄 [License](LICENSE) | 🧪 [Testing Guide](tests/TESTING_APPROACH.md) | 🔌 [API Contracts](docs/api-contracts.md) | 📊 [Security Reports](docs/test_summary_report.md)
 
-## 🎯 **Status Atual do Sistema**
+##  **Status Atual do Sistema**
 
-🟢 **SISTEMA COMPLETAMENTE TESTADO E VALIDADO**
+ **SISTEMA COMPLETAMENTE TESTADO E VALIDADO**
 
-- ✅ **Testes abrangentes aprovados** — veja `docs/test_summary_report.md`
-- 🌐 **API Web FastAPI** operacional na porta 8000
-- 📊 **Health checks** funcionais para todos os subsistemas
-- 📖 **Documentação Swagger** disponível em `/docs`
-- 🔒 **Sistemas de Segurança** (ABISS & NNIS) validados
-- 🌐 **Sistemas de Rede** (LoRa & P2P) operacionais
-- 🧠 **Core Systems** (Model Manager & Logging) configurados
-- 🤖 **ML Integration** (Pipeline LLM-SLM) funcional
+-  **Testes abrangentes aprovados** — veja `docs/test_summary_report.md`
+-  **API Web FastAPI** operacional na porta 8000
+-  **Health checks** funcionais para todos os subsistemas
+-  **Documentação Swagger** disponível em `/docs`
+-  **Sistemas de Segurança** (ABISS & NNIS) validados
+-  **Sistemas de Rede** (LoRa & P2P) operacionais
+-  **Core Systems** (Model Manager & Logging) configurados
+-  **ML Integration** (Pipeline LLM-SLM) funcional
 
 -----
 
@@ -23,14 +23,14 @@
 
 O **Atous Secure Network** é um framework de última geração que redefine a segurança e a comunicação em redes distribuídas. Projetado com uma abordagem TDD (Test-Driven Development), o sistema integra seis subsistemas sinérgicos para criar uma malha de dispositivos IoT que é:
 
-  - 🧠 **Inteligente**: Utiliza IA e Aprendizado Federado para aprender e se adaptar a novas ameaças.
-  - 🛡️ **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
-  - 🔗 **Resiliente**: Garante operação contínua com mecanismos de auto-recuperação (self-healing) em redes P2P.
-  - ⚡ **Eficiente**: Otimiza dinamicamente a comunicação sem fio (LoRa) para o equilíbrio ideal entre performance e consumo de energia.
+  -  **Inteligente**: Utiliza IA e Aprendizado Federado para aprender e se adaptar a novas ameaças.
+  - 🛡 **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
+  -  **Resiliente**: Garante operação contínua com mecanismos de auto-recuperação (self-healing) em redes P2P.
+  -  **Eficiente**: Otimiza dinamicamente a comunicação sem fio (LoRa) para o equilíbrio ideal entre performance e consumo de energia.
 
 Este projeto não é apenas uma solução de segurança; é uma base para construir aplicações de IoT robustas, autônomas e preparadas para o futuro.
 
-### ✨ **Principais Funcionalidades**
+### **Principais Funcionalidades**
 
 | Funcionalidade | Descrição |
 | :--- | :--- |
@@ -41,7 +41,7 @@ Este projeto não é apenas uma solução de segurança; é uma base para constr
 | **Pipeline Cognitivo (LLM Integration)** | Uma ponte inovadora que permite que modelos de linguagem pequenos (SLM) nos dispositivos enviem "contextos" para um modelo grande (LLM) central, aprimorando a inteligência da rede sem expor dados brutos. |
 | **Simulação de Hardware** | Suporte completo a mocks e stubs que permitem o desenvolvimento e teste de todo o sistema em ambientes sem hardware físico (Windows/Linux). |
 
-### 💡 **Potencial de Mercado**
+### **Potencial de Mercado**
 
 O Atous Secure Network é ideal para setores críticos que demandam alta segurança, resiliência e inteligência:
 
@@ -53,7 +53,7 @@ O Atous Secure Network é ideal para setores críticos que demandam alta seguran
 
 -----
 
-### 🏗️ **Arquitetura e Diagramas do Sistema**
+###  **Arquitetura e Diagramas do Sistema**
 
 O sistema é construído sobre seis pilares que interagem para entregar uma solução completa e robusta.
 
@@ -283,33 +283,47 @@ python start_app.py --status
 
 O ATous Secure Network oferece diferentes modos de execução:
 
-##### **🧪 Modo de Teste (Import Test)**
+##### ** Modo de Teste (Import Test)**
+
+#### Teste rápido de importação - NÃO inicia servidor
 ```bash
-# Teste rápido de importação - NÃO inicia servidor
 python start_app.py --lite
 ```
 *Este comando apenas testa se os módulos podem ser importados e sai imediatamente.*
 
-##### **🎯 Modo Demonstração (Demo Mode)**
+##### ** Modo Demonstração (Demo Mode)**
+
+#### Demonstração dos sistemas - NÃO inicia servidor web
 ```bash
-# Demonstração dos sistemas - NÃO inicia servidor web
 python start_app.py --full
-# ou
+```
+
+#### ou
+```bash
 python -m atous_sec_network
 ```
-*Este comando inicializa todos os sistemas, mostra o status e sai. Ideal para verificar se tudo está funcionando.*
 
-##### **🌐 Modo Servidor Web (Production Mode)**
-```bash
-# INICIA o servidor web FastAPI com todos os endpoints
-python start_server.py
-
-# Ou com opções personalizadas
-python start_server.py --host 0.0.0.0 --port 8000 --reload
-
-# Ou usando uvicorn diretamente
+#### Ou usando uvicorn diretamente
+bash```
 python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --reload
 ```
+
+*Este comando inicializa todos os sistemas, mostra o status e sai. Ideal para verificar se tudo está funcionando.*
+
+##### ** Modo Servidor Web (Production Mode)**
+
+# INICIA o servidor web FastAPI com todos os endpoints
+```bash
+python start_server.py
+
+
+```
+#### Ou com opções personalizadas
+```bash
+python start_server.py --host 0.0.0.0 --port 8000 --reload
+```
+#### Ou usando uvicorn diretamente
+
 
 **📡 Após iniciar o servidor, acesse:**
 - **API Principal:** http://localhost:8000
