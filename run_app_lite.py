@@ -71,7 +71,7 @@ def main():
         print(f"\nError during lightweight test: {e}")
         print("\nTroubleshooting:")
         print("   1. Check dependencies: pip install -r requirements.txt")
-        print("   2. Run debug script: python scripts/debug_import.py")
+        print("   2. Run debug script: python debug_import.py")
         print("   3. Check virtual environment activation")
         return 1
 

@@ -1,0 +1,212 @@
+# Security Presets Configuration for ATous Secure Network
+# This file defines the security presets that can be applied to the system
+
+presets:
+  development:
+    name: "Development"
+    description: "Permissive security for testing and debugging"
+    rate_limiting:
+      requests_per_minute: 120
+      requests_per_hour: 5000
+      burst_limit: 20
+      block_duration_minutes: 5
+    ddos_protection:
+      max_connections_per_ip: 100
+      connection_timeout_seconds: 2
+    input_validation:
+      enable_strict_validation: false
+      block_suspicious_patterns: false
+      max_query_params: 50
+      max_header_size_bytes: 8192
+    auto_blocking:
+      malicious_threshold: 10
+      suspicious_threshold: 20
+      block_duration_hours: 1
+    security_headers:
+      strict: false
+      enable_csp: false
+      enable_hsts: false
+    excluded_paths:
+      - "/health"
+      - "/docs"
+      - "/redoc"
+      - "/openapi.json"
+      - "/"
+      - "/api/crypto/encrypt"
+      - "/api/security/encrypt"
+      - "/encrypt"
+      - "/api/info"
+      - "/api/security/status"
+      - "/api/metrics"
+
+  staging:
+    name: "Staging"
+    description: "Balanced security for pre-production testing"
+    rate_limiting:
+      requests_per_minute: 60
+      requests_per_hour: 2000
+      burst_limit: 10
+      block_duration_minutes: 15
+    ddos_protection:
+      max_connections_per_ip: 50
+      connection_timeout_seconds: 1
+    input_validation:
+      enable_strict_validation: true
+      block_suspicious_patterns: true
+      max_query_params: 25
+      max_header_size_bytes: 4096
+    auto_blocking:
+      malicious_threshold: 5
+      suspicious_threshold: 10
+      block_duration_hours: 2
+    security_headers:
+      strict: true
+      enable_csp: true
+      enable_hsts: true
+    excluded_paths:
+      - "/health"
+      - "/docs"
+      - "/redoc"
+      - "/openapi.json"
+      - "/"
+      - "/api/info"
+      - "/api/security/status"
+      - "/api/metrics"
+
+  production:
+    name: "Production"
+    description: "Maximum security and protection"
+    rate_limiting:
+      requests_per_minute: 30
+      requests_per_hour: 1000
+      burst_limit: 5
+      block_duration_minutes: 30
+    ddos_protection:
+      max_connections_per_ip: 25
+      connection_timeout_seconds: 1
+    input_validation:
+      enable_strict_validation: true
+      block_suspicious_patterns: true
+      max_query_params: 15
+      max_header_size_bytes: 2048
+    auto_blocking:
+      malicious_threshold: 3
+      suspicious_threshold: 5
+      block_duration_hours: 6
+    security_headers:
+      strict: true
+      enable_csp: true
+      enable_hsts: true
+    excluded_paths:
+      - "/health"
+      - "/api/info"
+      - "/api/security/status"
+      - "/api/metrics"
+
+  security_test:
+    name: "Security Testing"
+    description: "Aggressive protection for penetration testing"
+    rate_limiting:
+      requests_per_minute: 10
+      requests_per_hour: 100
+      burst_limit: 2
+      block_duration_minutes: 60
+    ddos_protection:
+      max_connections_per_ip: 10
+      connection_timeout_seconds: 1
+    input_validation:
+      enable_strict_validation: true
+      block_suspicious_patterns: true
+      max_query_params: 10
+      max_header_size_bytes: 1024
+    auto_blocking:
+      malicious_threshold: 1
+      suspicious_threshold: 2
+      block_duration_hours: 24
+    security_headers:
+      strict: true
+      enable_csp: true
+      enable_hsts: true
+    excluded_paths:
+      - "/health"
+
+# Environment-specific overrides
+environments:
+  local:
+    default_preset: "development"
+    allow_preset_changes: true
+    log_level: "DEBUG"
+  
+  staging:
+    default_preset: "staging"
+    allow_preset_changes: true
+    log_level: "INFO"
+  
+  production:
+    default_preset: "production"
+    allow_preset_changes: false  # Require manual intervention
+    log_level: "WARNING"
+  
+  security_testing:
+    default_preset: "security_test"
+    allow_preset_changes: true
+    log_level: "DEBUG"
+
+# Security monitoring configuration
+monitoring:
+  enable_audit_log: true
+  log_security_events: true
+  alert_on_blocked_ips: true
+  alert_on_rate_limit_exceeded: true
+  alert_on_malicious_requests: true
+  
+  # Metrics collection
+  collect_metrics: true
+  metrics_retention_days: 30
+  
+  # Reporting
+  generate_security_reports: true
+  report_frequency: "daily"
+  report_recipients: []
+
+# Integration settings
+integrations:
+  # External security services
+  enable_external_blocklists: false
+  external_blocklist_urls: []
+  
+  # SIEM integration
+  enable_siem_integration: false
+  siem_endpoint: ""
+  siem_api_key: ""
+  
+  # Notification services
+  enable_notifications: false
+  notification_webhook: ""
+  notification_email: ""
+
+# Custom rules and patterns
+custom_rules:
+  # Additional malicious patterns to detect
+  malicious_patterns:
+    - "script.*alert"
+    - "javascript:"
+    - "data:text/html"
+    - "vbscript:"
+  
+  # Suspicious user agents
+  suspicious_user_agents:
+    - "sqlmap"
+    - "nikto"
+    - "nmap"
+    - "wget"
+    - "curl"
+  
+  # Blocked file extensions
+  blocked_extensions:
+    - ".php"
+    - ".asp"
+    - ".jsp"
+    - ".exe"
+    - ".bat"
+    - ".sh"

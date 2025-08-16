@@ -1,0 +1,29 @@
+# Minimal server-only requirements for Control Plane (no heavy ML deps)
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+gunicorn==21.2.0
+
+# Core
+numpy>=1.21.0
+requests>=2.26.0
+httpx==0.28.1
+psutil==7.0.0
+prometheus-client>=0.11.0
+pydantic>=1.8.0
+msgpack>=1.0.0
+
+# Security
+cryptography>=3.4.0
+pycryptodome>=3.10.0
+certifi>=2021.5.30
+PyJWT>=2.4.0
+bcrypt>=3.2.0
+
+# Async / Web
+aiohttp>=3.8.0
+websockets>=10.0
+python-multipart==0.0.20
+
+# Misc
+setuptools>=80.0.0
+

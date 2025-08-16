@@ -2,13 +2,13 @@
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
-📋 [Project Status](PROJECT_STATUS.md) | 📦 [Requirements](requirements.txt) | 📄 [License](LICENSE) | 🧪 [Testing Guide](tests/TESTING_APPROACH.md) | 🔌 [API Contracts](api-contracts.md) | 📊 [Security Reports](reports/)
+📋 [Project Status](docs/test_summary_report.md) | 📦 [Requirements](requirements.txt) | 📄 [License](LICENSE) | 🧪 [Testing Guide](tests/TESTING_APPROACH.md) | 🔌 [API Contracts](docs/api-contracts.md) | 📊 [Security Reports](docs/test_summary_report.md)
 
 ## 🎯 **Status Atual do Sistema**
 
-🟢 **SISTEMA COMPLETAMENTE TESTADO E VALIDADO - 99.7% OPERACIONAL**
+🟢 **SISTEMA COMPLETAMENTE TESTADO E VALIDADO**
 
-- ✅ **354 testes aprovados** de 355 (99.7% de sucesso)
+- ✅ **Testes abrangentes aprovados** — veja `docs/test_summary_report.md`
 - 🌐 **API Web FastAPI** operacional na porta 8000
 - 📊 **Health checks** funcionais para todos os subsistemas
 - 📖 **Documentação Swagger** disponível em `/docs`
@@ -263,10 +263,6 @@ python3 -m venv venv
 source venv/bin/activate
 
 # 3. Instale as dependências
-# Para desenvolvimento em Windows (inclui mocks)
-pip install -r requirements-dev-windows.txt
-
-# Para produção ou Linux/Raspberry Pi
 pip install -r requirements.txt
 ```
 
@@ -320,6 +316,12 @@ python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --
 - **Health Check:** http://localhost:8000/health
 - **Status de Segurança:** http://localhost:8000/api/security/status
 - **Métricas:** http://localhost:8000/api/metrics
+
+### 🧭 Produção
+
+- Docker: veja `docs/deployment/README.md` para build e execução com `docker compose` (Nginx + Gunicorn/Uvicorn)
+- Variáveis de ambiente essenciais: `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `ADMIN_ENABLED`, `ADMIN_AUTH_ENABLED`, `ADMIN_API_KEY`, `RATE_LIMIT_*`
+- Nginx: arquivos em `deploy/nginx/` (inclui exemplo com TLS)
 
 #### **4. Executando os Testes**
 
@@ -400,10 +402,61 @@ Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS**
 - ✅ Criptografia e autenticação
 - ✅ Rate limiting e proteção DDoS
 
+
+### 🛠️ **Admin (MVP)**
+
+- **UI**: acesse `http://localhost:8000/admin` (com o servidor ativo)
+- **APIs**: `GET /v1/admin/overview`, `GET/POST /v1/admin/events`
+
+Seed rápido para demonstração:
+
+```bash
+# 1) Inicie o servidor (terminal 1)
+python start_server.py
+
+# 2) Popule dados de demo (terminal 2)
+python scripts/seed_admin_demo.py --base-url http://localhost:8000 \
+  --agent-id agt-demo --service-name api-service --port 8000
+```
+
+Após o seed, a página `/admin` mostrará 1 agente em discovery/relay e eventos registrados. Os eventos também são persistidos em `logs/admin_events.ndjson`.
+
+### ✅ Testar funcionalidades (local)
+
+No Windows PowerShell (use `$env:` para variáveis de ambiente):
+
+```powershell
+# 1) Inicie o servidor com auth de admin simples
+$env:ALLOWED_HOSTS='localhost,127.0.0.1'; `
+$env:CORS_ALLOWED_ORIGINS='http://localhost'; `
+$env:ADMIN_ENABLED='true'; `
+$env:ADMIN_AUTH_ENABLED='true'; `
+$env:ADMIN_API_KEY='dev-admin'; `
+python -m uvicorn atous_sec_network.api.server:app --host 127.0.0.1 --port 8000
+
+# 2) Em outro terminal, popule dados de demo
+python scripts/seed_admin_demo.py --base-url http://127.0.0.1:8000 `
+  --agent-id agt-demo --service-name api-service --port 8000
+
+# 3) Verifique endpoints (use curl.exe no Windows)
+curl.exe -sS http://127.0.0.1:8000/health
+curl.exe -sS -H "X-Admin-Api-Key: dev-admin" http://127.0.0.1:8000/v1/admin/overview
+curl.exe -sS "http://127.0.0.1:8000/v1/discovery/services?name=api-service"
+curl.exe -sS "http://127.0.0.1:8000/v1/discovery/resolve?name=api-service&pref=local,lan,wan"
+
+# 4) Teste Relay (PowerShell tem cotações estritas; use Python inline)
+python -c "import requests; base='http://127.0.0.1:8000'; print('send:', requests.post(base+'/v1/relay/send', json={'from':'agt-demo','to':'agt-demo','payload':{'msg':'hello'}}).status_code); print('poll:', requests.get(base+'/v1/relay/poll', params={'agent_id':'agt-demo'}).json())"
+```
+
+Observações:
+- Evite `set VAR &&` no PowerShell; use `$env:VAR='valor'`.
+- Para chamadas Admin, inclua o header `X-Admin-Api-Key`.
+- O middleware de segurança pode bloquear cargas malformadas; prefira o script de seed ou `requests` em Python para JSON correto.
+
 ### 📚 **Documentação Completa**
 
 #### 🚨 **IMPORTANTE - Leia Primeiro**
-- 🚀 **[Guia de Inicialização](docs/STARTUP_GUIDE.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
+- 🚀 **[Guia de Inicialização](docs/getting-started/README.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
 
 #### Links Rápidos
 - 📖 **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
@@ -412,14 +465,15 @@ Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS**
 - 📊 **[Status do Projeto](PROJECT_STATUS.md)** - Status atual de desenvolvimento e resultados de testes
 - 📋 **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
 - 🧪 **[Guia de Testes](tests/TESTING_APPROACH.md)** - Documentação abrangente de testes
+ - 🌐 **[Mapa de Endpoints](docs/technical/ENDPOINTS_MAP.md)** - Endpoints REST e WebSocket consolidados
 
 #### Recursos Adicionais
 Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento, consulte a pasta `/docs`:
 
-  - [**Guia de Iniciação**](https://www.google.com/search?q=./docs/getting-started/README.md)
-  - [**Arquitetura do Sistema**](https://www.google.com/search?q=./docs/architecture/README.md)
-  - [**Documentação da API**](https://www.google.com/search?q=./docs/technical/API_DOCUMENTATION.md)
-  - [**Guia de Implantação (Deployment)**](https://www.google.com/search?q=./docs/deployment/README.md)
+  - [**Guia de Iniciação**](docs/getting-started/README.md)
+  - [**Arquitetura do Sistema**](docs/architecture/README.md)
+  - [**Documentação da API**](docs/technical/API_DOCUMENTATION.md)
+  - [**Guia de Implantação (Deployment)**](docs/deployment/README.md)
   - [Requisitos](requirements.txt) - Dependências Python
   - [Licença](LICENSE) - Licença GNU General Public License v3.0
   - [Documentação de Arquitetura](docs/architecture/) - Design e arquitetura do sistema

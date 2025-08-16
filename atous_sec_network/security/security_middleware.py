@@ -19,6 +19,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
 from .input_validator import validator, ValidationResult, validate_request_data
+from .security_presets import get_security_preset, SecurityPreset
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
         app: ASGIApp,
+        security_preset: Optional[str] = None,
         rate_limit_config: Optional[RateLimitConfig] = None,
         enable_input_validation: bool = True,
         enable_rate_limiting: bool = True,
@@ -56,13 +58,46 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         excluded_paths: Optional[List[str]] = None
     ):
         super().__init__(app)
-        self.rate_limit_config = rate_limit_config or RateLimitConfig()
-        self.enable_input_validation = enable_input_validation
-        self.enable_rate_limiting = enable_rate_limiting
-        self.enable_ddos_protection = enable_ddos_protection
-        self.max_request_size = max_request_size
+        
+        # Apply security preset if specified
+        if security_preset:
+            preset = get_security_preset(security_preset)
+            self.rate_limit_config = preset.rate_limit_config
+            self.enable_input_validation = preset.enable_input_validation
+            self.enable_rate_limiting = enable_rate_limiting  # Can still override
+            self.enable_ddos_protection = enable_ddos_protection  # Can still override
+            self.max_request_size = preset.max_request_size_mb * 1024 * 1024
+            self.excluded_paths = preset.excluded_paths
+            self.max_connections_per_ip = preset.max_connections_per_ip
+            self.strict_validation = preset.strict_validation
+            self.block_suspicious_patterns = preset.block_suspicious_patterns
+            self.auto_block_malicious_threshold = preset.auto_block_malicious_threshold
+            self.auto_block_suspicious_threshold = preset.auto_block_suspicious_threshold
+            self.block_duration_hours = preset.block_duration_hours
+            self.strict_security_headers = preset.strict_security_headers
+            self.enable_csp = preset.enable_csp
+            self.enable_hsts = preset.enable_hsts
+            logger.info(f"Security middleware initialized with preset: {preset.name} - {preset.description}")
+        else:
+            # Use default configuration
+            self.rate_limit_config = rate_limit_config or RateLimitConfig()
+            self.enable_input_validation = enable_input_validation
+            self.enable_rate_limiting = enable_rate_limiting
+            self.enable_ddos_protection = enable_ddos_protection
+            self.max_request_size = max_request_size
+            self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt", "/api/info", "/api/security/status", "/api/metrics"]
+            self.max_connections_per_ip = 50
+            self.strict_validation = False
+            self.block_suspicious_patterns = False
+            self.auto_block_malicious_threshold = 5
+            self.auto_block_suspicious_threshold = 10
+            self.block_duration_hours = 1
+            self.strict_security_headers = False
+            self.enable_csp = False
+            self.enable_hsts = False
+            logger.info("Security middleware initialized with default configuration")
+        
         self.blocked_ips = set(blocked_ips or [])
-        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt", "/api/info", "/api/security/status", "/api/metrics"]
         
         # Client tracking for rate limiting
         self.clients: Dict[str, ClientInfo] = {}
@@ -71,12 +106,9 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         
         # DDoS protection
         self.connection_counts: Dict[str, int] = defaultdict(int)
-        self.max_connections_per_ip = 50
         
         # Request size tracking
         self.large_request_threshold = 100 * 1024  # 100KB
-        
-        logger.info("Security middleware initialized with comprehensive protection")
     
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """Main middleware dispatch method"""
@@ -278,6 +310,18 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                 )
             
             # Validate query parameters
+            if len(request.query_params) > getattr(self, 'max_query_params', 50):
+                logger.warning(f"Too many query parameters from {self._get_client_ip(request)}: {len(request.query_params)}")
+                await self._update_client_stats(self._get_client_ip(request), 'suspicious')
+                if self.block_suspicious_patterns:
+                    return JSONResponse(
+                        status_code=400,
+                        content={
+                            "error": "Too many query parameters",
+                            "code": "TOO_MANY_QUERY_PARAMS"
+                        }
+                    )
+            
             for key, value in request.query_params.items():
                 param_validation = validator.validate_input(f"{key}={value}", 'url')
                 if not param_validation.get('valid', True):
@@ -295,6 +339,19 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
             # Validate headers
             for header_name, header_value in request.headers.items():
                 if header_name.lower() not in ['host', 'user-agent', 'accept', 'content-type', 'content-length', 'authorization']:
+                    # Check header size limit
+                    if len(header_value) > getattr(self, 'max_header_size', 8192):
+                        logger.warning(f"Header too large from {self._get_client_ip(request)}: {header_name} ({len(header_value)} bytes)")
+                        await self._update_client_stats(self._get_client_ip(request), 'suspicious')
+                        if self.block_suspicious_patterns:
+                            return JSONResponse(
+                                status_code=400,
+                                content={
+                                    "error": "Header too large",
+                                    "code": "HEADER_TOO_LARGE"
+                                }
+                            )
+                    
                     header_validation = validator.validate_input(header_value, 'general')
                     if not header_validation.get('valid', True):
                         logger.warning(f"Malicious header from {self._get_client_ip(request)}: {header_name}={header_value}")
@@ -393,19 +450,31 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
             client.suspicious_requests += 1
         
         # Auto-block clients with too many malicious requests
-        if client.malicious_requests >= 5:
-            client.blocked_until = datetime.now() + timedelta(hours=1)
-            logger.warning(f"Auto-blocking client {client_ip} due to {client.malicious_requests} malicious requests")
+        if client.malicious_requests >= self.auto_block_malicious_threshold:
+            client.blocked_until = datetime.now() + timedelta(hours=self.block_duration_hours)
+            logger.warning(f"Auto-blocking client {client_ip} due to {client.malicious_requests} malicious requests (threshold: {self.auto_block_malicious_threshold})")
+        
+        # Auto-block clients with too many suspicious requests
+        if client.suspicious_requests >= self.auto_block_suspicious_threshold:
+            client.blocked_until = datetime.now() + timedelta(hours=self.block_duration_hours)
+            logger.warning(f"Auto-blocking client {client_ip} due to {client.suspicious_requests} suspicious requests (threshold: {self.auto_block_suspicious_threshold})")
     
     def _add_security_headers(self, response: Response):
         """Add security headers to response"""
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        
+        # Conditional security headers based on preset
+        if self.enable_hsts:
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        
+        if self.enable_csp:
+            response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+        
+        if self.strict_security_headers:
+            response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+            response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     
     async def _cleanup_old_clients(self):
         """Clean up old client data to prevent memory leaks"""

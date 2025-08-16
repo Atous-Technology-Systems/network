@@ -9,7 +9,7 @@ Este diretório contém scripts utilitários para desenvolvimento, teste e manut
 
 **Uso**:
 ```bash
-python scripts/run_app_lite.py
+python run_app_lite.py
 ```
 
 **Funcionalidades**:
@@ -29,7 +29,7 @@ python scripts/run_app_lite.py
 ```
 scripts/
 ├── README.md              # Este arquivo
-├── run_app_lite.py        # Executor leve da aplicação
+├── fix_main_file.py       # Ferramenta de correção do __main__.py
 └── [futuros scripts]      # Scripts adicionais
 ```
 

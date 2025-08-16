@@ -1,0 +1,38 @@
+{
+  "endpoints_tested": [
+    {
+      "endpoint": "/ws",
+      "uri": "ws://127.0.0.1:8000/ws",
+      "status": "success",
+      "response": "{\"status\":\"connected\",\"message\":\"WebSocket connection established\",\"endpoint\":\"/ws\",\"timestamp\":\"2025-08-16T16:41:48.568700+00:00\"}"
+    },
+    {
+      "endpoint": "/api/ws",
+      "uri": "ws://127.0.0.1:8000/api/ws",
+      "status": "success",
+      "response": "{\"status\":\"connected\",\"message\":\"API WebSocket connection established\",\"endpoint\":\"/api/ws\",\"timestamp\":\"2025-08-16T16:41:49.095850+00:00\"}"
+    },
+    {
+      "endpoint": "/websocket",
+      "uri": "ws://127.0.0.1:8000/websocket",
+      "status": "success",
+      "response": "{\"status\":\"connected\",\"message\":\"Generic WebSocket connection established\",\"endpoint\":\"/websocket\",\"timestamp\":\"2025-08-16T16:41:49.614902+00:00\"}"
+    },
+    {
+      "endpoint": "/ws/test_node",
+      "uri": "ws://127.0.0.1:8000/ws/test_node",
+      "status": "success",
+      "response": "{\"status\":\"connected\",\"message\":\"WebSocket connection established\",\"endpoint\":\"/ws/test_node\",\"timestamp\":\"2025-08-16T16:41:50.125818+00:00\"}"
+    }
+  ],
+  "successful_connections": 4,
+  "failed_connections": 0,
+  "errors": [],
+  "test_summary": {
+    "total_endpoints_tested": 4,
+    "successful_connections": 4,
+    "failed_connections": 0,
+    "success_rate": 100.0,
+    "timestamp": "2025-08-16T13:41:50.633706"
+  }
+}

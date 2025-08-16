@@ -60,9 +60,8 @@ Handles all network communication between nodes.
 - Network recovery
 
 #### Main Classes:
-- `LoRaOptimizer`: Optimizes LoRa network communication
-- `P2PRecovery`: Manages network partition detection and recovery
-- `MessageBroker`: Handles message queuing and delivery
+- `LoraAdaptiveEngine`: Optimizes LoRa network communication
+- `ChurnMitigation`: Manages network partition detection and recovery
 
 ### 3. Security Module
 

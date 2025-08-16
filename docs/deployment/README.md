@@ -91,21 +91,39 @@ REDIS_DB=0
 
 ## Docker Deployment
 
-1. Build the Docker image:
+1. Prepare environment:
+   - Copy `deploy/.env.example` to `.env` and adjust values (hosts, CORS, admin keys):
+   ```bash
+   cp deploy/.env.example .env
+   ```
+
+2. Build the Docker image:
    ```bash
    docker build -t atous-network .
    ```
 
-2. Run a container:
+3. Run a container (standalone):
    ```bash
    docker run -d \
      --name atous-node \
      -p 8000:8000 \
      --env-file .env \
-     -v ./models:/app/models \
-     -v ./storage:/app/storage \
+     -v ./logs:/app/logs \
      atous-network
    ```
+
+4. Using docker-compose with Nginx reverse proxy:
+   ```bash
+   docker compose up -d --build
+   ```
+   - App available at http://localhost via Nginx → FastAPI (app listens on 8000)
+   - Adjust `deploy/nginx/nginx.conf` for TLS in production (recommend terminating TLS at Nginx)
+
+### Windows PowerShell tips
+
+- Do not chain env sets with `&&`. Use `$env:VAR='value'` before the command.
+- Use `curl.exe` (not `curl`) to avoid alias issues.
+- For JSON POST, prefer Python `requests` or the provided seed script to avoid quoting/escaping problems in PowerShell.
 
 ## Kubernetes Deployment
 

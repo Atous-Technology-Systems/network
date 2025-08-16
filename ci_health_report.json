@@ -1,0 +1,335 @@
+{
+  "summary": {
+    "total_checks": 17,
+    "passed": 10,
+    "failed": 4,
+    "warnings": 3,
+    "success_rate": 58.8,
+    "total_time_seconds": 0.31,
+    "average_response_time_ms": 15.6
+  },
+  "results": [
+    {
+      "name": "Health Check",
+      "status": "pass",
+      "response_time_ms": 22.5,
+      "details": {
+        "status_code": 200,
+        "content_length": 477,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "477",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "API Info",
+      "status": "pass",
+      "response_time_ms": 13.5,
+      "details": {
+        "status_code": 200,
+        "content_length": 582,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "582",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "Security Status",
+      "status": "pass",
+      "response_time_ms": 16.5,
+      "details": {
+        "status_code": 200,
+        "content_length": 470,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "470",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "System Metrics",
+      "status": "pass",
+      "response_time_ms": 29.4,
+      "details": {
+        "status_code": 200,
+        "content_length": 294,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "294",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "API Docs",
+      "status": "pass",
+      "response_time_ms": 5.3,
+      "details": {
+        "status_code": 200,
+        "content_length": 948,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "948",
+          "content-type": "text/html; charset=utf-8",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "OpenAPI Schema",
+      "status": "pass",
+      "response_time_ms": 13.5,
+      "details": {
+        "status_code": 200,
+        "content_length": 25191,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "25191",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "Crypto Encrypt",
+      "status": "fail",
+      "response_time_ms": 34.6,
+      "details": {
+        "expected_status": 200,
+        "actual_status": 422,
+        "response_text": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"message\"],\"msg\":\"Field required\",\"input\":{\"data\":\"test\",\"key\":\"test\"}}]}"
+      },
+      "error": "Expected 200, got 422"
+    },
+    {
+      "name": "Rate Limit Test",
+      "status": "pass",
+      "response_time_ms": 16.3,
+      "details": {
+        "status_code": 200,
+        "content_length": 477,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "477",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "Rate Limit Test 2",
+      "status": "pass",
+      "response_time_ms": 11.7,
+      "details": {
+        "status_code": 200,
+        "content_length": 477,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "477",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "Rate Limit Test 3",
+      "status": "pass",
+      "response_time_ms": 17.3,
+      "details": {
+        "status_code": 200,
+        "content_length": 477,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "477",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "SQL Injection",
+      "status": "warning",
+      "response_time_ms": 10.4,
+      "details": {
+        "status_code": 200,
+        "content_length": 477,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "477",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": "Malicious input was allowed (dev mode?)"
+    },
+    {
+      "name": "XSS Test",
+      "status": "warning",
+      "response_time_ms": 7.2,
+      "details": {
+        "status_code": 200,
+        "content_length": 477,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "477",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": "Malicious input was allowed (dev mode?)"
+    },
+    {
+      "name": "Path Traversal",
+      "status": "warning",
+      "response_time_ms": 6.4,
+      "details": {
+        "status_code": 200,
+        "content_length": 477,
+        "response_headers": {
+          "date": "Sat, 16 Aug 2025 17:01:59 GMT",
+          "server": "uvicorn",
+          "content-length": "477",
+          "content-type": "application/json",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "x-xss-protection": "1; mode=block",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": "geolocation=(), microphone=(), camera=()"
+        }
+      },
+      "error": "Malicious input was allowed (dev mode?)"
+    },
+    {
+      "name": "Main WebSocket",
+      "status": "fail",
+      "response_time_ms": 33.8,
+      "details": {},
+      "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
+    },
+    {
+      "name": "API WebSocket",
+      "status": "fail",
+      "response_time_ms": 0.0,
+      "details": {},
+      "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
+    },
+    {
+      "name": "Generic WebSocket",
+      "status": "fail",
+      "response_time_ms": 0.0,
+      "details": {},
+      "error": "BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'"
+    },
+    {
+      "name": "Performance Summary",
+      "status": "pass",
+      "response_time_ms": 10.0,
+      "details": {
+        "requests": 5,
+        "avg_response_time_ms": 10.0,
+        "min_response_time_ms": 5.9,
+        "max_response_time_ms": 16.5
+      },
+      "error": null
+    }
+  ],
+  "timestamp": "2025-08-16T14:02:00.507983",
+  "base_url": "http://127.0.0.1:8000"
+}

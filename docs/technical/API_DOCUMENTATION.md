@@ -55,10 +55,15 @@ ATous Secure Network provides a comprehensive set of APIs for each subsystem. Th
 
 #### Real-time Communication
 - **URL**: `WS /ws`
-- **Description**: WebSocket para comunicação em tempo real
+- **URL**: `WS /api/ws`
+- **URL**: `WS /websocket`
+- **URL**: `WS /ws/test_node`
+- **Description**: WebSockets para comunicação em tempo real e testes
 - **Features**: Conexão bidirecional, notificações de eventos de segurança
 
-## Security APIs
+## Security APIs (nota de estado)
+
+Algumas APIs de segurança estão disponíveis como endpoints de status e criptografia. Os contratos detalhados de ABISS/NNIS e LLM/policy/discovery/relay estão descritos em `docs/api-contracts.md` e alguns ainda não possuem endpoints HTTP dedicados; usam serviços in-memory no MVP. Para uma visão operacional completa das rotas, consulte o "Mapa de Endpoints": `docs/technical/ENDPOINTS_MAP.md`.
 
 ### ABISS System
 

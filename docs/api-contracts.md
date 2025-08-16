@@ -3,6 +3,8 @@
 > Criado em: 2025-07-30
 >
 > Este documento define os contratos de API para os diferentes componentes do sistema Atous Secure Network.
+>
+> Estado: MVP. Nem todos os contratos possuem endpoints HTTP implementados ainda. Endpoints efetivamente expostos no servidor estão descritos em `docs/technical/API_DOCUMENTATION.md` e no código `atous_sec_network/api/server.py` e `atous_sec_network/api/routes/*`.
 
 ## Sumário
 
@@ -19,7 +21,7 @@
 
 ### 1.1 Verificação de Versão
 
-**Endpoint:** `/model-version`
+**Endpoint (planejado):** `/model-version`
 
 **Método:** GET
 
@@ -57,7 +59,7 @@
 
 ### 1.2 Obtenção de Patch de Modelo
 
-**Endpoint:** `/model-diff/{from_version}/{to_version}`
+**Endpoint (planejado):** `/model-diff/{from_version}/{to_version}`
 
 **Método:** GET
 
@@ -90,7 +92,7 @@
 
 ### 1.3 Obtenção de Modelo Completo
 
-**Endpoint:** `/model-full/{version}`
+**Endpoint (planejado):** `/model-full/{version}`
 
 **Método:** GET
 
@@ -126,7 +128,7 @@
 
 ### 2.1 Submissão de Dados Comportamentais
 
-**Endpoint:** `/abiss/behavior`
+**Endpoint (planejado):** `/abiss/behavior`
 
 **Método:** POST
 
@@ -190,7 +192,7 @@
 
 ### 2.2 Consulta de Perfil Comportamental
 
-**Endpoint:** `/abiss/profile/{node_id}`
+**Endpoint (planejado):** `/abiss/profile/{node_id}`
 
 **Método:** GET
 
@@ -241,7 +243,7 @@
 
 ### 3.1 Consulta de Memória Imunológica
 
-**Endpoint:** `/nnis/memory`
+**Endpoint (planejado):** `/nnis/memory`
 
 **Método:** GET
 
@@ -299,7 +301,7 @@
 
 ### 3.2 Ativação de Resposta Imune
 
-**Endpoint:** `/nnis/response`
+**Endpoint (planejado):** `/nnis/response`
 
 **Método:** POST
 
@@ -368,7 +370,7 @@
 
 ### 4.1 Obtenção de Parâmetros Otimizados
 
-**Endpoint:** `/lora/optimize`
+**Endpoint (planejado):** `/lora/optimize`
 
 **Método:** POST
 
@@ -439,7 +441,7 @@
 
 ### 4.2 Submissão de Métricas de Canal
 
-**Endpoint:** `/lora/metrics`
+**Endpoint (planejado):** `/lora/metrics`
 
 **Método:** POST
 
@@ -499,7 +501,7 @@
 
 ### 5.1 Consulta de Status de Nó
 
-**Endpoint:** `/p2p/node/{node_id}/status`
+**Endpoint (planejado):** `/p2p/node/{node_id}/status`
 
 **Método:** GET
 
@@ -549,7 +551,7 @@
 
 ### 5.2 Inicialização de Recuperação
 
-**Endpoint:** `/p2p/recovery`
+**Endpoint (planejado):** `/p2p/recovery`
 
 **Método:** POST
 
@@ -743,11 +745,11 @@
 
 Todas as APIs requerem autenticação usando um dos seguintes métodos:
 
-1. **Token JWT** - Enviado no header `Authorization: Bearer <token>`
-2. **Certificado mTLS** - Para autenticação mútua entre nós e servidor
-3. **API Key** - Enviada no header `X-API-Key: <api_key>` (apenas para desenvolvimento)
+1. **API Key de Admin** — `X-Admin-Api-Key` (já disponível para rotas Admin quando `ADMIN_AUTH_ENABLED=true`)
+2. **Token JWT** — Planejado
+3. **mTLS** — Planejado para agentes
 
-As chaves JWT têm validade de 1 hora e devem ser renovadas usando o endpoint `/auth/refresh`.
+JWT e fluxo de refresh ainda não estão implementados no servidor.
 
 Todas as comunicações devem ser realizadas via HTTPS (TLS 1.3+) com as seguintes configurações mínimas:
 - Cifras: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256

@@ -1,0 +1,74 @@
+[
+  {
+    "name": "google/gemma-2b",
+    "size": "2B parameters",
+    "downloads": 236135,
+    "likes": 1061
+  },
+  {
+    "name": "google/gemma-2b-it",
+    "size": "2B parameters",
+    "downloads": 231250,
+    "likes": 785
+  },
+  {
+    "name": "google/gemma-7b",
+    "size": "7B parameters",
+    "downloads": 135603,
+    "likes": 3188
+  },
+  {
+    "name": "google/gemma-7b-it",
+    "size": "7B parameters",
+    "downloads": 97781,
+    "likes": 1203
+  },
+  {
+    "name": "google/gemma-1.1-2b-it",
+    "size": "2B parameters",
+    "downloads": 189555,
+    "likes": 165
+  },
+  {
+    "name": "google/gemma-1.1-7b-it",
+    "size": "7B parameters",
+    "downloads": 16185,
+    "likes": 274
+  },
+  {
+    "name": "google/gemma-2-2b",
+    "size": "2B parameters",
+    "downloads": 1122634,
+    "likes": 575
+  },
+  {
+    "name": "google/gemma-2-2b-it",
+    "size": "2B parameters",
+    "downloads": 513041,
+    "likes": 1158
+  },
+  {
+    "name": "google/gemma-2-9b",
+    "size": "9B parameters",
+    "downloads": 80761,
+    "likes": 663
+  },
+  {
+    "name": "google/gemma-2-9b-it",
+    "size": "9B parameters",
+    "downloads": 171972,
+    "likes": 730
+  },
+  {
+    "name": "google/gemma-2-27b",
+    "size": "7B parameters",
+    "downloads": 10904,
+    "likes": 208
+  },
+  {
+    "name": "google/gemma-2-27b-it",
+    "size": "7B parameters",
+    "downloads": 96449,
+    "likes": 548
+  }
+]

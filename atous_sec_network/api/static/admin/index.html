@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ATous Admin Overview</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; color: #222; }
+      header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+      h1 { font-size: 20px; margin: 0; }
+      small { color: #666; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+      .card { border: 1px solid #e2e2e2; border-radius: 8px; padding: 16px; background: #fff; }
+      pre { background: #f7f7f7; padding: 12px; border-radius: 6px; overflow: auto; }
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      th, td { border-bottom: 1px solid #eee; text-align: left; padding: 8px; }
+      th { background: #fafafa; }
+      .muted { color: #777; font-size: 12px; }
+      .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #253; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>ATous Admin</h1>
+      <small class="muted">Overview (MVP) — ready for React integration</small>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Discovery</h2>
+        <div id="discovery-empty" class="muted">No agents registered.</div>
+        <table id="discovery-table" style="display:none">
+          <thead><tr><th>Agent</th><th>Services</th><th>Local</th><th>LAN</th><th>WAN</th></tr></thead>
+          <tbody id="discovery-body"></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Relay</h2>
+        <div id="relay-empty" class="muted">No active agents.</div>
+        <table id="relay-table" style="display:none">
+          <thead><tr><th>Agent</th><th>Queue size</th></tr></thead>
+          <tbody id="relay-body"></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Policies</h2>
+        <div id="policies">Version: <span class="pill" id="policy-version">—</span></div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <h2>Server Metrics</h2>
+      <div id="metrics" class="muted">loading...</div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h2>Raw JSON</h2>
+      <pre id="raw">loading...</pre>
+    </section>
+
+    <script>
+      async function loadOverview() {
+        try {
+          const res = await fetch('/v1/admin/overview');
+          const data = await res.json();
+          document.getElementById('raw').textContent = JSON.stringify(data, null, 2);
+
+          // Policies
+          const pv = (data.policies && data.policies.default_version) || 'unknown';
+          document.getElementById('policy-version').textContent = pv;
+
+          // Metrics
+          const mt = data.system_metrics || {};
+          document.getElementById('metrics').textContent = `cpu: ${mt.cpu_percent||0}% • mem: ${mt.memory_mb||0} MB • threads: ${mt.threads||0}`;
+
+          // Discovery
+          const agents = (data.discovery && data.discovery.agents) || [];
+          const discEmpty = document.getElementById('discovery-empty');
+          const discTable = document.getElementById('discovery-table');
+          const discBody = document.getElementById('discovery-body');
+          discBody.innerHTML = '';
+          if (agents.length === 0) {
+            discEmpty.style.display = 'block';
+            discTable.style.display = 'none';
+          } else {
+            discEmpty.style.display = 'none';
+            discTable.style.display = 'table';
+            for (const a of agents) {
+              const tr = document.createElement('tr');
+              const addresses = a.addresses || {local:[], lan:[], wan:[]};
+              const services = (a.services || []).map(s => s.name).join(', ');
+              tr.innerHTML = `<td>${a.agent_id||'-'}</td>
+                              <td>${services||'-'}</td>
+                              <td>${(addresses.local||[]).join('<br/>')||'-'}</td>
+                              <td>${(addresses.lan||[]).join('<br/>')||'-'}</td>
+                              <td>${(addresses.wan||[]).join('<br/>')||'-'}</td>`;
+              discBody.appendChild(tr);
+            }
+          }
+
+          // Relay
+          const active = (data.relay && data.relay.active_agents) || [];
+          const sizes = (data.relay && data.relay.queue_sizes) || {};
+          const rlEmpty = document.getElementById('relay-empty');
+          const rlTable = document.getElementById('relay-table');
+          const rlBody = document.getElementById('relay-body');
+          rlBody.innerHTML = '';
+          if (active.length === 0) {
+            rlEmpty.style.display = 'block';
+            rlTable.style.display = 'none';
+          } else {
+            rlEmpty.style.display = 'none';
+            rlTable.style.display = 'table';
+            for (const id of active) {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `<td>${id}</td><td>${sizes[id]||0}</td>`;
+              rlBody.appendChild(tr);
+            }
+          }
+        } catch (e) {
+          document.getElementById('raw').textContent = 'Failed to load overview: ' + e;
+        }
+      }
+
+      loadOverview();
+      // Simple auto-refresh for demo
+      setInterval(loadOverview, 5000);
+    </script>
+  </body>
+  </html>
+
+

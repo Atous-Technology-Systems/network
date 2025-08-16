@@ -1,0 +1,17 @@
+[Unit]
+Description=ATous Secure Network API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/atous-sec-network
+EnvironmentFile=/opt/atous-sec-network/.env
+ExecStart=/usr/bin/gunicorn -k uvicorn.workers.UvicornWorker -w 4 atous_sec_network.api.server:app --bind 0.0.0.0:8000 --timeout 60
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

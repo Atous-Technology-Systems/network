@@ -8,11 +8,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import logging
 import time
 import psutil
 import json
+import os
 from collections import defaultdict
 from datetime import datetime, UTC
 from typing import Dict, Any, Optional
@@ -22,6 +24,11 @@ from ..core.logging_config import setup_logging
 from ..security.abiss_system import ABISSSystem
 from ..security.nnis_system import NNISSystem
 from .routes import security
+from .routes import agents
+from .routes import policies
+from .routes import relay
+from .routes import admin
+from .routes import discovery
 
 # Import new security middleware
 from ..security.security_middleware import ComprehensiveSecurityMiddleware, RateLimitConfig
@@ -177,9 +184,38 @@ logger.info("Aplicação FastAPI criada com configurações lazy loading")
 class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
     """Enhanced middleware that integrates ABISS/NNIS with comprehensive security"""
     
-    def __init__(self, app, excluded_paths=None):
+    def __init__(self, app, excluded_paths=None, excluded_prefixes=None):
         super().__init__(app)
-        self.excluded_paths = excluded_paths or ["/health", "/docs", "/redoc", "/openapi.json", "/", "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt", "/api/info", "/api/security/status", "/api/metrics"]
+        self.excluded_paths = excluded_paths or [
+            "/health",
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/",
+            "/api/crypto/encrypt",
+            "/api/security/encrypt",
+            "/encrypt",
+            "/api/info",
+            "/api/security/status",
+            "/api/metrics",
+            "/v1/agents/enroll",
+        ]
+        # Prefixes to exclude (dynamic paths)
+        default_prefixes = [
+            "/v1/agents/",
+            "/v1/policies/",
+            "/v1/relay/",
+            "/v1/discovery/",
+        ]
+        admin_bypass_flag = os.environ.get("ADMIN_BYPASS_SECURITY")
+        app_env = (os.environ.get("APP_ENV", "development") or "").lower()
+        admin_bypass = (
+            (admin_bypass_flag is None and app_env != "production") or
+            (isinstance(admin_bypass_flag, str) and admin_bypass_flag.lower() in {"1", "true", "yes"})
+        )
+        if admin_bypass:
+            default_prefixes.append("/v1/admin/")
+        self.excluded_prefixes = excluded_prefixes or default_prefixes
         self.logger = logging.getLogger(__name__ + ".ABISSNNISSecurityMiddleware")
         # Rate limiting para detecção de brute force - configurações para desenvolvimento
         self.request_counts = defaultdict(list)
@@ -193,8 +229,9 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
         start_time = time.time()
         client_ip = request.client.host if request.client else "unknown"
         
-        # Skip analysis for excluded endpoints
-        if request.url.path in self.excluded_paths:
+        # Skip analysis for excluded endpoints (exact match or known prefixes)
+        path = request.url.path
+        if path in self.excluded_paths or any(path.startswith(p) for p in self.excluded_prefixes):
             return await call_next(request)
         
         # Check if IP is blocked
@@ -425,12 +462,12 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
         
         return False, ""
 
-# Configure comprehensive security middleware with development-friendly settings
+# Configure comprehensive security middleware with env-driven settings
 rate_limit_config = RateLimitConfig(
-    requests_per_minute=300,  # Increased for development/testing
-    requests_per_hour=5000,   # Increased for development/testing
-    burst_limit=50,           # Increased for development/testing
-    block_duration_minutes=1  # Reduced for development/testing
+    requests_per_minute=int(os.environ.get("RATE_LIMIT_RPM", "120")),
+    requests_per_hour=int(os.environ.get("RATE_LIMIT_RPH", "2400")),
+    burst_limit=int(os.environ.get("RATE_LIMIT_BURST", "20")),
+    block_duration_minutes=int(os.environ.get("RATE_LIMIT_BLOCK_MIN", "2"))
 )
 
 # Add comprehensive security middleware (input validation, rate limiting, DDoS protection)
@@ -440,27 +477,49 @@ app.add_middleware(
     enable_input_validation=True,
     enable_rate_limiting=True,
     enable_ddos_protection=True,
-    max_request_size=1024 * 1024,  # 1MB
-    blocked_ips=[]
+    max_request_size=int(os.environ.get("MAX_REQUEST_SIZE_BYTES", str(1024 * 1024))),
+    blocked_ips=[ip.strip() for ip in os.environ.get("BLOCKED_IPS", "").split(",") if ip.strip()]
 )
 
 # Add ABISS/NNIS security middleware
 app.add_middleware(ABISSNNISSecurityMiddleware)
 
-# Middleware de segurança de host
+# Admin API key middleware (optional, env-driven)
+class AdminAuthMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app):
+        super().__init__(app)
+        self.logger = logging.getLogger(__name__ + ".AdminAuthMiddleware")
+
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path or ""
+        admin_auth_enabled = (os.environ.get("ADMIN_AUTH_ENABLED", "false").lower() in {"1", "true", "yes"})
+        if admin_auth_enabled and (path.startswith("/v1/admin/") or path.startswith("/admin")):
+            expected_key = os.environ.get("ADMIN_API_KEY", "")
+            provided = request.headers.get("X-Admin-Api-Key", "")
+            if not expected_key or provided != expected_key:
+                return JSONResponse(status_code=401, content={"error": "Unauthorized admin access"})
+        return await call_next(request)
+
+app.add_middleware(AdminAuthMiddleware)
+
+# Middleware de segurança de host (env-driven)
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["localhost", "127.0.0.1", "*.atous.tech", "testserver"]
+    allowed_hosts=[h.strip() for h in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if h.strip()]
 )
 
-# CORS
+# CORS (env-driven)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8080"],
+    allow_origins=[o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",") if o.strip()],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+
+# Static admin (MVP) — gated by ADMIN_ENABLED
+if os.environ.get("ADMIN_ENABLED", "true").lower() in {"1", "true", "yes"}:
+    app.mount("/admin", StaticFiles(directory="atous_sec_network/api/static/admin", html=True), name="admin")
 
 # Inicializar estado da aplicação
 app.state.start_time = time.time()
@@ -473,6 +532,11 @@ app.state.rate_limit_hits = 0
 
 # Incluir routers
 app.include_router(security.router, prefix="/api/v1", tags=["security"])
+app.include_router(agents.router, tags=["agents"])  # routes define full paths
+app.include_router(policies.router, tags=["policies"])  # routes define full paths
+app.include_router(relay.router, tags=["relay"])  # routes define full paths
+app.include_router(admin.router, tags=["admin"])  # routes define full paths
+app.include_router(discovery.router, tags=["discovery"])  # routes define full paths
 
 # Crypto endpoints
 from ..core.crypto_utils import CryptoUtils
@@ -684,6 +748,15 @@ async def health_check():
                 "timestamp": datetime.now(UTC).isoformat()
             }
         )
+
+
+@app.get("/ready")
+async def ready_check():
+    """Basic readiness endpoint (extend with external deps in future)."""
+    try:
+        return {"status": "ready", "timestamp": datetime.now(UTC).isoformat()}
+    except Exception:
+        raise HTTPException(status_code=503, detail="Not ready")
 
 
 # API v1 endpoints
@@ -1001,7 +1074,7 @@ async def api_info():
             "version": "2.0.0",
             "description": "Advanced security API with ABISS/NNIS integration",
             "author": "ATous Security Team",
-            "license": "MIT"
+            "license": "GPL-3.0-or-later"
         },
         "features": {
             "abiss_system": True,

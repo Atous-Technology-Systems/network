@@ -1,6 +1,6 @@
 {
   "test_type": "API Endpoints Test",
-  "timestamp": "2025-08-15T14:43:50.310992",
+  "timestamp": "2025-08-15T23:18:14.423985",
   "summary": {
     "total_endpoints": 4,
     "successful_endpoints": 0,
@@ -15,7 +15,7 @@
       "response_time": 0,
       "success": false,
       "error": "Connection refused",
-      "timestamp": "2025-08-15T14:43:38.130704"
+      "timestamp": "2025-08-15T23:18:02.146751"
     },
     {
       "endpoint": "Security Status",
@@ -24,7 +24,7 @@
       "response_time": 0,
       "success": false,
       "error": "Connection refused",
-      "timestamp": "2025-08-15T14:43:42.175439"
+      "timestamp": "2025-08-15T23:18:06.230155"
     },
     {
       "endpoint": "Root Endpoint",
@@ -33,7 +33,7 @@
       "response_time": 0,
       "success": false,
       "error": "Connection refused",
-      "timestamp": "2025-08-15T14:43:46.247465"
+      "timestamp": "2025-08-15T23:18:10.325504"
     },
     {
       "endpoint": "Docs",
@@ -42,7 +42,7 @@
       "response_time": 0,
       "success": false,
       "error": "Connection refused",
-      "timestamp": "2025-08-15T14:43:50.310992"
+      "timestamp": "2025-08-15T23:18:14.423985"
     }
   ]
 }
