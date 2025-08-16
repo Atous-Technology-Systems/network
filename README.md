@@ -312,18 +312,16 @@ python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --
 
 ##### ** Modo Servidor Web (Production Mode)**
 
-# INICIA o servidor web FastAPI com todos os endpoints
+
+#### INICIA o servidor web FastAPI com todos os endpoints
 ```bash
 python start_server.py
-
-
 ```
+
 #### Ou com opções personalizadas
 ```bash
 python start_server.py --host 0.0.0.0 --port 8000 --reload
 ```
-#### Ou usando uvicorn diretamente
-
 
 **📡 Após iniciar o servidor, acesse:**
 - **API Principal:** http://localhost:8000
@@ -342,18 +340,18 @@ python start_server.py --host 0.0.0.0 --port 8000 --reload
 
 Para garantir que tudo está funcionando corretamente:
 
+#### Execute todos os testes
 ```bash
-# Execute todos os testes
 python start_app.py --test
-# ou
-python -m pytest tests/ -v
+```
 
 # Testes específicos
 python -m pytest tests/unit/ -v          # Testes unitários
 python -m pytest tests/integration/ -v   # Testes de integração
 python -m pytest tests/security/ -v      # Testes de segurança
 
-# Gere um relatório de cobertura de código
+#### Gere um relatório de cobertura de código
+```bash
 python -m pytest --cov=atous_sec_network --cov-report=html
 ```
 
