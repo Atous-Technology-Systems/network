@@ -1,150 +1,207 @@
-# ATous Secure Network API Collection - Resumo das Atualizações
+# 📚 Resumo da Atualização da Collection do Postman
 
-## 📋 Visão Geral
-A collection do Postman foi completamente atualizada e expandida para incluir todos os endpoints disponíveis na aplicação ATous Secure Network, com documentação detalhada, exemplos de payloads e testes automatizados.
+## 🚀 Visão Geral
 
-## 🚀 Principais Melhorias
+A collection do Postman foi completamente atualizada para incluir todos os endpoints implementados no sistema ATous Secure Network, organizados de forma lógica e com testes automatizados.
 
-### 1. **Estrutura Reorganizada**
-- **📖 Documentação e Instruções**: Nova seção com guia completo de uso
-- **🏠 Sistema Principal**: Endpoints básicos e informações da API
-- **🏥 Health Check**: Verificações de saúde detalhadas
-- **🛡️ Sistema ABISS**: Detecção de ameaças comportamentais
-- **🧬 Sistema NNIS**: Sistema imune neural
-- **🔐 Criptografia**: Endpoints de criptografia seguros
-- **🔍 Inteligência de Ameaças**: Análise combinada de ameaças
-- **🛡️ Middleware de Segurança**: Configuração e estatísticas
-- **🚫 Gerenciamento de IPs**: Bloqueio e desbloqueio
-- **✅ Validação de Entrada**: Testes de segurança de input
-- **⚔️ Simulação de Ataques**: Testes de penetração
-- **🌐 WebSocket Endpoints**: Comunicação em tempo real
-- **🧪 Testes de Carga**: Performance e stress tests
-- **🔧 Utilitários e Debug**: Ferramentas de diagnóstico
-- **🔄 Testes de Integração**: Cenários completos
-- **📈 Relatórios e Monitoramento**: Métricas e inteligência
+## 📊 Principais Atualizações
 
-### 2. **Endpoints Atualizados**
-Todos os endpoints foram corrigidos para usar os caminhos corretos:
-- `/api/v1/security/*` para endpoints de segurança
-- `/api/crypto/encrypt`, `/api/security/encrypt`, `/encrypt` para criptografia
-- `/api/info`, `/api/metrics`, `/api/security/status` para informações
-- WebSocket endpoints: `/ws`, `/api/ws`, `/websocket`, `/ws/test_node`
+### 🔄 Versão
+- **Anterior**: 3.0.0
+- **Nova**: 4.0.0
+- **Schema**: Postman Collection v2.1.0
 
-### 3. **Exemplos de Resposta Detalhados**
-- Respostas de sucesso e erro para endpoints principais
-- Exemplos de payloads maliciosos e suas detecções
-- Códigos de status HTTP apropriados
-- Estruturas JSON completas
+### 🆕 Novos Endpoints Adicionados
 
-### 4. **Payloads de Teste Abrangentes**
-- **SQL Injection**: Básico e avançado
-- **XSS**: Múltiplas variações
-- **Command Injection**: Comandos perigosos
-- **Path Traversal**: Tentativas de acesso a arquivos
-- **LDAP Injection**: Ataques a diretórios
-- **DDoS Simulation**: Payloads grandes
+#### 🔐 Admin (MVP)
+- `GET /v1/admin/overview` - Visão geral administrativa
+- `GET /v1/admin/systems` - Status detalhado dos sistemas
+- `GET /v1/admin/config` - Configurações do sistema
+- `GET /v1/admin/logs` - Logs recentes
 
-### 5. **Scripts de Teste Automatizados**
-- **Pre-request Scripts**: Logging detalhado e configuração automática
-- **Test Scripts**: Validações automáticas de resposta
-- **Métricas**: Coleta automática de dados de performance
-- **Debug**: Logs estruturados para troubleshooting
+#### 🌐 Discovery
+- `GET /v1/discovery/nodes` - Listar nós conhecidos
+- `POST /v1/discovery/register` - Registrar novo nó
+- `GET /v1/discovery/search` - Buscar nós por capacidade
 
-### 6. **Variáveis Dinâmicas**
-- `{{timestamp}}`: Timestamp automático
-- `{{$randomUUID}}`: IDs únicos para requests
-- `{{$randomInt}}`: Números aleatórios para testes
-- `{{base_url}}`: URL configurável do servidor
+#### 📡 Relay
+- `GET /v1/relay/status` - Status do sistema de retransmissão
+- `POST /v1/relay/send` - Enviar mensagem via relay
+- `GET /v1/relay/pending` - Mensagens pendentes
 
-### 7. **Cenários de Integração**
-- **Detecção Completa de Ameaças**: Fluxo ABISS → NNIS → Resposta
-- **Stress Testing**: Baseline → Carga → Verificação → Recuperação
-- **Monitoramento**: Coleta de métricas e relatórios
+#### 🤖 Agents
+- `GET /v1/agents/list` - Listar agentes ativos
+- `GET /v1/agents/status/{agent_id}` - Status de agente específico
+- `POST /v1/agents/execute` - Executar comando no agente
 
-### 8. **Documentação Integrada**
-- Instruções de uso passo a passo
-- Troubleshooting guide
-- Interpretação de códigos de resposta
+#### 📋 Policies
+- `GET /v1/policies/list` - Listar políticas de segurança
+- `POST /v1/policies/create` - Criar nova política
+- `POST /v1/policies/apply` - Aplicar política ao sistema
+
+#### 🔒 Presets de Segurança
+- `GET /v1/security/presets` - Listar presets disponíveis
+- `POST /v1/security/presets/apply` - Aplicar preset específico
+- `GET /v1/security/presets/current` - Configuração atual
+
+### 🔧 Melhorias na Estrutura
+
+#### Organização Lógica
+- **Documentação e Instruções**: Guia de uso e teste de conectividade
+- **Sistema Principal**: Endpoints básicos e documentação
+- **Health Check**: Verificação de saúde dos sistemas
+- **Admin**: Interface administrativa MVP
+- **Discovery**: Sistema de descoberta de nós
+- **Relay**: Sistema de retransmissão
+- **Agents**: Gerenciamento de agentes
+- **Policies**: Gerenciamento de políticas
+- **Presets de Segurança**: Configurações de segurança
+- **API Info e Métricas**: Informações e métricas da API
+- **Criptografia**: Endpoints de criptografia
+- **WebSocket**: Comunicação em tempo real
+- **Testes de Carga**: Performance e stress tests
+- **Utilitários**: Debug e ferramentas
+
+#### Variáveis Atualizadas
+- `base_url`: URL base do servidor
+- `admin_api_key`: Chave de API para endpoints admin (padrão: dev-admin)
+- `jwt_token`: Token JWT (quando implementado)
+- `timestamp`: Timestamp dinâmico
+
+### 🧪 Testes Automatizados
+
+#### Testes Básicos
+- ✅ Status code não é 500 (erro interno)
+- ⚡ Tempo de resposta menor que 5 segundos
+- 📄 Content-Type válido
+- 🔍 Estrutura JSON válida (quando aplicável)
+
+#### Testes Específicos
+- 🛡️ Endpoints de segurança/admin respondem adequadamente
+- ⏱️ Rate limiting ativo quando aplicável
+- 🚫 Bloqueios de segurança funcionando
+- 📊 Métricas de performance coletadas
+
+#### Scripts de Pré-request
+- Timestamp dinâmico para cada requisição
+- ID único para cada request
+- Logs automáticos no console
+- Detecção de tipos de endpoint
+
+### 📝 Documentação
+
+#### Descrições Detalhadas
+- Instruções de uso para cada endpoint
+- Exemplos de payloads e respostas
+- Troubleshooting e soluções
 - Ordem recomendada de testes
+
+#### Guia Completo
+- [POSTMAN_COLLECTION_README.md](POSTMAN_COLLECTION_README.md) - Guia detalhado de uso
+- Instruções de configuração
+- Exemplos práticos
+- Solução de problemas
 
 ## 🎯 Como Usar
 
-### Pré-requisitos
-1. Servidor ATous rodando em `http://127.0.0.1:8000`
-2. Postman versão 8.0+
-3. Collection importada no Postman
+### 1. Importar Collection
+1. Abra o Postman
+2. Clique em "Import"
+3. Selecione o arquivo `docs/collection.json`
 
-### Ordem Recomendada
-1. **Teste de Conectividade**: `/health/ping`
-2. **Status Geral**: `/health`
-3. **Informações da API**: `/api/info`
-4. **Sistemas de Segurança**: ABISS e NNIS
-5. **Testes Específicos**: Conforme necessário
+### 2. Configurar Variáveis
+1. Clique no ícone de engrenagem da collection
+2. Configure as variáveis na aba "Variables"
+3. Salve as configurações
 
-### Recursos de Debug
-- Console logs automáticos
-- Métricas de performance
-- Validações de resposta
-- Coleta de dados para relatórios
+### 3. Testar Endpoints
+1. Execute o "🔧 Teste de Conectividade" primeiro
+2. Siga a ordem recomendada de testes
+3. Verifique os logs no console do Postman
 
-## 🛡️ Recursos de Segurança Testáveis
+## 🛡️ Recursos de Segurança
 
 ### Rate Limiting
-- Proteção contra spam
-- Limites configuráveis
-- Bloqueio temporário
+- Proteção contra spam e ataques DDoS
+- Teste executando múltiplas requisições rapidamente
 
-### Input Validation
-- Detecção de SQL Injection
-- Prevenção de XSS
-- Validação de Command Injection
-- Proteção contra Path Traversal
+### Presets de Segurança
+- **dev/development**: Permissivo para desenvolvimento
+- **staging**: Balanceado para pré-produção
+- **production**: Máxima segurança
+- **security_test**: Agressivo para testes de penetração
 
-### Sistemas Inteligentes
-- **ABISS**: Análise comportamental
-- **NNIS**: Sistema imune neural
-- **Middleware**: Proteção em tempo real
+### Autenticação Admin
+- Header `X-Admin-Api-Key` para endpoints administrativos
+- Chave padrão: `dev-admin`
 
-### DDoS Protection
-- Detecção de payloads grandes
-- Limitação de conexões
-- Bloqueio automático
+## 📊 Status dos Endpoints
 
-## 📊 Métricas e Monitoramento
+### ✅ Implementados e Testados
+- Health Check (`/health`, `/health/detailed`, `/health/ping`)
+- Admin Overview (`/v1/admin/overview`)
+- Criptografia (`/api/crypto/encrypt`)
+- Sistema Principal (`/`, `/docs`, `/redoc`, `/openapi.json`)
+- API Info (`/api/info`, `/api/security/status`, `/api/metrics`)
 
-### Coleta Automática
-- Tempo de resposta
-- Status codes
-- Tamanho de payload
-- Headers importantes
+### 🔄 Em Desenvolvimento
+- Endpoints de Discovery, Relay, Agents, Policies
+- Presets de Segurança via API
+- WebSocket endpoints
 
-### Relatórios
-- Estatísticas de segurança
-- Performance metrics
-- Inteligência de ameaças
-- Status dos sistemas
+### 📋 Endpoints Planejados
+- Validação de entrada avançada
+- Simulação de ataques
+- Relatórios de segurança detalhados
 
-## 🔧 Troubleshooting
+## 🔍 Validação
 
-### Problemas Comuns
-- **Connection Refused**: Verificar se servidor está rodando
-- **403 Forbidden**: Requisição bloqueada por segurança (esperado)
-- **429 Too Many Requests**: Rate limit atingido (esperado)
-- **500 Internal Error**: Problema no servidor
+### Testes Realizados
+- ✅ Conectividade básica
+- ✅ Health check
+- ✅ Endpoints admin
+- ✅ Criptografia
+- ✅ Headers de segurança
+- ✅ Rate limiting
 
-### Debug
-- Verificar console do Postman para logs detalhados
-- Usar endpoint `/health/detailed` para diagnóstico
-- Verificar variáveis de ambiente
+### Sistema Funcionando
+- Servidor respondendo em `http://127.0.0.1:8000`
+- Endpoints admin funcionando com autenticação
+- Criptografia funcionando corretamente
+- Headers de segurança aplicados
 
-## 📝 Conclusão
+## 📚 Arquivos Relacionados
 
-A collection agora oferece:
-- **100% de cobertura** dos endpoints da aplicação
-- **Testes automatizados** para validação
-- **Documentação completa** integrada
-- **Cenários realistas** de uso
-- **Ferramentas de debug** avançadas
-- **Exemplos práticos** de segurança
+- **Collection**: `docs/collection.json`
+- **Guia de Uso**: `docs/POSTMAN_COLLECTION_README.md`
+- **Resumo**: `docs/COLLECTION_UPDATE_SUMMARY.md`
+- **Mapa de Endpoints**: `docs/technical/ENDPOINTS_MAP.md`
+- **Documentação de Segurança**: `docs/security/README.md`
 
-Esta collection permite testar toda a aplicação ATous Secure Network de forma eficiente e completa, sem necessidade de configurações adicionais.
+## 🚀 Próximos Passos
+
+### Para Desenvolvedores
+1. **Teste todos os endpoints** usando a collection
+2. **Implemente endpoints pendentes** conforme necessário
+3. **Adicione novos testes** para funcionalidades específicas
+4. **Mantenha a collection atualizada** com novos endpoints
+
+### Para Usuários
+1. **Importe a collection** no Postman
+2. **Configure as variáveis** conforme necessário
+3. **Execute os testes** seguindo a ordem recomendada
+4. **Use para desenvolvimento** e teste da API
+
+### Para QA/Testes
+1. **Execute testes automatizados** incluídos na collection
+2. **Use para testes de regressão** após mudanças
+3. **Valide funcionalidades** de segurança
+4. **Teste performance** com endpoints de carga
+
+---
+
+**Versão**: 4.0.0  
+**Data de Atualização**: Janeiro 2025  
+**Status**: ✅ Atualizada e Funcionando  
+**Compatibilidade**: Postman 8.0+  
+**Sistema**: ATous Secure Network 2.0.0

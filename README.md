@@ -458,14 +458,21 @@ Observações:
 #### 🚨 **IMPORTANTE - Leia Primeiro**
 - 🚀 **[Guia de Inicialização](docs/getting-started/README.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
 
+#### 🧪 **Testando a API com Postman**
+- 📚 **[Collection do Postman](docs/collection.json)** - Collection completa com todos os endpoints
+- 📖 **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Instruções detalhadas de uso
+- 🔧 **Configuração Rápida**: Importe a collection, configure as variáveis e comece a testar
+
 #### Links Rápidos
 - 📖 **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
 - 🏁 **[Getting Started](docs/getting-started/README.md)** - Configuração detalhada e primeiros passos
 - 🛠️ **[Guia de Desenvolvimento](docs/development/README.md)** - Configuração e fluxo de trabalho para desenvolvedores
-- 📊 **[Status do Projeto](PROJECT_STATUS.md)** - Status atual de desenvolvimento e resultados de testes
+- 📊 **[Status do Projeto](docs/test_summary_report.md)** - Status atual de desenvolvimento e resultados de testes
 - 📋 **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
 - 🧪 **[Guia de Testes](tests/TESTING_APPROACH.md)** - Documentação abrangente de testes
- - 🌐 **[Mapa de Endpoints](docs/technical/ENDPOINTS_MAP.md)** - Endpoints REST e WebSocket consolidados
+- 🌐 **[Mapa de Endpoints](docs/technical/ENDPOINTS_MAP.md)** - Endpoints REST e WebSocket consolidados
+- 📚 **[Collection do Postman](docs/collection.json)** - Collection completa para testar a API
+- 📖 **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Como usar a collection do Postman
 
 #### Recursos Adicionais
 Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento, consulte a pasta `/docs`:
