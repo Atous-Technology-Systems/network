@@ -270,11 +270,12 @@ pip install -r requirements.txt
 
 Verifique se tudo está configurado corretamente:
 
+##### Verifique problemas de importação
 ```bash
-# Verifique problemas de importação
 python debug_import.py
-
+```
 # Verifique o status da aplicação
+```bash
 python start_app.py --status
 ```
 
