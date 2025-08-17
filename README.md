@@ -4,9 +4,7 @@
 
  [Project Status](docs/test_summary_report.md) |  [Requirements](requirements.txt) |  [License](LICENSE) |  [Testing Guide](tests/TESTING_APPROACH.md) |  [API Contracts](docs/api-contracts.md) |  [Security Reports](docs/test_summary_report.md)
 
-##  **Status Atual do Sistema**
-
- **SISTEMA COMPLETAMENTE TESTADO E VALIDADO**
+##  **Status Atual do Sistema*
 
 -  **Testes abrangentes aprovados** — veja `docs/test_summary_report.md`
 -  **API Web FastAPI** operacional na porta 8000
