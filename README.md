@@ -2,13 +2,7 @@
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
- [Project Status](docs/test_summary_report.md) |  [Requirements](requirements.txt) |  [License](LICENSE) |  [Testing Guide](tests/TESTING_APPROACH.md) |  [API Contracts](docs/api-contracts.md) |  [Security Reports](docs/test_summary_report.md)
-
-##  **Status Atual do Sistema**
-
- **SISTEMA COMPLETAMENTE TESTADO E VALIDADO**
-
--  **Testes abrangentes aprovados** — veja `docs/test_summary_report.md`
+-  **Testes abrangentes** — veja `docs/test_summary_report.md`
 -  **API Web FastAPI** operacional na porta 8000
 -  **Health checks** funcionais para todos os subsistemas
 -  **Documentação Swagger** disponível em `/docs`
@@ -21,7 +15,7 @@
 
 ### **Visão Geral**
 
-O **Atous Secure Network** é um framework de última geração que redefine a segurança e a comunicação em redes distribuídas. Projetado com uma abordagem TDD (Test-Driven Development), o sistema integra seis subsistemas sinérgicos para criar uma malha de dispositivos IoT que é:
+A **Matrix Network** é um framework de segurança e a comunicação em redes distribuídas, o sistema integra seis subsistemas sinérgicos para criar uma malha de dispositivos IoT que é:
 
   -  **Inteligente**: Utiliza IA e Aprendizado Federado para aprender e se adaptar a novas ameaças.
   -  **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
@@ -43,7 +37,7 @@ Este projeto não é apenas uma solução de segurança; é uma base para constr
 
 ### **Potencial de Mercado**
 
-O Atous Secure Network é ideal para setores críticos que demandam alta segurança, resiliência e inteligência:
+A Matrix é ideal para setores críticos que demandam alta segurança, resiliência e inteligência:
 
   - **Indústria 4.0**: Redes de sensores e atuadores em chão de fábrica.
   - **Cidades Inteligentes**: Infraestrutura urbana conectada (iluminação, tráfego, sensores ambientais).
@@ -329,7 +323,7 @@ python start_server.py
 python start_server.py --host 0.0.0.0 --port 8000 --reload
 ```
 
-**📡 Após iniciar o servidor, acesse:**
+** Após iniciar o servidor, acesse:**
 - **API Principal:** http://localhost:8000
 - **Documentação:** http://localhost:8000/docs
 - **Health Check:** http://localhost:8000/health
