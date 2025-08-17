@@ -1,3 +1,1105 @@
-
-
-
+{
+  "info": {
+    "name": "ATous Secure Network - API Completa",
+    "description": "Collection completa para testar TODOS os endpoints, WebSockets e funcionalidades do backend ATous Secure Network",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// Auto-save tokens after login/refresh",
+          "if (pm.response.code === 200 || pm.response.code === 201) {",
+          "    const response = pm.response.json();",
+          "    if (response.access_token) {",
+          "        pm.collectionVariables.set('auth_token', response.access_token);",
+          "    }",
+          "    if (response.refresh_token) {",
+          "        pm.collectionVariables.set('refresh_token', response.refresh_token);",
+          "    }",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "🏠 **ROOT & INFO**",
+      "item": [
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Endpoint raiz com informações básicas da API"
+          }
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/info",
+              "host": ["{{base_url}}"],
+              "path": ["api", "info"]
+            },
+            "description": "Informações detalhadas da API, features e endpoints"
+          }
+        },
+        {
+          "name": "Documentação Swagger",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/docs",
+              "host": ["{{base_url}}"],
+              "path": ["docs"]
+            },
+            "description": "Interface Swagger UI para documentação interativa da API"
+          }
+        },
+        {
+          "name": "Documentação ReDoc",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/redoc",
+              "host": ["{{base_url}}"],
+              "path": ["redoc"]
+            },
+            "description": "Interface ReDoc para documentação da API"
+          }
+        },
+        {
+          "name": "Schema OpenAPI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/openapi.json",
+              "host": ["{{base_url}}"],
+              "path": ["openapi.json"]
+            },
+            "description": "Schema OpenAPI em formato JSON"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💚 **HEALTH & MONITORING**",
+      "item": [
+        {
+          "name": "Health Check Básico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Verificação de saúde de todos os sistemas"
+          }
+        },
+        {
+          "name": "Health Check Detalhado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/detailed",
+              "host": ["{{base_url}}"],
+              "path": ["health", "detailed"]
+            },
+            "description": "Verificação detalhada de saúde com métricas completas"
+          }
+        },
+        {
+          "name": "Status de Segurança",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "status"]
+            },
+            "description": "Status dos sistemas de segurança ABISS e NNIS"
+          }
+        },
+        {
+          "name": "Métricas do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "metrics"]
+            },
+            "description": "Métricas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 **AUTENTICAÇÃO & USUÁRIOS**",
+      "item": [
+        {
+          "name": "Registrar Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"roles\": [\"OPERATOR\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registrar novo usuário no sistema"
+          }
+        },
+        {
+          "name": "Login de Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"TestPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Autenticar usuário e gerar tokens de acesso"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Renovar access token usando refresh token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Fazer logout do usuário e invalidar tokens"
+          }
+        },
+        {
+          "name": "Alterar Senha",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"TestPassword123!\",\n  \"new_password\": \"NewPassword456!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "change-password"]
+            },
+            "description": "Alterar senha do usuário autenticado"
+          }
+        },
+        {
+          "name": "Perfil do Usuário",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Obter perfil completo do usuário autenticado"
+          }
+        },
+        {
+          "name": "Atualizar Perfil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Atualizar perfil do usuário autenticado"
+          }
+        },
+        {
+          "name": "Sessões do Usuário",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/sessions",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "sessions"]
+            },
+            "description": "Obter sessões ativas do usuário autenticado"
+          }
+        },
+        {
+          "name": "Usuário Atual",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Obter informações do usuário atualmente autenticado"
+          }
+        },
+        {
+          "name": "Listar Usuários (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/users?page=1&per_page=10",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Listar usuários do sistema (apenas para administradores)"
+          }
+        },
+        {
+          "name": "Estatísticas de Segurança (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/security/stats",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "security", "stats"]
+            },
+            "description": "Obter estatísticas de segurança do sistema"
+          }
+        },
+        {
+          "name": "Logs de Acesso (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/security/logs?page=1&per_page=50",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "security", "logs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Obter logs de acesso e auditoria do sistema"
+          }
+        },
+        {
+          "name": "Estatísticas de Tokens (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/tokens/stats",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "tokens", "stats"]
+            },
+            "description": "Obter estatísticas de refresh tokens e sessões"
+          }
+        },
+        {
+          "name": "Limpeza de Manutenção (Super Admin)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/maintenance/cleanup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "maintenance", "cleanup"]
+            },
+            "description": "Limpar dados expirados e realizar manutenção do sistema"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛡️ **SEGURANÇA & CRIPTOGRAFIA**",
+      "item": [
+        {
+          "name": "Status ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "abiss", "status"]
+            },
+            "description": "Obter status e saúde do sistema ABISS"
+          }
+        },
+        {
+          "name": "Configuração ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/config",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "abiss", "config"]
+            },
+            "description": "Obter configuração atual do sistema ABISS"
+          }
+        },
+        {
+          "name": "Estatísticas ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "abiss", "stats"]
+            },
+            "description": "Obter estatísticas e métricas do sistema ABISS"
+          }
+        },
+        {
+          "name": "Status NNIS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/nnis/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "nnis", "status"]
+            },
+            "description": "Obter status e saúde do sistema NNIS"
+          }
+        },
+        {
+          "name": "Detectar Antígenos NNIS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"network_traffic\": {\n    \"connections\": 150,\n    \"packets_per_second\": 1000,\n    \"suspicious_patterns\": [\"unusual_port_scan\", \"data_exfiltration\"]\n  },\n  \"timestamp\": \"2025-08-17T20:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/nnis/detect-antigens",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "nnis", "detect-antigens"]
+            },
+            "description": "Detectar antígenos de ameaças usando o sistema NNIS"
+          }
+        },
+        {
+          "name": "Gerar Resposta Imune NNIS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"ddos_attack\",\n  \"severity\": \"high\",\n  \"context\": {\n    \"source_ip\": \"192.168.1.100\",\n    \"attack_pattern\": \"syn_flood\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/nnis/generate-response",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "nnis", "generate-response"]
+            },
+            "description": "Gerar resposta imune para ameaça detectada"
+          }
+        },
+        {
+          "name": "Bloquear IP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ip_address\": \"192.168.1.100\",\n  \"reason\": \"DDoS attack detected\",\n  \"duration_minutes\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/middleware/block-ip",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "middleware", "block-ip"]
+            },
+            "description": "Bloquear IP específico via middleware de segurança"
+          }
+        },
+        {
+          "name": "Desbloquear IP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ip_address\": \"192.168.1.100\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/middleware/unblock-ip",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "middleware", "unblock-ip"]
+            },
+            "description": "Desbloquear IP previamente bloqueado"
+          }
+        },
+        {
+          "name": "Validar Input",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input_data\": \"<script>alert('xss')</script>\",\n  \"input_type\": \"html_content\",\n  \"validation_rules\": [\"no_xss\", \"no_sql_injection\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/validate-input",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "validate-input"]
+            },
+            "description": "Validar input usando sistema de validação de segurança"
+          }
+        },
+        {
+          "name": "Configuração de Segurança Atual",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/config/current",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "config", "current"]
+            },
+            "description": "Obter configuração atual de segurança para desenvolvimento"
+          }
+        },
+        {
+          "name": "Teste Simples de Segurança",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/test/simple",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "test", "simple"]
+            },
+            "description": "Endpoint de teste básico para verificar comportamento do middleware de segurança"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 **CRIPTOGRAFIA**",
+      "item": [
+        {
+          "name": "Criptografar Dados",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Dados sensíveis para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"user-key-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/encrypt",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "encrypt"]
+            },
+            "description": "Criptografar dados usando endpoint de criptografia principal"
+          }
+        },
+        {
+          "name": "Criptografar Dados (Segurança)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Dados de segurança para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"security-key-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/encrypt",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "encrypt"]
+            },
+            "description": "Criptografar dados usando endpoint de segurança"
+          }
+        },
+        {
+          "name": "Criptografar Dados (Simples)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Dados simples para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"simple-key-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/encrypt",
+              "host": ["{{base_url}}"],
+              "path": ["encrypt"]
+            },
+            "description": "Criptografar dados usando endpoint simples"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔌 **WEBSOCKETS**",
+      "item": [
+        {
+          "name": "WebSocket Principal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ws",
+              "host": ["{{base_url}}"],
+              "path": ["ws"]
+            },
+            "description": "WebSocket principal para comunicação geral e testes"
+          }
+        },
+        {
+          "name": "WebSocket da API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ws",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ws"]
+            },
+            "description": "WebSocket da API para operações específicas"
+          }
+        },
+        {
+          "name": "WebSocket Genérico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/websocket",
+              "host": ["{{base_url}}"],
+              "path": ["websocket"]
+            },
+            "description": "WebSocket genérico para operações básicas"
+          }
+        },
+        {
+          "name": "WebSocket Teste de Nó",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ws/test_node",
+              "host": ["{{base_url}}"],
+              "path": ["ws", "test_node"]
+            },
+            "description": "WebSocket para testes de conectividade de nós"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 **MONITORAMENTO WEBSOCKET**",
+      "item": [
+        {
+          "name": "Status dos WebSockets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/websocket/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "websocket", "status"]
+            },
+            "description": "Obter status atual de todos os WebSockets ativos"
+          }
+        },
+        {
+          "name": "Configuração dos WebSockets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/websocket/config",
+              "host": ["{{base_url}}"],
+              "path": ["api", "websocket", "config"]
+            },
+            "description": "Obter configurações atuais dos WebSockets"
+          }
+        },
+        {
+          "name": "Endpoints WebSocket Disponíveis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/websocket/endpoints",
+              "host": ["{{base_url}}"],
+              "path": ["api", "websocket", "endpoints"]
+            },
+            "description": "Lista todos os endpoints WebSocket disponíveis"
+          }
+        },
+        {
+          "name": "Health Check dos WebSockets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/websocket/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "websocket", "health"]
+            },
+            "description": "Verificação de saúde dos WebSockets"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏢 **ADMINISTRAÇÃO**",
+      "item": [
+        {
+          "name": "Visão Geral do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/overview",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "overview"]
+            },
+            "description": "Obter visão geral do sistema administrativo"
+          }
+        },
+        {
+          "name": "Eventos Administrativos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/events?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "events"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Obter eventos administrativos do sistema"
+          }
+        },
+        {
+          "name": "Criar Evento Administrativo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"system_maintenance\",\n  \"payload\": {\n    \"action\": \"backup_completed\",\n    \"timestamp\": \"2025-08-17T20:00:00Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/admin/events",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "events"]
+            },
+            "description": "Criar novo evento administrativo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 **DESCOBERTA DE SERVIÇOS**",
+      "item": [
+        {
+          "name": "Registrar Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"agent-001\",\n  \"services\": [\n    {\n      \"name\": \"data_processing\",\n      \"version\": \"1.0.0\",\n      \"capabilities\": [\"ml_inference\", \"data_aggregation\"]\n    }\n  ],\n  \"addresses\": {\n    \"local\": [\"127.0.0.1:8080\"],\n    \"lan\": [\"192.168.1.100:8080\"],\n    \"wan\": [\"203.0.113.1:8080\"]\n  },\n  \"ttl\": 300\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/register",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "register"]
+            },
+            "description": "Registrar agente no sistema de descoberta"
+          }
+        },
+        {
+          "name": "Buscar Serviços",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/services?name=data_processing",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "services"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "data_processing"
+                }
+              ]
+            },
+            "description": "Buscar serviços por nome"
+          }
+        },
+        {
+          "name": "Resolver Serviço",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/resolve?name=data_processing&pref=local,lan,wan",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "resolve"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "data_processing"
+                },
+                {
+                  "key": "pref",
+                  "value": "local,lan,wan"
+                }
+              ]
+            },
+            "description": "Resolver serviço com preferências de rede"
+          }
+        },
+        {
+          "name": "Obter Agente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/agents/agent-001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "agents", "agent-001"]
+            },
+            "description": "Obter informações de agente específico"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📡 **RELAY & COMUNICAÇÃO**",
+      "item": [
+        {
+          "name": "Heartbeat do Relay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"agent-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/relay/heartbeat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "heartbeat"]
+            },
+            "description": "Enviar heartbeat para manter agente ativo no relay"
+          }
+        },
+        {
+          "name": "Enviar Mensagem via Relay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"agent-001\",\n  \"to\": \"agent-002\",\n  \"payload\": {\n    \"type\": \"data_request\",\n    \"data\": {\"query\": \"get_metrics\"}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/relay/send",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "send"]
+            },
+            "description": "Enviar mensagem entre agentes via relay"
+          }
+        },
+        {
+          "name": "Poll de Mensagens",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/relay/poll?agent_id=agent-001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "poll"],
+              "query": [
+                {
+                  "key": "agent_id",
+                  "value": "agent-001"
+                }
+              ]
+            },
+            "description": "Verificar mensagens pendentes para agente específico"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 **AGENTES**",
+      "item": [
+        {
+          "name": "Enrolar Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_info\": {\n    \"hostname\": \"agent-host-001\",\n    \"os\": \"linux\",\n    \"version\": \"1.0.0\"\n  },\n  \"attestation\": {\n    \"measurement\": \"sha256:abc123...\",\n    \"quote\": \"base64:xyz789...\"\n  },\n  \"csr_pem\": \"-----BEGIN CERTIFICATE REQUEST-----\\n...\\n-----END CERTIFICATE REQUEST-----\\n\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/agents/enroll",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "enroll"]
+            },
+            "description": "Enrolar novo agente no sistema"
+          }
+        },
+        {
+          "name": "Heartbeat do Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version\": \"1.0.0\",\n  \"services\": [\"data_processing\", \"ml_inference\"],\n  \"metrics\": {\n    \"cpu_usage\": 45.2,\n    \"memory_usage\": 67.8,\n    \"active_connections\": 12\n  },\n  \"risk_score\": 0.15\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/agents/agent-001/heartbeat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "agent-001", "heartbeat"]
+            },
+            "description": "Enviar heartbeat com métricas e status do agente"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 **POLÍTICAS**",
+      "item": [
+        {
+          "name": "Política Ativa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/policies/active?agent_id=agent-001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "policies", "active"],
+              "query": [
+                {
+                  "key": "agent_id",
+                  "value": "agent-001"
+                }
+              ]
+            },
+            "description": "Obter política ativa para agente específico"
+          }
+        }
+      ]
+    }
+  ]
+}
