@@ -1,0 +1,26 @@
+{
+  "model_name": "google/gemma-2-2b-it",
+  "model_params": {
+    "torch_dtype": "float16",
+    "device_map": "auto",
+    "low_cpu_mem_usage": true,
+    "trust_remote_code": true,
+    "use_cache": true
+  },
+  "pipeline_params": {
+    "max_length": 512,
+    "max_new_tokens": 256,
+    "temperature": 0.7,
+    "do_sample": true,
+    "top_p": 0.9,
+    "top_k": 50,
+    "repetition_penalty": 1.1,
+    "pad_token_id": 0,
+    "eos_token_id": 1
+  },
+  "memory_size": 1000,
+  "threat_threshold": 0.7,
+  "simulation_mode": false,
+  "enable_monitoring": true,
+  "learning_rate": 0.01
+}

@@ -4,13 +4,12 @@
 
 1. [Core Module](#core-module)
    - [ModelManager](#modelmanager)
-   - [FederatedModelUpdater](#federatedmodelupdater)
 2. [Network Module](#network-module)
-   - [LoRaOptimizer](#loraoptimizer)
-   - [P2PRecovery](#p2precovery)
+   - [LoraAdaptiveEngine](#loraadaptiveengine)
+   - [ChurnMitigation](#churnmitigation)
 3. [Security Module](#security-module)
-   - [ABISSSystem](#abiss-system)
-   - [ThreatPattern](#threatpattern)
+   - [ABISSSystem](#abisssystem)
+   - [NNISSystem](#nnissystem)
 
 ## Core Module
 
@@ -34,9 +33,9 @@ The main class for managing machine learning models.
 
 ## Network Module
 
-### LoRaOptimizer
+### LoraAdaptiveEngine
 
-Optimizes LoRa network communication.
+Optimiza comunicação LoRa e parâmetros dinâmicos.
 
 #### Methods
 
@@ -46,9 +45,9 @@ Optimizes LoRa network communication.
 - `receive() -> bytes`
   - Receive data from LoRa
 
-### P2PRecovery
+### ChurnMitigation
 
-Handles peer-to-peer network recovery.
+Handles peer-to-peer network recovery and churn mitigation.
 
 #### Methods
 
@@ -66,9 +65,9 @@ Advanced Behavioral and Intrusion Security System.
 - `analyze_behavior(behavior_data: Dict) -> Dict`
   - Analyze behavior patterns
 
-### ThreatPattern
+### NNISSystem
 
-Defines and matches threat patterns.
+Neural Network Immune System for threat response and memory.
 
 #### Methods
 

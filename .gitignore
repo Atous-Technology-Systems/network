@@ -127,3 +127,5 @@ coverage.xml
 
 .crush/
 .kiro/
+models/
+overview.md

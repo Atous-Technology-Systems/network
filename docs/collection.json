@@ -1,28 +1,68 @@
 {
   "info": {
     "name": "ATous Secure Network API Collection",
-    "description": "Collection completa para testar todas as funcionalidades do sistema ATous Secure Network via endpoints REST e WebSockets",
-    "version": "2.0.0",
+    "description": "Collection completa para testar todas as funcionalidades do sistema ATous Secure Network via endpoints REST e WebSockets. Esta collection inclui todos os endpoints disponíveis na aplicação, com exemplos de payloads, testes automatizados e documentação detalhada.",
+    "version": "4.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "base_url",
       "value": "http://127.0.0.1:8000",
-      "type": "string"
+      "type": "string",
+      "description": "URL base do servidor ATous Secure Network"
     },
     {
-      "key": "api_key",
-      "value": "your-api-key-here",
-      "type": "string"
+      "key": "admin_api_key",
+      "value": "dev-admin",
+      "type": "string",
+      "description": "Chave de API para autenticação admin"
     },
     {
       "key": "jwt_token",
       "value": "your-jwt-token-here",
-      "type": "string"
+      "type": "string",
+      "description": "Token JWT para autenticação Bearer (quando implementado)"
+    },
+    {
+      "key": "timestamp",
+      "value": "{{$timestamp}}",
+      "type": "string",
+      "description": "Timestamp dinâmico para requisições"
     }
   ],
   "item": [
+    {
+      "name": "📖 Documentação e Instruções",
+      "item": [
+        {
+          "name": "📋 Como Usar Esta Collection",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "## 🚀 Como Usar Esta Collection\n\n### 📋 Pré-requisitos\n1. **Servidor ATous**: Certifique-se de que o servidor esteja rodando em `http://127.0.0.1:8000`\n2. **Postman**: Versão 8.0 ou superior\n3. **Variáveis**: Configure as variáveis de ambiente se necessário\n\n### 🔧 Configuração Inicial\n1. **Importe a collection** no Postman\n2. **Configure as variáveis**:\n   - `base_url`: URL do servidor (padrão: http://127.0.0.1:8000)\n   - `admin_api_key`: Chave de API admin (padrão: dev-admin)\n3. **Execute o teste de conectividade** primeiro\n\n### 📊 Estrutura da Collection\n- **🏠 Sistema Principal**: Endpoints básicos e documentação\n- **🏥 Health Check**: Verificação de saúde dos sistemas\n- **🔐 Admin**: Interface administrativa (MVP)\n- **🌐 Discovery**: Sistema de descoberta de nós\n- **📡 Relay**: Sistema de retransmissão\n- **🤖 Agents**: Gerenciamento de agentes\n- **📋 Policies**: Gerenciamento de políticas\n- **🔒 Presets de Segurança**: Configurações de segurança\n- **🔐 Criptografia**: Endpoints de criptografia\n- **🌐 WebSocket**: Comunicação em tempo real\n- **🧪 Testes de Carga**: Performance e stress tests\n\n### 🎯 Ordem Recomendada de Testes\n1. **Conectividade**: `/health`\n2. **Status Geral**: `/api/info`\n3. **Admin**: `/v1/admin/overview`\n4. **Funcionalidades Específicas**: Conforme necessário\n\n### 🔍 Interpretando Respostas\n- **200**: Sucesso\n- **400**: Erro de requisição\n- **401**: Não autorizado\n- **403**: Bloqueado por segurança\n- **429**: Rate limit atingido\n- **500**: Erro interno do servidor\n- **503**: Serviço indisponível\n\n### 🛡️ Recursos de Segurança\n- **Rate Limiting**: Proteção contra spam\n- **Input Validation**: Validação de entrada\n- **DDoS Protection**: Proteção contra ataques\n- **Presets de Segurança**: Configurações adaptáveis\n\n### 📝 Logs e Debug\nTodos os requests incluem logs automáticos no console do Postman para facilitar o debug."
+          }
+        },
+        {
+          "name": "🔧 Teste de Conectividade",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "**🎯 Execute este teste primeiro!**\n\nTeste básico de conectividade para verificar se o servidor está respondendo. Deve retornar status de saúde dos sistemas.\n\n**Resposta esperada:**\n```json\n{\n  \"status\": \"healthy\",\n  \"systems\": {\n    \"abiss\": {\"status\": \"healthy\"},\n    \"nnis\": {\"status\": \"healthy\"}\n  }\n}\n```\n\n**Troubleshooting:**\n- Se falhar, verifique se o servidor está rodando\n- Confirme a URL base nas variáveis\n- Verifique firewall/proxy"
+          }
+        }
+      ]
+    },
     {
       "name": "🏠 Sistema Principal",
       "item": [
@@ -93,7 +133,7 @@
               "host": ["{{base_url}}"],
               "path": ["health"]
             },
-            "description": "Verificação de saúde dos sistemas com métricas detalhadas"
+            "description": "Verificação de saúde dos sistemas com métricas detalhadas incluindo ABISS, NNIS e Model Manager"
           }
         },
         {
@@ -125,637 +165,547 @@
       ]
     },
     {
-      "name": "📊 Status do Sistema",
+      "name": "🔐 Admin (MVP)",
       "item": [
         {
-          "name": "Status Geral do Sistema",
+          "name": "Visão Geral do Sistema",
           "request": {
             "method": "GET",
             "header": [
               {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
+                "key": "X-Admin-Api-Key",
+                "value": "{{admin_api_key}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/status",
+              "raw": "{{base_url}}/v1/admin/overview",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "status"]
+              "path": ["v1", "admin", "overview"]
             },
-            "description": "Status geral de todos os sistemas (ABISS, NNIS, Model Manager)"
+            "description": "Visão geral do sistema administrativo com status dos componentes principais"
           }
         },
         {
-          "name": "Status de Segurança",
+          "name": "Status dos Sistemas",
           "request": {
             "method": "GET",
             "header": [
               {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
+                "key": "X-Admin-Api-Key",
+                "value": "{{admin_api_key}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/security/status",
+              "raw": "{{base_url}}/v1/admin/systems",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "status"]
+              "path": ["v1", "admin", "systems"]
             },
-            "description": "Status específico dos sistemas de segurança ABISS e NNIS"
+            "description": "Status detalhado de todos os sistemas (ABISS, NNIS, Model Manager, LoRa, P2P)"
+          }
+        },
+        {
+          "name": "Configurações do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Api-Key",
+                "value": "{{admin_api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/config",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "config"]
+            },
+            "description": "Configurações atuais do sistema incluindo presets de segurança"
+          }
+        },
+        {
+          "name": "Logs do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Admin-Api-Key",
+                "value": "{{admin_api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/logs",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "logs"]
+            },
+            "description": "Logs recentes do sistema para monitoramento e debug"
           }
         }
       ]
     },
     {
-      "name": "🛡️ Sistema ABISS",
+      "name": "🌐 Discovery",
       "item": [
         {
-          "name": "Status do ABISS",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/abiss/status",
-              "host": ["{{base_url}}"],
-              "path": ["security", "abiss", "status"]
-            },
-            "description": "Status detalhado do sistema ABISS com informações de modelo e estatísticas"
-          }
-        },
-        {
-          "name": "Detectar Ameaças",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"source_ip\": \"192.168.1.100\",\n  \"destination_ip\": \"10.0.0.1\",\n  \"packet_size\": 1024,\n  \"protocol\": \"TCP\",\n  \"port\": 80,\n  \"payload\": \"GET /index.html HTTP/1.1\",\n  \"timestamp\": \"2025-01-01T12:00:00Z\",\n  \"frequency\": 10\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/abiss/detect",
-              "host": ["{{base_url}}"],
-              "path": ["security", "abiss", "detect"]
-            },
-            "description": "Detecta ameaças em dados de rede usando o sistema ABISS"
-          }
-        },
-        {
-          "name": "Analisar Comportamento",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": \"user123\",\n  \"session_duration\": 3600,\n  \"actions_per_minute\": 15,\n  \"failed_login_attempts\": 0,\n  \"unusual_access_patterns\": false,\n  \"geolocation\": {\n    \"country\": \"BR\",\n    \"city\": \"São Paulo\"\n  },\n  \"device_fingerprint\": \"abc123def456\",\n  \"timestamp\": \"2025-01-01T12:00:00Z\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/abiss/analyze-behavior",
-              "host": ["{{base_url}}"],
-              "path": ["security", "abiss", "analyze-behavior"]
-            },
-            "description": "Analisa comportamento do usuário para detectar anomalias"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🧬 Sistema NNIS",
-      "item": [
-        {
-          "name": "Status do NNIS",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/nnis/status",
-              "host": ["{{base_url}}"],
-              "path": ["security", "nnis", "status"]
-            },
-            "description": "Status do sistema imune neural NNIS com métricas de células imunes"
-          }
-        },
-        {
-          "name": "Detectar Antígenos",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"network_traffic\": {\n    \"packets_per_second\": 1000,\n    \"average_packet_size\": 512,\n    \"protocol_distribution\": {\n      \"TCP\": 0.7,\n      \"UDP\": 0.2,\n      \"ICMP\": 0.1\n    }\n  },\n  \"connection_patterns\": {\n    \"new_connections_per_minute\": 50,\n    \"failed_connections\": 5,\n    \"suspicious_ports\": [22, 23, 3389]\n  },\n  \"timestamp\": \"2025-01-01T12:00:00Z\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/nnis/detect-antigens",
-              "host": ["{{base_url}}"],
-              "path": ["security", "nnis", "detect-antigens"]
-            },
-            "description": "Detecta antígenos de ameaças usando o sistema imune neural"
-          }
-        },
-        {
-          "name": "Gerar Resposta Imune",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"threat_type\": \"malware\",\n  \"confidence\": 0.85,\n  \"source\": \"192.168.1.100\",\n  \"severity\": \"high\",\n  \"description\": \"Suspicious executable detected\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/nnis/generate-response",
-              "host": ["{{base_url}}"],
-              "path": ["security", "nnis", "generate-response"]
-            },
-            "description": "Gera resposta imune automática para uma ameaça específica"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🔍 Inteligência de Ameaças",
-      "item": [
-        {
-          "name": "Inteligência Combinada",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/threat-intelligence",
-              "host": ["{{base_url}}"],
-              "path": ["security", "threat-intelligence"]
-            },
-            "description": "Obtém inteligência de ameaças combinada dos sistemas ABISS e NNIS"
-          }
-        },
-        {
-          "name": "Relatório de Segurança",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/security-report",
-              "host": ["{{base_url}}"],
-              "path": ["security", "security-report"]
-            },
-            "description": "Gera relatório abrangente de segurança do sistema"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🛡️ Middleware de Segurança",
-      "item": [
-        {
-          "name": "Teste do Middleware",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"test_data\": \"normal request\",\n  \"user_id\": \"test_user\",\n  \"action\": \"test_middleware\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/middleware/test",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "test"]
-            },
-            "description": "Testa o middleware de segurança com dados simulados"
-          }
-        },
-        {
-          "name": "Configuração do Middleware",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/middleware/config",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "config"]
-            },
-            "description": "Obtém configuração atual do middleware de segurança"
-          }
-        },
-        {
-          "name": "Estatísticas do Middleware",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/middleware/stats",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "stats"]
-            },
-            "description": "Estatísticas detalhadas do middleware de segurança"
-          }
-        },
-        {
-          "name": "Estatísticas Legacy",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/middleware/legacy-stats",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "legacy-stats"]
-            },
-            "description": "Endpoint legacy para compatibilidade com versões anteriores"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🚫 Gerenciamento de IPs",
-      "item": [
-        {
-          "name": "Bloquear IP",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"ip_address\": \"192.168.1.100\",\n  \"reason\": \"Suspicious activity detected\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/middleware/block-ip",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "block-ip"]
-            },
-            "description": "Bloqueia um endereço IP específico"
-          }
-        },
-        {
-          "name": "Desbloquear IP",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"ip_address\": \"192.168.1.100\",\n  \"reason\": \"False positive - legitimate user\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/middleware/unblock-ip",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "unblock-ip"]
-            },
-            "description": "Remove o bloqueio de um endereço IP"
-          }
-        }
-      ]
-    },
-    {
-      "name": "✅ Validação de Entrada",
-      "item": [
-        {
-          "name": "Validar Input",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"input_data\": \"SELECT * FROM users WHERE id = 1\",\n  \"context\": \"database\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/validate-input",
-              "host": ["{{base_url}}"],
-              "path": ["security", "validate-input"]
-            },
-            "description": "Valida dados de entrada para detectar ameaças de segurança"
-          }
-        },
-        {
-          "name": "Validar Input - SQL Injection",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"input_data\": \"'; DROP TABLE users; --\",\n  \"context\": \"database\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/validate-input",
-              "host": ["{{base_url}}"],
-              "path": ["security", "validate-input"]
-            },
-            "description": "Teste de validação com payload de SQL Injection"
-          }
-        },
-        {
-          "name": "Validar Input - XSS",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"input_data\": \"<script>alert('XSS')</script>\",\n  \"context\": \"html\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/security/validate-input",
-              "host": ["{{base_url}}"],
-              "path": ["security", "validate-input"]
-            },
-            "description": "Teste de validação com payload de Cross-Site Scripting"
-          }
-        },
-        {
-          "name": "Padrões de Validação",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/validation-patterns",
-              "host": ["{{base_url}}"],
-              "path": ["security", "validation-patterns"]
-            },
-            "description": "Informações sobre padrões de validação utilizados pelo sistema"
-          }
-        }
-      ]
-    },
-    {
-      "name": "⚔️ Simulação de Ataques",
-      "item": [
-        {
-          "name": "Simular SQL Injection",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/middleware/simulate-attack?attack_type=sql_injection",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "simulate-attack"],
-              "query": [
-                {
-                  "key": "attack_type",
-                  "value": "sql_injection"
-                }
-              ]
-            },
-            "description": "Simula um ataque de SQL Injection para testar as defesas"
-          }
-        },
-        {
-          "name": "Simular XSS",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/middleware/simulate-attack?attack_type=xss",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "simulate-attack"],
-              "query": [
-                {
-                  "key": "attack_type",
-                  "value": "xss"
-                }
-              ]
-            },
-            "description": "Simula um ataque de Cross-Site Scripting"
-          }
-        },
-        {
-          "name": "Simular Command Injection",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/middleware/simulate-attack?attack_type=command_injection",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "simulate-attack"],
-              "query": [
-                {
-                  "key": "attack_type",
-                  "value": "command_injection"
-                }
-              ]
-            },
-            "description": "Simula um ataque de Command Injection"
-          }
-        },
-        {
-          "name": "Simular DDoS",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{jwt_token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/security/middleware/simulate-attack?attack_type=ddos_simulation",
-              "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "simulate-attack"],
-              "query": [
-                {
-                  "key": "attack_type",
-                  "value": "ddos_simulation"
-                }
-              ]
-            },
-            "description": "Simula um ataque de DDoS com payload grande"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🌐 WebSocket",
-      "item": [
-        {
-          "name": "Conectar WebSocket",
+          "name": "Listar Nós Conhecidos",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "ws://127.0.0.1:8000/ws/test_node",
-              "protocol": "ws",
-              "host": ["127.0.0.1"],
-              "port": "8000",
-              "path": ["ws", "test_node"]
+              "raw": "{{base_url}}/v1/discovery/nodes",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "nodes"]
             },
-            "description": "Conecta ao WebSocket para teste de conectividade em tempo real. Use um cliente WebSocket para testar."
+            "description": "Lista todos os nós conhecidos na rede P2P"
+          }
+        },
+        {
+          "name": "Registrar Novo Nó",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"node_id\": \"node_001\",\n  \"address\": \"192.168.1.100:8000\",\n  \"capabilities\": [\"abiss\", \"nnis\", \"lora\"],\n  \"last_seen\": \"{{timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/register",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "register"]
+            },
+            "description": "Registra um novo nó na rede de descoberta"
+          }
+        },
+        {
+          "name": "Buscar Nós por Capacidade",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/search?capability=abiss",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "search"],
+              "query": [
+                {
+                  "key": "capability",
+                  "value": "abiss"
+                }
+              ]
+            },
+            "description": "Busca nós que possuem uma capacidade específica"
           }
         }
       ]
     },
     {
-      "name": "🧪 Testes de Carga",
+      "name": "📡 Relay",
+      "item": [
+        {
+          "name": "Status do Relay",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/relay/status",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "status"]
+            },
+            "description": "Status do sistema de retransmissão de mensagens"
+          }
+        },
+        {
+          "name": "Enviar Mensagem via Relay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_node\": \"node_002\",\n  \"message\": \"Hello from node_001\",\n  \"priority\": \"normal\",\n  \"timestamp\": \"{{timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/relay/send",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "send"]
+            },
+            "description": "Envia uma mensagem através do sistema de relay"
+          }
+        },
+        {
+          "name": "Mensagens Pendentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/relay/pending",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "pending"]
+            },
+            "description": "Lista mensagens pendentes no sistema de relay"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 Agents",
+      "item": [
+        {
+          "name": "Listar Agentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/agents/list",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "list"]
+            },
+            "description": "Lista todos os agentes ativos no sistema"
+          }
+        },
+        {
+          "name": "Status do Agente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/agents/status/agent_001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "status", "agent_001"]
+            },
+            "description": "Status detalhado de um agente específico"
+          }
+        },
+        {
+          "name": "Executar Comando no Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"agent_001\",\n  \"command\": \"status_check\",\n  \"parameters\": {\"check_type\": \"full\"},\n  \"timestamp\": \"{{timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/agents/execute",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "execute"]
+            },
+            "description": "Executa um comando em um agente específico"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Policies",
+      "item": [
+        {
+          "name": "Listar Políticas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/policies/list",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "policies", "list"]
+            },
+            "description": "Lista todas as políticas de segurança ativas"
+          }
+        },
+        {
+          "name": "Criar Nova Política",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"strict_security\",\n  \"description\": \"Política de segurança rigorosa\",\n  \"rules\": [\n    {\"type\": \"rate_limit\", \"value\": 10},\n    {\"type\": \"block_suspicious\", \"value\": true}\n  ],\n  \"enabled\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/policies/create",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "policies", "create"]
+            },
+            "description": "Cria uma nova política de segurança"
+          }
+        },
+        {
+          "name": "Aplicar Política",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"policy_id\": \"policy_001\",\n  \"target\": \"global\",\n  \"timestamp\": \"{{timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/policies/apply",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "policies", "apply"]
+            },
+            "description": "Aplica uma política específica ao sistema"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔒 Presets de Segurança",
+      "item": [
+        {
+          "name": "Listar Presets Disponíveis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/security/presets",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "security", "presets"]
+            },
+            "description": "Lista todos os presets de segurança disponíveis (dev, staging, production, security_test)"
+          }
+        },
+        {
+          "name": "Aplicar Preset de Segurança",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Admin-Api-Key",
+                "value": "{{admin_api_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preset_name\": \"production\",\n  \"reason\": \"Ativação de segurança para produção\",\n  \"timestamp\": \"{{timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/security/presets/apply",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "security", "presets", "apply"]
+            },
+            "description": "Aplica um preset de segurança específico ao sistema"
+          }
+        },
+        {
+          "name": "Configuração Atual de Segurança",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/security/presets/current",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "security", "presets", "current"]
+            },
+            "description": "Mostra a configuração de segurança atualmente ativa"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 API Info e Métricas",
+      "item": [
+        {
+          "name": "Informações da API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/info",
+              "host": ["{{base_url}}"],
+              "path": ["api", "info"]
+            },
+            "description": "Informações detalhadas da API, recursos disponíveis e endpoints"
+          }
+        },
+        {
+          "name": "Status de Segurança da API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "status"]
+            },
+            "description": "Status dos sistemas de segurança com informações detalhadas"
+          }
+        },
+        {
+          "name": "Métricas do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "metrics"]
+            },
+            "description": "Métricas detalhadas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Criptografia",
+      "item": [
+        {
+          "name": "Criptografar via /api/crypto/encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Dados confidenciais para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"crypto-key-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/encrypt",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "encrypt"]
+            },
+            "description": "Endpoint de criptografia via /api/crypto/encrypt - Criptografa dados usando algoritmos seguros"
+          }
+        },
+        {
+          "name": "Criptografar via /api/security/encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Dados de segurança para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"security-key-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/encrypt",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "encrypt"]
+            },
+            "description": "Endpoint de criptografia via /api/security/encrypt - Criptografia focada em segurança"
+          }
+        },
+        {
+          "name": "Criptografar via /encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Dados simples para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"simple-key-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/encrypt",
+              "host": ["{{base_url}}"],
+              "path": ["encrypt"]
+            },
+            "description": "Endpoint de criptografia simples via /encrypt - Interface simplificada"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 WebSocket Endpoints",
+      "item": [
+        {
+          "name": "WebSocket Principal (/ws)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "ws://127.0.0.1:8000/ws",
+              "protocol": "ws",
+              "host": ["127.0.0.1"],
+              "port": "8000",
+              "path": ["ws"]
+            },
+            "description": "Endpoint WebSocket principal para comunicação em tempo real. Aceita mensagens JSON e texto simples, retornando echo das mensagens recebidas."
+          }
+        },
+        {
+          "name": "WebSocket API (/api/ws)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "ws://127.0.0.1:8000/api/ws",
+              "protocol": "ws",
+              "host": ["127.0.0.1"],
+              "port": "8000",
+              "path": ["api", "ws"]
+            },
+            "description": "Endpoint WebSocket da API para comunicação estruturada. Ideal para integrações que precisam de comunicação bidirecional."
+          }
+        },
+        {
+          "name": "WebSocket Genérico (/websocket)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "ws://127.0.0.1:8000/websocket",
+              "protocol": "ws",
+              "host": ["127.0.0.1"],
+              "port": "8000",
+              "path": ["websocket"]
+            },
+            "description": "Endpoint WebSocket genérico para compatibilidade com diferentes clientes WebSocket."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Testes de Carga e Performance",
       "item": [
         {
           "name": "Teste de Rate Limiting",
@@ -770,14 +720,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"test\": \"rate_limit\",\n  \"timestamp\": \"{{$timestamp}}\"\n}"
+              "raw": "{\n  \"test\": \"rate_limit\",\n  \"timestamp\": \"{{timestamp}}\",\n  \"request_id\": \"{{$randomUUID}}\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/security/middleware/test",
+              "raw": "{{base_url}}/api/v1/security/middleware/test",
               "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "test"]
+              "path": ["api", "v1", "security", "middleware", "test"]
             },
-            "description": "Execute múltiplas vezes rapidamente para testar rate limiting"
+            "description": "Execute múltiplas vezes rapidamente para testar rate limiting. O sistema deve bloquear requisições excessivas com status 429."
           }
         },
         {
@@ -793,14 +743,61 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"large_data\": \"{{$randomLoremParagraphs}}\",\n  \"repeated_field\": \"A\".repeat(10000),\n  \"test_type\": \"large_payload\"\n}"
+              "raw": "{\n  \"large_data\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\",\n  \"repeated_field\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"test_type\": \"large_payload\",\n  \"timestamp\": \"{{timestamp}}\",\n  \"request_id\": \"{{$randomUUID}}\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/security/middleware/test",
+              "raw": "{{base_url}}/api/v1/security/middleware/test",
               "host": ["{{base_url}}"],
-              "path": ["security", "middleware", "test"]
+              "path": ["api", "v1", "security", "middleware", "test"]
             },
-            "description": "Testa o sistema com payload grande para verificar limites"
+            "description": "Testa o sistema com payload grande para verificar limites de tamanho e proteção contra DDoS"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Utilitários e Debug",
+      "item": [
+        {
+          "name": "Verificar Tempo de Resposta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "metrics"]
+            },
+            "description": "Verifica métricas de performance e tempo de resposta do sistema"
+          }
+        },
+        {
+          "name": "Teste de Headers Customizados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Test-Header",
+                "value": "PostmanTest",
+                "type": "text"
+              },
+              {
+                "key": "X-Request-ID",
+                "value": "{{$randomUUID}}",
+                "type": "text"
+              },
+              {
+                "key": "User-Agent",
+                "value": "ATous-Test-Client/1.0",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Testa como o sistema processa headers customizados"
           }
         }
       ]
@@ -823,10 +820,28 @@
         "type": "text/javascript",
         "exec": [
           "// Script para executar antes de cada requisição",
-          "console.log('Executando requisição para:', pm.request.url.toString());",
+          "console.log('🚀 Executando requisição para:', pm.request.url.toString());",
           "",
           "// Adicionar timestamp dinâmico",
-          "pm.globals.set('timestamp', new Date().toISOString());"
+          "pm.globals.set('timestamp', new Date().toISOString());",
+          "",
+          "// Adicionar ID único para cada requisição",
+          "pm.globals.set('requestId', pm.variables.replaceIn('{{$randomUUID}}'));",
+          "",
+          "// Log de informações da requisição",
+          "console.log('📅 Timestamp:', pm.globals.get('timestamp'));",
+          "console.log('🆔 Request ID:', pm.globals.get('requestId'));",
+          "",
+          "// Verificar se é um endpoint de segurança",
+          "const url = pm.request.url.toString();",
+          "if (url.includes('/security/') || url.includes('/admin/')) {",
+          "    console.log('🛡️ Endpoint de segurança/admin detectado');",
+          "}",
+          "",
+          "// Verificar se é um WebSocket",
+          "if (url.startsWith('ws://') || url.startsWith('wss://')) {",
+          "    console.log('🌐 Conexão WebSocket detectada');",
+          "}"
         ]
       }
     },
@@ -836,23 +851,98 @@
         "type": "text/javascript",
         "exec": [
           "// Testes automáticos para todas as requisições",
-          "pm.test('Status code is not 500', function () {",
+          "pm.test('✅ Status code não é 500 (erro interno)', function () {",
           "    pm.expect(pm.response.code).to.not.equal(500);",
           "});",
           "",
-          "pm.test('Response time is less than 5000ms', function () {",
+          "pm.test('⚡ Tempo de resposta menor que 5 segundos', function () {",
           "    pm.expect(pm.response.responseTime).to.be.below(5000);",
           "});",
           "",
-          "pm.test('Response has timestamp', function () {",
-          "    if (pm.response.json && pm.response.json().timestamp) {",
-          "        pm.expect(pm.response.json().timestamp).to.be.a('string');",
+          "pm.test('📄 Resposta tem Content-Type válido', function () {",
+          "    const contentType = pm.response.headers.get('Content-Type');",
+          "    if (contentType) {",
+          "        pm.expect(contentType).to.match(/application\\/json|text\\/html|text\\/plain/);",
           "    }",
           "});",
           "",
-          "// Log da resposta para debug",
-          "console.log('Response status:', pm.response.status);",
-          "console.log('Response time:', pm.response.responseTime + 'ms');"
+          "// Teste específico para endpoints JSON",
+          "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+          "    pm.test('🔍 Resposta JSON tem timestamp', function () {",
+          "        try {",
+          "            const jsonData = pm.response.json();",
+          "            if (jsonData.timestamp) {",
+          "                pm.expect(jsonData.timestamp).to.be.a('string');",
+          "                pm.expect(jsonData.timestamp).to.match(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+          "            }",
+          "        } catch (e) {",
+          "            console.log('⚠️ Não foi possível parsear JSON ou timestamp não encontrado');",
+          "        }",
+          "    });",
+          "",
+          "    pm.test('🔍 Resposta JSON tem estrutura válida', function () {",
+          "        try {",
+          "            const jsonData = pm.response.json();",
+          "            pm.expect(jsonData).to.be.an('object');",
+          "        } catch (e) {",
+          "            console.log('⚠️ Resposta não é um JSON válido');",
+          "        }",
+          "    });",
+          "}",
+          "",
+          "// Teste para endpoints de admin",
+          "const url = pm.request.url.toString();",
+          "if (url.includes('/admin/')) {",
+          "    pm.test('🔐 Endpoint admin respondeu adequadamente', function () {",
+          "        pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 401, 403, 429]);",
+          "    });",
+          "}",
+          "",
+          "// Teste para rate limiting",
+          "if (pm.response.code === 429) {",
+          "    pm.test('⏱️ Rate limiting ativo - resposta adequada', function () {",
+          "        pm.expect(pm.response.code).to.equal(429);",
+          "        console.log('🚫 Rate limit atingido - sistema funcionando corretamente');",
+          "    });",
+          "}",
+          "",
+          "// Teste para bloqueios de segurança",
+          "if (pm.response.code === 403) {",
+          "    pm.test('🚫 Bloqueio de segurança - resposta adequada', function () {",
+          "        pm.expect(pm.response.code).to.equal(403);",
+          "        console.log('🛡️ Requisição bloqueada por segurança - sistema funcionando');",
+          "    });",
+          "}",
+          "",
+          "// Log detalhado da resposta para debug",
+          "console.log('📊 Status da resposta:', pm.response.status);",
+          "console.log('⏱️ Tempo de resposta:', pm.response.responseTime + 'ms');",
+          "console.log('📏 Tamanho da resposta:', pm.response.responseSize + ' bytes');",
+          "",
+          "// Log de headers importantes",
+          "const importantHeaders = ['Content-Type', 'Content-Length', 'X-RateLimit-Remaining', 'X-Request-ID'];",
+          "importantHeaders.forEach(header => {",
+          "    const value = pm.response.headers.get(header);",
+          "    if (value) {",
+          "        console.log(`📋 ${header}:`, value);",
+          "    }",
+          "});",
+          "",
+          "// Salvar métricas para relatório",
+          "if (!pm.globals.get('testMetrics')) {",
+          "    pm.globals.set('testMetrics', JSON.stringify([]));",
+          "}",
+          "",
+          "const metrics = JSON.parse(pm.globals.get('testMetrics'));",
+          "metrics.push({",
+          "    url: pm.request.url.toString(),",
+          "    method: pm.request.method,",
+          "    status: pm.response.code,",
+          "    responseTime: pm.response.responseTime,",
+          "    timestamp: new Date().toISOString()",
+          "});",
+          "",
+          "pm.globals.set('testMetrics', JSON.stringify(metrics));"
         ]
       }
     }

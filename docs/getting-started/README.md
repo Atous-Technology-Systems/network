@@ -85,10 +85,6 @@ source venv/bin/activate
 #### Step 3: Install Dependencies
 
 ```bash
-# For Windows development
-pip install -r requirements-dev-windows.txt
-
-# For Linux/Production
 pip install -r requirements.txt
 ```
 
@@ -241,9 +237,6 @@ curl http://localhost:8000/api/metrics
 curl -X POST "http://localhost:8000/api/crypto/encrypt" \
      -H "Content-Type: application/json" \
      -d '{"message": "Hello World", "algorithm": "AES-256"}'
-
-# Test security detection (should be blocked)
-curl "http://localhost:8000/api/v1/test?id=1' OR '1'='1"
 ```
 
 ### Using API Endpoints
@@ -278,6 +271,54 @@ curl -X POST "http://localhost:8000/api/security/encrypt" \
      -d '{"message": "Confidential info", "algorithm": "AES-256"}'
 ```
 
+#### Call Templates (Bash/PowerShell)
+
+##### Bash (Linux/macOS)
+```bash
+# Useful variables
+BASE_URL="http://127.0.0.1:8000"
+
+# Simple GET
+curl -sS "$BASE_URL/health"
+
+# POST JSON with header
+curl -sS -H 'Content-Type: application/json' \
+  -d '{"message":"Hello","algorithm":"AES-256"}' \
+  "$BASE_URL/api/crypto/encrypt"
+
+# Admin with API Key (when enabled)
+curl -sS -H 'X-Admin-Api-Key: dev-admin' "$BASE_URL/v1/admin/overview"
+```
+
+##### PowerShell (Windows)
+```powershell
+# Useful variables
+$baseUrl = 'http://127.0.0.1:8000'
+
+# Simple GET (pretty JSON)
+Invoke-RestMethod -Method Get -Uri "$baseUrl/health" | ConvertTo-Json -Depth 8
+
+# POST JSON using ConvertTo-Json
+$headers = @{ 'Content-Type' = 'application/json' }
+$bodyObj = @{ message = 'Hello'; algorithm = 'AES-256' }
+$body = $bodyObj | ConvertTo-Json -Depth 8
+Invoke-RestMethod -Method Post -Uri "$baseUrl/api/crypto/encrypt" -Headers $headers -Body $body
+
+# Admin with API Key (when enabled)
+$headers = @{ 'X-Admin-Api-Key' = 'dev-admin' }
+Invoke-RestMethod -Method Get -Uri "$baseUrl/v1/admin/overview" -Headers $headers | ConvertTo-Json -Depth 8
+
+# Tip: for manual JSON, prefer here-strings to avoid escaping
+$headers = @{ 'Content-Type' = 'application/json' }
+$body = @'
+{
+  "type": "note",
+  "payload": { "msg": "hello" }
+}
+'@
+Invoke-RestMethod -Method Post -Uri "$baseUrl/v1/admin/events" -Headers $headers -Body $body
+```
+
 #### Interactive Documentation
 
 Visit http://localhost:8000/docs in your browser for:
@@ -308,6 +349,7 @@ python test_final_summary.py
 2. Learn about [Deployment Options](../deployment/README.md) for production environments
 3. Check out the [Development Guide](../development/README.md) for contributing to the project
 4. Join our community forum/slack for support and discussions
+5. See the consolidated [Endpoints Map](../technical/ENDPOINTS_MAP.md) for all REST and WebSocket routes
 
 ## Troubleshooting
 

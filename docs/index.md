@@ -74,7 +74,7 @@ python start_server.py
 
 ### 📚 Essential Guides
 
-- **[🚀 Startup Guide](STARTUP_GUIDE.md)** - **START HERE** - Clear instructions for running the application
+- **[🚀 Startup Guide](getting-started/README.md)** - **START HERE** - Clear instructions for running the application
 - **[📖 User Guide](USER_GUIDE.md)** - Comprehensive usage instructions
 - **[🏁 Getting Started](getting-started/README.md)** - Detailed setup and first steps
 

@@ -34,10 +34,48 @@ uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000
 
 ## Endpoints Disponíveis
 
-### Health Check
-- **URL**: `GET /health`
-- **Descrição**: Verifica a saúde de todos os sistemas
-- **Resposta**: JSON com status dos sistemas e métricas
+### Health & Info
+- `GET /` — informações básicas da API
+- `GET /health` — saúde geral e métricas
+- `GET /ready` — prontidão básica
+- `GET /api/info` — informações detalhadas da API
+- `GET /api/v1/status` — status geral dos sistemas
+- `GET /api/v1/security/status` — status dos sistemas de segurança
+- `GET /api/metrics` — métricas do sistema
+
+### Admin (MVP)
+- `GET /v1/admin/overview`
+- `GET /v1/admin/events?limit=N`
+- `POST /v1/admin/events` (Header opcional: `X-Admin-Api-Key`)
+
+### Discovery
+- `POST /v1/discovery/register`
+- `GET /v1/discovery/services?name=...`
+- `GET /v1/discovery/resolve?name=...&pref=local,lan,wan`
+- `GET /v1/discovery/agents/{agent_id}`
+
+### Relay
+- `POST /v1/relay/heartbeat`
+- `POST /v1/relay/send`
+- `GET /v1/relay/poll?agent_id=...`
+
+### Agents
+- `POST /v1/agents/enroll`
+- `POST /v1/agents/{agent_id}/heartbeat`
+
+### Policies (MVP)
+- `GET /v1/policies/active?agent_id=...`
+
+### Criptografia
+- `POST /api/crypto/encrypt`
+- `POST /api/security/encrypt`
+- `POST /encrypt`
+
+### WebSockets
+- `WS /ws`
+- `WS /api/ws`
+- `WS /websocket`
+- `WS /ws/test_node`
 
 ### Documentação
 - **Swagger UI**: `http://localhost:8000/docs`
@@ -83,10 +121,7 @@ pytest tests/api/test_health_endpoint.py -v
 
 ## Próximos Passos
 
-- [ ] Implementar rotas de modelo (ML)
-- [ ] Implementar rotas de segurança
-- [ ] Implementar rotas de rede P2P
-- [ ] Implementar WebSocket para comunicação em tempo real
-- [ ] Adicionar autenticação e autorização
-- [ ] Implementar rate limiting
-- [ ] Adicionar métricas Prometheus
+- [ ] Persistência para discovery/relay (Redis/Postgres)
+- [ ] OIDC + RBAC para Admin
+- [ ] Agente com mTLS e pinagem de CA
+- [ ] Engine de políticas com armazenamento versionado

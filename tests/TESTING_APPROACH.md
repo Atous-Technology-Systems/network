@@ -1,18 +1,12 @@
 # Testing Approach for Atous Secure Network
 
-🟢 **SISTEMA COMPLETAMENTE TESTADO - 354/355 TESTES APROVADOS (99.7%)**
+🟢 **SISTEMA TESTADO – veja `docs/test_summary_report.md` para resultados atualizados**
 
 This document outlines the testing strategy and best practices for the Atous Secure Network project. Our comprehensive testing suite has achieved 99.7% success rate with only 1 performance-related failure.
 
-## 🎯 Current Test Results (2025-01-27)
+## 🎯 Current Test Results
 
-- ✅ **354 tests passed** (99.7% success rate)
-- ⚠️ **1 test failed** (performance: test_serialization_performance_acceptable)
-- 🔄 **8 tests skipped** (optional dependencies)
-- ⚡ **18 advanced NNIS tests** passed
-- 🌐 **API Web FastAPI** operational and tested
-- 📊 **Health endpoints** validated
-- 🔒 **Security systems** (ABISS & NNIS) fully tested
+Consulte `docs/test_summary_report.md` para o último resumo consolidado.
 
 ## Table of Contents
 1. [Testing Philosophy](#testing-philosophy)

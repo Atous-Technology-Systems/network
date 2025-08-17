@@ -32,6 +32,9 @@ dependencies = [
     "bsdiff4>=0.2.0"
 ]
 
+[project.scripts]
+atous-agent = "atous_sec_network.agent.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=6.2.0",

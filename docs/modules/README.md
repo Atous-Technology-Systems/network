@@ -8,9 +8,8 @@
    - [ModelMetadata](#modelmetadata)
 
 2. [Network Module](#network-module)
-   - [LoRaOptimizer](#loraoptimizer)
-   - [P2PRecovery](#p2precovery)
-   - [MessageBroker](#messagebroker)
+   - [LoraAdaptiveEngine](#loraadaptiveengine)
+   - [ChurnMitigation](#churnmitigation)
 
 3. [Security Module](#security-module)
    - [ABISSSystem](#abiss-system)
@@ -82,7 +81,7 @@ Manages metadata for models, including:
 
 ## Network Module
 
-### LoRaOptimizer
+### LoraAdaptiveEngine
 
 #### Overview
 Optimizes communication over LoRa networks with features like:
@@ -93,24 +92,22 @@ Optimizes communication over LoRa networks with features like:
 
 #### Example Usage
 ```python
-from atous_sec_network.network.lora_optimizer import LoRaOptimizer
+from atous_sec_network.network.lora_optimizer import LoraAdaptiveEngine
 
-# Initialize with configuration
-lora = LoRaOptimizer(
-    frequency=868.1e6,
-    tx_power=14,
-    bandwidth=125e3,
-    spreading_factor=7
-)
+engine = LoraAdaptiveEngine(base_config={
+    'region': 'BR',
+    'spreading_factor': 7,
+    'tx_power': 14,
+    'bandwidth': 125000,
+    'coding_rate': '4/5'
+})
 
-# Send data
-message_id = lora.send(b'Hello, LoRa!')
-
-# Receive data
-data = lora.receive(timeout=10)
+engine.log_metrics(rssi=-90.0, snr=3.5, lost_packets=0.08)
+engine.adjust_parameters()
+summary = engine.get_performance_summary()
 ```
 
-### P2PRecovery
+### ChurnMitigation
 
 Manages network partition detection and recovery with:
 - Partition detection
@@ -118,13 +115,7 @@ Manages network partition detection and recovery with:
 - Data consistency checks
 - Network topology management
 
-### MessageBroker
-
-Handles message queuing and delivery with:
-- Priority queues
-- Message persistence
-- Retry mechanisms
-- Dead letter queue
+<!-- MessageBroker not present in codebase; section removed to avoid drift -->
 
 ## Security Module
 

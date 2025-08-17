@@ -1,21 +1,21 @@
-# Matrix Secure Network 🛡️
+# Matrix Network 
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
-📋 [Project Status](PROJECT_STATUS.md) | 📦 [Requirements](requirements.txt) | 📄 [License](LICENSE) | 🧪 [Testing Guide](tests/TESTING_APPROACH.md) | 🔌 [API Contracts](api-contracts.md) | 📊 [Security Reports](reports/)
+ [Project Status](docs/test_summary_report.md) |  [Requirements](requirements.txt) |  [License](LICENSE) |  [Testing Guide](tests/TESTING_APPROACH.md) |  [API Contracts](docs/api-contracts.md) |  [Security Reports](docs/test_summary_report.md)
 
-## 🎯 **Status Atual do Sistema**
+##  **Status Atual do Sistema**
 
-🟢 **SISTEMA COMPLETAMENTE TESTADO E VALIDADO - 99.7% OPERACIONAL**
+ **SISTEMA COMPLETAMENTE TESTADO E VALIDADO**
 
-- ✅ **354 testes aprovados** de 355 (99.7% de sucesso)
-- 🌐 **API Web FastAPI** operacional na porta 8000
-- 📊 **Health checks** funcionais para todos os subsistemas
-- 📖 **Documentação Swagger** disponível em `/docs`
-- 🔒 **Sistemas de Segurança** (ABISS & NNIS) validados
-- 🌐 **Sistemas de Rede** (LoRa & P2P) operacionais
-- 🧠 **Core Systems** (Model Manager & Logging) configurados
-- 🤖 **ML Integration** (Pipeline LLM-SLM) funcional
+-  **Testes abrangentes aprovados** — veja `docs/test_summary_report.md`
+-  **API Web FastAPI** operacional na porta 8000
+-  **Health checks** funcionais para todos os subsistemas
+-  **Documentação Swagger** disponível em `/docs`
+-  **Sistemas de Segurança** (ABISS & NNIS) validados
+-  **Sistemas de Rede** (LoRa & P2P) operacionais
+-  **Core Systems** (Model Manager & Logging) configurados
+-  **ML Integration** (Pipeline LLM-SLM) funcional
 
 -----
 
@@ -23,14 +23,14 @@
 
 O **Atous Secure Network** é um framework de última geração que redefine a segurança e a comunicação em redes distribuídas. Projetado com uma abordagem TDD (Test-Driven Development), o sistema integra seis subsistemas sinérgicos para criar uma malha de dispositivos IoT que é:
 
-  - 🧠 **Inteligente**: Utiliza IA e Aprendizado Federado para aprender e se adaptar a novas ameaças.
-  - 🛡️ **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
-  - 🔗 **Resiliente**: Garante operação contínua com mecanismos de auto-recuperação (self-healing) em redes P2P.
-  - ⚡ **Eficiente**: Otimiza dinamicamente a comunicação sem fio (LoRa) para o equilíbrio ideal entre performance e consumo de energia.
+  -  **Inteligente**: Utiliza IA e Aprendizado Federado para aprender e se adaptar a novas ameaças.
+  -  **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
+  -  **Resiliente**: Garante operação contínua com mecanismos de auto-recuperação (self-healing) em redes P2P.
+  -  **Eficiente**: Otimiza dinamicamente a comunicação sem fio (LoRa) para o equilíbrio ideal entre performance e consumo de energia.
 
 Este projeto não é apenas uma solução de segurança; é uma base para construir aplicações de IoT robustas, autônomas e preparadas para o futuro.
 
-### ✨ **Principais Funcionalidades**
+### **Principais Funcionalidades**
 
 | Funcionalidade | Descrição |
 | :--- | :--- |
@@ -41,7 +41,7 @@ Este projeto não é apenas uma solução de segurança; é uma base para constr
 | **Pipeline Cognitivo (LLM Integration)** | Uma ponte inovadora que permite que modelos de linguagem pequenos (SLM) nos dispositivos enviem "contextos" para um modelo grande (LLM) central, aprimorando a inteligência da rede sem expor dados brutos. |
 | **Simulação de Hardware** | Suporte completo a mocks e stubs que permitem o desenvolvimento e teste de todo o sistema em ambientes sem hardware físico (Windows/Linux). |
 
-### 💡 **Potencial de Mercado**
+### **Potencial de Mercado**
 
 O Atous Secure Network é ideal para setores críticos que demandam alta segurança, resiliência e inteligência:
 
@@ -53,7 +53,7 @@ O Atous Secure Network é ideal para setores críticos que demandam alta seguran
 
 -----
 
-### 🏗️ **Arquitetura e Diagramas do Sistema**
+###  **Arquitetura e Diagramas do Sistema**
 
 O sistema é construído sobre seis pilares que interagem para entregar uma solução completa e robusta.
 
@@ -238,7 +238,7 @@ graph TD
 ```
 -----
 
-### 🚀 **Início Rápido (Getting Started)**
+### **Início Rápido (Getting Started)**
 
 #### **Pré-requisitos**
 
@@ -248,37 +248,41 @@ graph TD
 
 #### **1. Instalação**
 
+#### 1. Clone o repositório
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/devrodts/Atous-Sec-Network.git
 cd Atous-Sec-Network
+```
 
-# 2. Crie e ative o ambiente virtual
-# No Windows
+#### 2. Crie e ative o ambiente virtual
+
+#### No Windows
+```bash
 python -m venv venv
 .\\venv\\Scripts\\Activate.ps1
+```
 
-# No Linux/macOS
+#### No Linux/macOS
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-# 3. Instale as dependências
-# Para desenvolvimento em Windows (inclui mocks)
-pip install -r requirements-dev-windows.txt
-
-# Para produção ou Linux/Raspberry Pi
+#### 3. Instale as dependências
+```bash
 pip install -r requirements.txt
 ```
 
 #### **2. Verificação da Instalação**
-
 Verifique se tudo está configurado corretamente:
 
+##### Verifique problemas de importação
 ```bash
-# Verifique problemas de importação
 python debug_import.py
+```
 
-# Verifique o status da aplicação
+#### Verifique o status da aplicação
+```bash
 python start_app.py --status
 ```
 
@@ -286,32 +290,43 @@ python start_app.py --status
 
 O ATous Secure Network oferece diferentes modos de execução:
 
-##### **🧪 Modo de Teste (Import Test)**
+##### ** Modo de Teste (Import Test)**
+
+#### Teste rápido de importação - NÃO inicia servidor
 ```bash
-# Teste rápido de importação - NÃO inicia servidor
 python start_app.py --lite
 ```
 *Este comando apenas testa se os módulos podem ser importados e sai imediatamente.*
 
-##### **🎯 Modo Demonstração (Demo Mode)**
+##### ** Modo Demonstração (Demo Mode)**
+
+#### Demonstração dos sistemas - NÃO inicia servidor web
 ```bash
-# Demonstração dos sistemas - NÃO inicia servidor web
 python start_app.py --full
-# ou
+```
+
+#### ou
+```bash
 python -m atous_sec_network
 ```
+
+#### Ou usando uvicorn diretamente
+```bash
+python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --reload
+```
+
 *Este comando inicializa todos os sistemas, mostra o status e sai. Ideal para verificar se tudo está funcionando.*
 
-##### **🌐 Modo Servidor Web (Production Mode)**
+##### ** Modo Servidor Web (Production Mode)**
+
+#### Inicia o servidor web FastAPI com todos os endpoints
 ```bash
-# INICIA o servidor web FastAPI com todos os endpoints
 python start_server.py
+```
 
-# Ou com opções personalizadas
+#### Ou com opções personalizadas
+```bash
 python start_server.py --host 0.0.0.0 --port 8000 --reload
-
-# Ou usando uvicorn diretamente
-python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 **📡 Após iniciar o servidor, acesse:**
@@ -321,22 +336,36 @@ python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --
 - **Status de Segurança:** http://localhost:8000/api/security/status
 - **Métricas:** http://localhost:8000/api/metrics
 
+### Produção
+
+- Docker: veja `docs/deployment/README.md` para build e execução com `docker compose` (Nginx + Gunicorn/Uvicorn)
+- Variáveis de ambiente essenciais: `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `ADMIN_ENABLED`, `ADMIN_AUTH_ENABLED`, `ADMIN_API_KEY`, `RATE_LIMIT_*`
+- Nginx: arquivos em `deploy/nginx/` (inclui exemplo com TLS)
+
 #### **4. Executando os Testes**
 
 Para garantir que tudo está funcionando corretamente:
 
+#### Execute todos os testes
 ```bash
-# Execute todos os testes
 python start_app.py --test
-# ou
-python -m pytest tests/ -v
+```
 
-# Testes específicos
-python -m pytest tests/unit/ -v          # Testes unitários
-python -m pytest tests/integration/ -v   # Testes de integração
-python -m pytest tests/security/ -v      # Testes de segurança
+#### Testes específicos
+```bash
+python -m pytest tests/unit/ -v
+```
 
-# Gere um relatório de cobertura de código
+```bash
+python -m pytest tests/integration/ -v 
+```
+
+```bash
+python -m pytest tests/security/ -v
+```
+
+#### Gere um relatório de cobertura de código
+```bash
 python -m pytest --cov=atous_sec_network --cov-report=html
 ```
 
@@ -344,82 +373,152 @@ python -m pytest --cov=atous_sec_network --cov-report=html
 
 | Modo | Comando | Servidor Web | Descrição | Uso Recomendado |
 |------|---------|--------------|-----------|-----------------|
-| **🧪 Teste de Importação** | `python start_app.py --lite` | ❌ Não | Testa apenas importações e sai | Verificação rápida, CI/CD |
-| **🎯 Demonstração** | `python start_app.py --full` | ❌ Não | Inicializa sistemas e mostra status | Verificação de funcionalidade |
-| **🌐 Servidor Web** | `python start_server.py` | ✅ Sim | Inicia FastAPI com todos os endpoints | Desenvolvimento e produção |
-| **🔧 Debug** | `python start_app.py --debug` | ❌ Não | Verifica problemas de importação | Troubleshooting |
-| **🧪 Testes** | `python start_app.py --test` | ❌ Não | Executa suite de testes | Validação de código |
+| ** Teste de Importação** | `python start_app.py --lite` |  Não | Testa apenas importações e sai | Verificação rápida, CI/CD |
+| ** Demonstração** | `python start_app.py --full` |  Não | Inicializa sistemas e mostra status | Verificação de funcionalidade |
+| ** Servidor Web** | `python start_server.py` |  Sim | Inicia FastAPI com todos os endpoints | Desenvolvimento e produção |
+| ** Debug** | `python start_app.py --debug` |  Não | Verifica problemas de importação | Troubleshooting |
+| ** Testes** | `python start_app.py --test` |  Não | Executa suite de testes | Validação de código |
 
-**⚠️ IMPORTANTE:** Para acessar a API web, WebSockets, endpoints de criptografia e sistemas de segurança, você DEVE usar o **Modo Servidor Web**.
+** IMPORTANTE:** Para acessar a API web, WebSockets, endpoints de criptografia e sistemas de segurança, você DEVE usar o **Modo Servidor Web**.
 
 #### **6. Fluxo de Desenvolvimento Recomendado**
 
+#### 1. Verifique o ambiente e dependências
 ```bash
-# 1. Verifique o ambiente e dependências
 python start_app.py --debug
+```
 
-# 2. Teste importações básicas
+#### 2. Teste importações básicas
+```bash
 python start_app.py --lite
+```
 
-# 3. Execute a suite de testes
+#### 3. Execute a suite de testes
+```bash
 python start_app.py --test
+```
 
-# 4. Verifique inicialização dos sistemas
+#### 4. Verifique inicialização dos sistemas
+```bash
 python start_app.py --full
+```
 
-# 5. Inicie o servidor para desenvolvimento
+#### 5. Inicie o servidor para desenvolvimento
+```bash
 python start_server.py --reload
+````
 
-# 6. Teste os endpoints (em outro terminal)
+#### 6. Teste os endpoints (em outro terminal)
+```bash
 curl http://localhost:8000/health
+```
+
+#### Status 
+```bash
 curl http://localhost:8000/api/security/status
 ```
 
 #### **7. Verificação de Funcionalidade Completa**
-
 Para testar todas as funcionalidades do sistema:
 
+#### 1. Inicie o servidor
 ```bash
-# 1. Inicie o servidor
 python start_server.py
+```
 
-# 2. Execute testes de funcionalidade (em outro terminal)
+#### 2. Execute testes de funcionalidade (em outro terminal)
+```bash
 python test_complete_functionality.py
-
-# 3. Teste WebSockets
-python test_websocket_fix.py
-
-# 4. Teste segurança
-python test_security_final.py
 ```
 
 Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS** incluindo:
-- ✅ API REST endpoints
-- ✅ WebSocket connections  
-- ✅ Sistemas de segurança ABISS/NNIS
-- ✅ Criptografia e autenticação
-- ✅ Rate limiting e proteção DDoS
+-  API REST endpoints
+-  WebSocket connections  
+-  Sistemas de segurança ABISS/NNIS
+-  Criptografia e autenticação
+-  Rate limiting e proteção DDoS
 
-### 📚 **Documentação Completa**
 
-#### 🚨 **IMPORTANTE - Leia Primeiro**
-- 🚀 **[Guia de Inicialização](docs/STARTUP_GUIDE.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
+### **Admin (MVP)**
+
+- **UI**: acesse `http://localhost:8000/admin` (com o servidor ativo)
+- **APIs**: `GET /v1/admin/overview`, `GET/POST /v1/admin/events`
+
+Seed rápido para demonstração:
+
+#### 1) Inicie o servidor (terminal 1)
+```bash
+python start_server.py
+```
+
+#### 2) Popule dados de demo (terminal 2)
+```bash
+python scripts/seed_admin_demo.py --base-url http://localhost:8000 \
+  --agent-id agt-demo --service-name api-service --port 8000
+```
+
+Após o seed, a página `/admin` mostrará 1 agente em discovery/relay e eventos registrados. Os eventos também são persistidos em `logs/admin_events.ndjson`.
+
+###  Testar funcionalidades (local)
+
+No Windows PowerShell (use `$env:` para variáveis de ambiente):
+
+```powershell
+# 1) Inicie o servidor com auth de admin simples
+$env:ALLOWED_HOSTS='localhost,127.0.0.1'; `
+$env:CORS_ALLOWED_ORIGINS='http://localhost'; `
+$env:ADMIN_ENABLED='true'; `
+$env:ADMIN_AUTH_ENABLED='true'; `
+$env:ADMIN_API_KEY='dev-admin'; `
+python -m uvicorn atous_sec_network.api.server:app --host 127.0.0.1 --port 8000
+
+# 2) Em outro terminal, popule dados de demo
+python scripts/seed_admin_demo.py --base-url http://127.0.0.1:8000 `
+  --agent-id agt-demo --service-name api-service --port 8000
+
+# 3) Verifique endpoints (use curl.exe no Windows)
+curl.exe -sS http://127.0.0.1:8000/health
+curl.exe -sS -H "X-Admin-Api-Key: dev-admin" http://127.0.0.1:8000/v1/admin/overview
+curl.exe -sS "http://127.0.0.1:8000/v1/discovery/services?name=api-service"
+curl.exe -sS "http://127.0.0.1:8000/v1/discovery/resolve?name=api-service&pref=local,lan,wan"
+
+# 4) Teste Relay (PowerShell tem cotações estritas; use Python inline)
+python -c "import requests; base='http://127.0.0.1:8000'; print('send:', requests.post(base+'/v1/relay/send', json={'from':'agt-demo','to':'agt-demo','payload':{'msg':'hello'}}).status_code); print('poll:', requests.get(base+'/v1/relay/poll', params={'agent_id':'agt-demo'}).json())"
+```
+
+Observações:
+- Evite `set VAR &&` no PowerShell; use `$env:VAR='valor'`.
+- Para chamadas Admin, inclua o header `X-Admin-Api-Key`.
+- O middleware de segurança pode bloquear cargas malformadas; prefira o script de seed ou `requests` em Python para JSON correto.
+
+### **Documentação Completa**
+
+####  **IMPORTANTE - Leia Primeiro**
+-  **[Guia de Inicialização](docs/getting-started/README.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
+
+#### **Testando a API com Postman**
+- **[Collection do Postman](docs/collection.json)** - Collection completa com todos os endpoints
+-  **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Instruções detalhadas de uso
+-  **Configuração Rápida**: Importe a collection, configure as variáveis e comece a testar
 
 #### Links Rápidos
-- 📖 **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
-- 🏁 **[Getting Started](docs/getting-started/README.md)** - Configuração detalhada e primeiros passos
-- 🛠️ **[Guia de Desenvolvimento](docs/development/README.md)** - Configuração e fluxo de trabalho para desenvolvedores
-- 📊 **[Status do Projeto](PROJECT_STATUS.md)** - Status atual de desenvolvimento e resultados de testes
-- 📋 **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
-- 🧪 **[Guia de Testes](tests/TESTING_APPROACH.md)** - Documentação abrangente de testes
+-  **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
+-  **[Getting Started](docs/getting-started/README.md)** - Configuração detalhada e primeiros passos
+-  **[Guia de Desenvolvimento](docs/development/README.md)** - Configuração e fluxo de trabalho para desenvolvedores
+-  **[Status do Projeto](docs/test_summary_report.md)** - Status atual de desenvolvimento e resultados de testes
+-  **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
+-  **[Guia de Testes](tests/TESTING_APPROACH.md)** - Documentação abrangente de testes
+-  **[Mapa de Endpoints](docs/technical/ENDPOINTS_MAP.md)** - Endpoints REST e WebSocket consolidados
+-  **[Collection do Postman](docs/collection.json)** - Collection completa para testar a API
+-  **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Como usar a collection do Postman
 
 #### Recursos Adicionais
 Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento, consulte a pasta `/docs`:
 
-  - [**Guia de Iniciação**](https://www.google.com/search?q=./docs/getting-started/README.md)
-  - [**Arquitetura do Sistema**](https://www.google.com/search?q=./docs/architecture/README.md)
-  - [**Documentação da API**](https://www.google.com/search?q=./docs/technical/API_DOCUMENTATION.md)
-  - [**Guia de Implantação (Deployment)**](https://www.google.com/search?q=./docs/deployment/README.md)
+  - [**Guia de Iniciação**](docs/getting-started/README.md)
+  - [**Arquitetura do Sistema**](docs/architecture/README.md)
+  - [**Documentação da API**](docs/technical/API_DOCUMENTATION.md)
+  - [**Guia de Implantação (Deployment)**](docs/deployment/README.md)
   - [Requisitos](requirements.txt) - Dependências Python
   - [Licença](LICENSE) - Licença GNU General Public License v3.0
   - [Documentação de Arquitetura](docs/architecture/) - Design e arquitetura do sistema
@@ -427,7 +526,7 @@ Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento
 
 -----
 
-### 🤝 **Como Contribuir**
+###  **Como Contribuir**
 
 Estamos abertos a contribuições\! Se você deseja participar:
 
@@ -437,7 +536,7 @@ Estamos abertos a contribuições\! Se você deseja participar:
 4.  Garanta que todos os testes estão passando (`pytest`).
 5.  Envie um *Pull Request* detalhado.
 
-### 📄 **Licença**
+###  **Licença**
 
 Este projeto é licenciado sob os termos da licença **GNU General Public License v3.0**. Veja o arquivo [LICENSE](https://www.google.com/search?q=LICENSE) para mais detalhes.
 

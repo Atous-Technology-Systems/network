@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atous-network
+  labels:
+    app: atous-network
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: atous-network
+  template:
+    metadata:
+      labels:
+        app: atous-network
+    spec:
+      containers:
+        - name: app
+          image: atous-sec-network:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: atous-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+
