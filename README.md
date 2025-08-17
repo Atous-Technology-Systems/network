@@ -21,7 +21,7 @@
 
 ### **Visão Geral**
 
-A **Matrix Network** é um framework de última geração que redefine a segurança e a comunicação em redes distribuídas. Projetado com uma abordagem TDD (Test-Driven Development), o sistema integra seis subsistemas sinérgicos para criar uma malha de dispositivos IoT que é:
+A **Matrix Network** é um framework de segurança e a comunicação em redes distribuídas, o sistema integra seis subsistemas sinérgicos para criar uma malha de dispositivos IoT que é:
 
   -  **Inteligente**: Utiliza IA e Aprendizado Federado para aprender e se adaptar a novas ameaças.
   -  **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
