@@ -24,7 +24,7 @@
 O **Atous Secure Network** é um framework de última geração que redefine a segurança e a comunicação em redes distribuídas. Projetado com uma abordagem TDD (Test-Driven Development), o sistema integra seis subsistemas sinérgicos para criar uma malha de dispositivos IoT que é:
 
   -  **Inteligente**: Utiliza IA e Aprendizado Federado para aprender e se adaptar a novas ameaças.
-  - 🛡 **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
+  -  **Segura**: Combina detecção de anomalias comportamentais com um sistema de defesa bio-inspirado.
   -  **Resiliente**: Garante operação contínua com mecanismos de auto-recuperação (self-healing) em redes P2P.
   -  **Eficiente**: Otimiza dinamicamente a comunicação sem fio (LoRa) para o equilíbrio ideal entre performance e consumo de energia.
 
@@ -238,7 +238,7 @@ graph TD
 ```
 -----
 
-### 🚀 **Início Rápido (Getting Started)**
+### **Início Rápido (Getting Started)**
 
 #### **Pré-requisitos**
 
@@ -336,7 +336,7 @@ python start_server.py --host 0.0.0.0 --port 8000 --reload
 - **Status de Segurança:** http://localhost:8000/api/security/status
 - **Métricas:** http://localhost:8000/api/metrics
 
-### 🧭 Produção
+### Produção
 
 - Docker: veja `docs/deployment/README.md` para build e execução com `docker compose` (Nginx + Gunicorn/Uvicorn)
 - Variáveis de ambiente essenciais: `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `ADMIN_ENABLED`, `ADMIN_AUTH_ENABLED`, `ADMIN_API_KEY`, `RATE_LIMIT_*`
@@ -413,6 +413,7 @@ python start_server.py --reload
 curl http://localhost:8000/health
 ```
 
+#### Status 
 ```bash
 curl http://localhost:8000/api/security/status
 ```
@@ -430,25 +431,15 @@ python start_server.py
 python test_complete_functionality.py
 ```
 
-#### 3. Teste WebSockets
-```bash
-python test_websocket_fix.py
-``´ 
-
-#### 4. Teste segurança
-```bash
-python test_security_final.py
-```
-
 Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS** incluindo:
-- ✅ API REST endpoints
-- ✅ WebSocket connections  
-- ✅ Sistemas de segurança ABISS/NNIS
-- ✅ Criptografia e autenticação
-- ✅ Rate limiting e proteção DDoS
+-  API REST endpoints
+-  WebSocket connections  
+-  Sistemas de segurança ABISS/NNIS
+-  Criptografia e autenticação
+-  Rate limiting e proteção DDoS
 
 
-### 🛠️ **Admin (MVP)**
+### **Admin (MVP)**
 
 - **UI**: acesse `http://localhost:8000/admin` (com o servidor ativo)
 - **APIs**: `GET /v1/admin/overview`, `GET/POST /v1/admin/events`
@@ -468,7 +459,7 @@ python scripts/seed_admin_demo.py --base-url http://localhost:8000 \
 
 Após o seed, a página `/admin` mostrará 1 agente em discovery/relay e eventos registrados. Os eventos também são persistidos em `logs/admin_events.ndjson`.
 
-### ✅ Testar funcionalidades (local)
+###  Testar funcionalidades (local)
 
 No Windows PowerShell (use `$env:` para variáveis de ambiente):
 
@@ -500,26 +491,26 @@ Observações:
 - Para chamadas Admin, inclua o header `X-Admin-Api-Key`.
 - O middleware de segurança pode bloquear cargas malformadas; prefira o script de seed ou `requests` em Python para JSON correto.
 
-### 📚 **Documentação Completa**
+### **Documentação Completa**
 
-#### 🚨 **IMPORTANTE - Leia Primeiro**
-- 🚀 **[Guia de Inicialização](docs/getting-started/README.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
+####  **IMPORTANTE - Leia Primeiro**
+-  **[Guia de Inicialização](docs/getting-started/README.md)** - **COMECE AQUI** - Instruções claras sobre como executar a aplicação
 
-#### 🧪 **Testando a API com Postman**
-- 📚 **[Collection do Postman](docs/collection.json)** - Collection completa com todos os endpoints
-- 📖 **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Instruções detalhadas de uso
-- 🔧 **Configuração Rápida**: Importe a collection, configure as variáveis e comece a testar
+#### **Testando a API com Postman**
+- **[Collection do Postman](docs/collection.json)** - Collection completa com todos os endpoints
+-  **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Instruções detalhadas de uso
+-  **Configuração Rápida**: Importe a collection, configure as variáveis e comece a testar
 
 #### Links Rápidos
-- 📖 **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
-- 🏁 **[Getting Started](docs/getting-started/README.md)** - Configuração detalhada e primeiros passos
-- 🛠️ **[Guia de Desenvolvimento](docs/development/README.md)** - Configuração e fluxo de trabalho para desenvolvedores
-- 📊 **[Status do Projeto](docs/test_summary_report.md)** - Status atual de desenvolvimento e resultados de testes
-- 📋 **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
-- 🧪 **[Guia de Testes](tests/TESTING_APPROACH.md)** - Documentação abrangente de testes
-- 🌐 **[Mapa de Endpoints](docs/technical/ENDPOINTS_MAP.md)** - Endpoints REST e WebSocket consolidados
-- 📚 **[Collection do Postman](docs/collection.json)** - Collection completa para testar a API
-- 📖 **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Como usar a collection do Postman
+-  **[Guia do Usuário](docs/USER_GUIDE.md)** - Instruções completas de instalação e uso
+-  **[Getting Started](docs/getting-started/README.md)** - Configuração detalhada e primeiros passos
+-  **[Guia de Desenvolvimento](docs/development/README.md)** - Configuração e fluxo de trabalho para desenvolvedores
+-  **[Status do Projeto](docs/test_summary_report.md)** - Status atual de desenvolvimento e resultados de testes
+-  **[Contratos da API](api-contracts.md)** - Documentação e contratos da API
+-  **[Guia de Testes](tests/TESTING_APPROACH.md)** - Documentação abrangente de testes
+-  **[Mapa de Endpoints](docs/technical/ENDPOINTS_MAP.md)** - Endpoints REST e WebSocket consolidados
+-  **[Collection do Postman](docs/collection.json)** - Collection completa para testar a API
+-  **[Guia do Postman](docs/POSTMAN_COLLECTION_README.md)** - Como usar a collection do Postman
 
 #### Recursos Adicionais
 Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento, consulte a pasta `/docs`:
@@ -535,7 +526,7 @@ Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento
 
 -----
 
-### 🤝 **Como Contribuir**
+###  **Como Contribuir**
 
 Estamos abertos a contribuições\! Se você deseja participar:
 
@@ -545,7 +536,7 @@ Estamos abertos a contribuições\! Se você deseja participar:
 4.  Garanta que todos os testes estão passando (`pytest`).
 5.  Envie um *Pull Request* detalhado.
 
-### 📄 **Licença**
+###  **Licença**
 
 Este projeto é licenciado sob os termos da licença **GNU General Public License v3.0**. Veja o arquivo [LICENSE](https://www.google.com/search?q=LICENSE) para mais detalhes.
 
