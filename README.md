@@ -356,10 +356,10 @@ python start_app.py --test
 ```bash
 python -m pytest tests/unit/ -v
 ```
-bash```
+```bash
 python -m pytest tests/integration/ -v 
 ```
-bash```
+```bash
 python -m pytest tests/security/ -v
 ```
 
@@ -388,30 +388,30 @@ python start_app.py --debug
 ```
 
 #### 2. Teste importações básicas
-bash```
+```bash
 python start_app.py --lite
 ```
 
 #### 3. Execute a suite de testes
-bash```
+```bash
 python start_app.py --test
 ```
 
 #### 4. Verifique inicialização dos sistemas
-bash```
+```bash
 python start_app.py --full
 ```
 
 #### 5. Inicie o servidor para desenvolvimento
-bash```
+```bash
 python start_server.py --reload
 ````
 
 #### 6. Teste os endpoints (em outro terminal)
-bash```
+```bash
 curl http://localhost:8000/health
 ```
-bash```
+```bash
 curl http://localhost:8000/api/security/status
 ```
 
@@ -424,17 +424,17 @@ python start_server.py
 ```
 
 #### 2. Execute testes de funcionalidade (em outro terminal)
-bash```
+```bash
 python test_complete_functionality.py
 ```
 
 #### 3. Teste WebSockets
-bash``` 
+```bash
 python test_websocket_fix.py
 ``´ 
 
 #### 4. Teste segurança
-bash```
+```bash
 python test_security_final.py
 ```
 
@@ -454,12 +454,12 @@ Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS**
 Seed rápido para demonstração:
 
 #### 1) Inicie o servidor (terminal 1)
-bash```
+```bash
 python start_server.py
 ```
 
 #### 2) Popule dados de demo (terminal 2)
-bash```
+```bash
 python scripts/seed_admin_demo.py --base-url http://localhost:8000 \
   --agent-id agt-demo --service-name api-service --port 8000
 ```
