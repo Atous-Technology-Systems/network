@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
 
-from atous_sec_network.security.abiss import ABISS
+from atous_sec_network.security.abiss_system import ABISSSystem
 
 
 class TestABISSAdvancedBehavioralProfiling:
@@ -21,7 +21,7 @@ class TestABISSAdvancedBehavioralProfiling:
     
     def setup_method(self):
         """Setup para cada teste"""
-        self.abiss = ABISS()
+        self.abiss = ABISSSystem()
         self.node_id = "test_node_001"
         
     def test_create_behavioral_baseline_should_analyze_historical_data(self):
@@ -84,7 +84,7 @@ class TestABISSAdvancedAnomalyDetection:
     
     def setup_method(self):
         """Setup para cada teste"""
-        self.abiss = ABISS()
+        self.abiss = ABISSSystem()
         self.node_id = "test_node_002"
         
     def test_statistical_anomaly_detection_zscore_should_detect_outliers(self):
@@ -174,7 +174,7 @@ class TestABISSAdvancedAdaptiveResponse:
     
     def setup_method(self):
         """Setup para cada teste"""
-        self.abiss = ABISS()
+        self.abiss = ABISSSystem()
         self.node_id = "test_node_003"
         
     def test_quarantine_node_should_isolate_malicious_node(self):
@@ -273,7 +273,7 @@ class TestABISSAdvancedIntegration:
     
     def setup_method(self):
         """Setup para cada teste"""
-        self.abiss = ABISS()
+        self.abiss = ABISSSystem()
         self.mock_p2p = Mock()
         self.mock_ota = Mock()
         self.mock_nnis = Mock()
@@ -350,7 +350,7 @@ class TestABISSAdvancedPerformance:
     
     def setup_method(self):
         """Setup para cada teste"""
-        self.abiss = ABISS()
+        self.abiss = ABISSSystem()
         
     def test_bulk_analysis_should_process_multiple_nodes_efficiently(self):
         """Deve processar análise de múltiplos nós eficientemente"""

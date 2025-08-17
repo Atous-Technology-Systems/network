@@ -56,9 +56,14 @@ This document summarizes the implementation of enhanced security features for th
 - Excluded path management
 
 #### Current Status
-- **ABISS System**: Active but blocking endpoints de segurança com score máximo
+- **ABISS System**: Active but blocking security endpoints with maximum score
 - **NNIS System**: Active and operational
 - **Middleware**: Comprehensive security with rate limiting and DDoS protection
+
+#### API Endpoints Status
+- **Criptografia**: Apenas endpoints de criptografia implementados (`/api/crypto/encrypt`, `/api/security/encrypt`, `/encrypt`)
+- **Descriptografia**: **Não implementada** - endpoints de descriptografia não existem na versão atual
+- **WebSockets**: 4 endpoints funcionais (`/ws`, `/api/ws`, `/websocket`, `/ws/test_node`)
 
 ### 3. Automated Health Checking
 

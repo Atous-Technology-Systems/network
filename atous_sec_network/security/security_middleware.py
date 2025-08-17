@@ -21,6 +21,8 @@ from starlette.types import ASGIApp
 from .input_validator import validator, ValidationResult, validate_request_data
 from .config import RateLimitConfig, SecurityPreset
 from .security_presets import get_security_preset
+# Lazy import para evitar problemas com dependências pesadas
+from . import get_abiss_system
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +104,10 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         
         # Request size tracking
         self.large_request_threshold = 100 * 1024  # 100KB
+        
+        # Initialize ABISS system (lazy loading)
+        self.abiss_system = None
+        logger.info("ABISS system configured for lazy loading in security middleware")
     
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """Main middleware dispatch method"""
@@ -137,6 +143,11 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
                     status_code=413,
                     content={"error": "Request too large", "code": "REQUEST_TOO_LARGE"}
                 )
+            
+            # ABISS threat analysis
+            abiss_result = await self._analyze_with_abiss(request, client_ip)
+            if abiss_result:
+                return abiss_result
             
             # Input validation
             if self.enable_input_validation:
@@ -514,3 +525,67 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         if ip_address in self.clients:
             self.clients[ip_address].blocked_until = None
         logger.info(f"Manually unblocked IP: {ip_address}")
+    
+    async def _analyze_with_abiss(self, request: Request, client_ip: str) -> Optional[Response]:
+        """Analyze request using ABISS system for threat detection"""
+        try:
+            # Prepare request data for ABISS analysis
+            request_data = {
+                "method": request.method,
+                "url": str(request.url),
+                "headers": dict(request.headers),
+                "body": {},
+                "ip": client_ip
+            }
+            
+            # Try to get request body if available
+            try:
+                if request.method in ["POST", "PUT", "PATCH"]:
+                    body = await request.body()
+                    if body:
+                        try:
+                            request_data["body"] = json.loads(body.decode())
+                        except json.JSONDecodeError:
+                            request_data["body"] = {"raw_body": body.decode()}
+            except Exception:
+                # If we can't read the body, continue without it
+                pass
+            
+            # Initialize ABISS system if needed (lazy loading)
+            if self.abiss_system is None:
+                from .abiss_system import ABISSSystem
+                self.abiss_system = ABISSSystem()
+            
+            # Analyze with ABISS
+            threat_score = self.abiss_system.analyze_request(request_data)
+            
+            # Check if request should be blocked
+            if not self.abiss_system.is_request_allowed(threat_score):
+                logger.warning(f"Request blocked by ABISS system - IP: {client_ip}, Score: {threat_score:.2f}")
+                await self._update_client_stats(client_ip, 'malicious')
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "error": "Request blocked by security system",
+                        "code": "ABISS_BLOCKED",
+                        "reason": f"High threat score detected by ABISS: {threat_score:.2f}",
+                        "details": {
+                            "threat_score": threat_score,
+                            "block_threshold": self.abiss_system.block_threshold
+                        }
+                    }
+                )
+            
+            # Update client stats based on threat level
+            if threat_score >= self.abiss_system.monitor_threshold:
+                await self._update_client_stats(client_ip, 'suspicious')
+                logger.info(f"ABISS detected suspicious request - IP: {client_ip}, Score: {threat_score:.2f}")
+            elif threat_score < 0.3:
+                await self._update_client_stats(client_ip, 'safe')
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"ABISS analysis error: {e}")
+            # Continue with the request if ABISS fails
+            return None

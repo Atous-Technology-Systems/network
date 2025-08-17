@@ -11,8 +11,7 @@ from typing import Dict, Any, List
 
 from atous_sec_network.security.abiss_system import (
     ABISSSystem, 
-    ThreatPattern, 
-    AdaptiveResponse
+    ThreatPattern
 )
 
 class TestABISSIntegration(unittest.TestCase):

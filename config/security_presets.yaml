@@ -43,6 +43,7 @@ presets:
     name: "Staging"
     description: "Balanced security for pre-production testing"
     rate_limiting:
+    
       requests_per_minute: 60
       requests_per_hour: 2000
       burst_limit: 10
@@ -210,3 +211,70 @@ custom_rules:
     - ".exe"
     - ".bat"
     - ".sh"
+
+# ABISS System Configuration
+# Adaptive Behaviour Intelligence Security System
+abiss:
+  # Thresholds for threat detection
+  thresholds:
+    block_threshold: 0.95
+    monitor_threshold: 0.85
+    threat_threshold: 0.80
+  
+  # Endpoint whitelist for trusted paths
+  endpoint_whitelist:
+    - "/health"
+    - "/docs"
+    - "/redoc"
+    - "/openapi.json"
+  
+  # Pattern detection settings
+  pattern_detection:
+    sql_injection: true
+    xss_attack: true
+    command_injection: true
+    brute_force: true
+  
+  # Behavior analysis settings
+  behavior_analysis:
+    history_size: 10
+    learning_rate: 0.001
+    adaptation_speed: 0.1
+  
+  # Performance settings
+  performance:
+    memory_size: 1000
+    max_execution_time_ms: 100
+    enable_caching: true
+  
+  # Environment-specific overrides
+  environment_overrides:
+    development:
+      block_threshold: 0.95
+      monitor_threshold: 0.85
+      endpoint_whitelist:
+        - "/health"
+        - "/docs"
+        - "/redoc"
+        - "/openapi.json"
+        - "/auth/register"
+        - "/auth/login"
+        - "/auth/refresh"
+        - "/auth/profile"
+        - "/auth/change-password"
+        - "/auth/sessions"
+        - "/auth/logout"
+        - "/auth/users"
+        - "/auth/security/stats"
+        - "/auth/security/logs"
+        - "/auth/tokens/stats"
+        - "/auth/maintenance/cleanup"
+    
+    production:
+      block_threshold: 0.95
+      monitor_threshold: 0.80
+      endpoint_whitelist:
+        - "/health"
+        - "/api/info"
+        - "/api/security/status"
+        - "/api/metrics"

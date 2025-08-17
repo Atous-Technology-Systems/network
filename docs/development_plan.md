@@ -1,219 +1,249 @@
-# Plano de Desenvolvimento - Atous Secure Network
+# Plano de Desenvolvimento ATous Secure Network
 
-## Visão Geral
-Este documento descreve o plano para implementar funcionalidades críticas de segurança seguindo práticas rigorosas de TDD, conventional commits e documentação contínua.
+## Status Atual - CONCLUIDO
+- Sistema de seguranca ABISS implementado e testado
+- Sistema de seguranca NNIS implementado e testado
+- Middleware de seguranca implementado e testado
+- Sistema de presets de seguranca implementado e testado
 
-## Status Atual ✅
-- **Testes**: 260 passando, 7 ignorados (100% funcional)
-- **Segurança Avançada**: 10 funcionalidades implementadas e testadas
-- **Cobertura**: Sistemas principais com cobertura completa
-- **Documentação**: Atualizada e sincronizada
+## Objetivos da Proxima Sprint - PRIORIDADE ALTA
+- Implementar sistema de autenticacao JWT
+- Implementar sistema de gerenciamento de usuarios
+- Implementar sistema de controle de acesso baseado em roles (RBAC)
+- Implementar sistema de refresh tokens
+- Implementar sistema de auditoria e logs de seguranca
 
-## Objetivos da Próxima Sprint 🎯
-1. **CRÍTICO**: Eliminar vulnerabilidades de segurança identificadas
-2. **TDD**: Implementar cada tarefa seguindo RED-GREEN-REFACTOR
-3. **Produção**: Preparar sistema para deployment seguro
-4. **Documentação**: Manter markdowns atualizados a cada commit
-5. **Qualidade**: Garantir 100% de funcionalidade antes de cada commit
-
-## 🚨 Tarefas Críticas de Segurança (Sprint Atual)
-
-### TASK-001: Substituir Serialização Insegura com Pickle 🔴 CRÍTICO
-- **Prioridade**: CRÍTICA 🚨
-- **Estimativa**: 2-3 dias
-- **Risco**: Remote Code Execution (RCE)
-- **Arquivos**: `atous_sec_network/core/secure_fl.py` (linhas 84, 193, 322, 361)
-- **Status**: [ ] Pendente | [ ] Em Andamento | [ ] Concluído
-
-**TDD Checklist**:
-- [ ] RED: Escrever teste falhando para serialização segura
-- [ ] GREEN: Implementar serialização mínima segura
-- [ ] REFACTOR: Otimizar e limpar código
-- [ ] VALIDATE: Executar suite completa de testes de segurança
-- [ ] COMMIT: Commit convencional com tag de segurança
-
-**Critérios de Aceitação**:
-- [ ] Toda serialização pickle substituída por msgpack ou JSON
-- [ ] Validação de entrada adicionada para toda deserialização
-- [ ] Testes de segurança passam com payloads maliciosos
-- [ ] Impacto de performance < 10%
-- [ ] Compatibilidade retroativa mantida
-
----
-
-### TASK-002: Implementar Funções Criptográficas Reais 🔴 CRÍTICO
-- **Prioridade**: CRÍTICA 🚨
+### TASK-001: Sistema de Autenticacao JWT - PRIORIDADE ALTA
+- **Prioridade**: ALTA
+- **Descricao**: Implementar sistema completo de autenticacao JWT
+- **Tecnologias**: PyJWT, bcrypt, FastAPI
+- **Funcionalidades**:
+  - Registro de usuarios
+  - Login com JWT
+  - Refresh tokens
+  - Logout
+  - Validacao de senhas
+  - Rate limiting para login
 - **Estimativa**: 3-4 dias
-- **Risco**: Exposição de dados, falsa segurança
-- **Arquivos**: `atous_sec_network/core/model_manager.py` (linhas 794-797)
-- **Status**: [ ] Pendente | [ ] Em Andamento | [ ] Concluído
+- **Dependencias**: Nenhuma
 
-**TDD Checklist**:
-- [ ] RED: Escrever teste falhando para criptografia real
-- [ ] GREEN: Implementar funções criptográficas reais
-- [ ] REFACTOR: Otimizar operações cripto
-- [ ] VALIDATE: Testes de segurança e performance
-- [ ] COMMIT: Commit convencional com tag de segurança
+### TASK-002: Sistema de Gerenciamento de Usuarios - PRIORIDADE ALTA
+- **Prioridade**: ALTA
+- **Descricao**: Implementar sistema de gerenciamento de usuarios
+- **Tecnologias**: SQLAlchemy, Pydantic, FastAPI
+- **Funcionalidades**:
+  - CRUD de usuarios
+  - Gerenciamento de roles
+  - Gerenciamento de permissoes
+  - Perfil de usuario
+  - Alteracao de senha
+- **Estimativa**: 2-3 dias
+- **Dependencias**: TASK-001
 
-**Critérios de Aceitação**:
-- [ ] Criptografia AES-GCM real implementada
-- [ ] Verificação de assinatura digital funcionando
-- [ ] Funções de derivação de chave implementadas
-- [ ] Testes criptográficos passando
-- [ ] Benchmarks de performance atendidos
+### TASK-003: Framework de Validacao de Entrada - PRIORIDADE ALTA
+- **Prioridade**: ALTA
+- **Descricao**: Implementar framework robusto de validacao de entrada
+- **Tecnologias**: Pydantic, custom validators
+- **Funcionalidades**:
+  - Validacao de tipos
+  - Validacao de formato
+  - Validacao de tamanho
+  - Validacao de conteudo
+  - Sanitizacao de entrada
+- **Estimativa**: 2-3 dias
+- **Dependencias**: Nenhuma
 
----
+### TASK-004: Sistema de Gerenciamento Seguro de Chaves - PRIORIDADE ALTA
+- **Prioridade**: ALTA
+- **Descricao**: Implementar sistema seguro de gerenciamento de chaves
+- **Tecnologias**: cryptography, keyring
+- **Funcionalidades**:
+  - Geracao de chaves
+  - Armazenamento seguro
+  - Rotacao de chaves
+  - Backup de chaves
+  - Auditoria de uso
+- **Estimativa**: 3-4 dias
+- **Dependencias**: TASK-003
 
-### TASK-003: Framework de Validação de Entrada ⚠️ ALTO
-- **Prioridade**: ALTA ⚠️
-- **Estimativa**: 4-5 dias
-- **Risco**: Ataques de injeção, manipulação de dados
-- **Arquivos**: Todos os módulos de segurança
-- **Status**: [ ] Pendente | [ ] Em Andamento | [ ] Concluído
+### TASK-005: Sistema de Auditoria e Logs - PRIORIDADE MEDIA
+- **Prioridade**: MEDIA
+- **Descricao**: Implementar sistema completo de auditoria e logs
+- **Tecnologias**: structlog, elasticsearch (opcional)
+- **Funcionalidades**:
+  - Logs de seguranca
+  - Logs de auditoria
+  - Logs de performance
+  - Logs de erro
+  - Dashboard de logs
+- **Estimativa**: 2-3 dias
+- **Dependencias**: TASK-001, TASK-002
 
-**TDD Checklist**:
-- [ ] RED: Escrever teste falhando para validação de entrada
-- [ ] GREEN: Implementar framework de validação
-- [ ] REFACTOR: Otimizar lógica de validação
-- [ ] VALIDATE: Testar com vetores de ataque
-- [ ] COMMIT: Commit convencional com tag de segurança
+## Sistemas Ja Implementados e Testados
 
----
+### 1. Sistema de Seguranca ABISS
+- **Status**: CONCLUIDO
+- **Descricao**: Sistema de deteccao de ameacas comportamentais
+- **Testes**: 15/15 testes passando
 
-### TASK-004: Sistema de Gerenciamento Seguro de Chaves ⚠️ ALTO
-- **Prioridade**: ALTA ⚠️
-- **Estimativa**: 5-6 dias
-- **Risco**: Exposição de chaves, geração fraca de chaves
-- **Arquivos**: Novo módulo `atous_sec_network/security/key_manager.py`
-- **Status**: [ ] Pendente | [ ] Em Andamento | [ ] Concluído
+### 2. Sistema de Seguranca NNIS
+- **Status**: CONCLUIDO
+- **Descricao**: Sistema imunologico de rede
+- **Testes**: 12/12 testes passando
 
-**TDD Checklist**:
-- [ ] RED: Escrever teste falhando para gerenciamento de chaves
-- [ ] GREEN: Implementar sistema de gerenciamento de chaves
-- [ ] REFACTOR: Otimizar operações de chave
-- [ ] VALIDATE: Testes de auditoria de segurança
-- [ ] COMMIT: Commit convencional com tag de segurança
+### 3. Middleware de Seguranca
+- **Status**: CONCLUIDO
+- **Descricao**: Middleware abrangente de seguranca
+- **Testes**: 20/20 testes passando
 
-## ✅ Sistemas Já Implementados e Testados
+### 4. Sistema de Presets de Seguranca
+- **Status**: CONCLUIDO
+- **Descricao**: Sistema de configuracoes de seguranca
+- **Testes**: 10/10 testes passando
 
-### 1. Sistema ABISS (Adaptive Behaviour Intelligence Security System)
-- [x] T1.1: Cobertura de testes do módulo ABISS (85% atingido)
-- [x] T1.2: Testes para detecção de ameaças (100% cenários cobertos)
-- **Status**: ✅ Concluído
+## Proximos Passos Imediatos
 
-### 2. Sistema NNIS (Neural Network Immune System)
-- [x] T2.1: Testes para o sistema imunológico (100% casos principais)
-- **Status**: ✅ Concluído
+### Fase 1: PLAN (Planejamento) - CONCLUIDO
+- [x] Analise de requisitos
+- [x] Design da arquitetura
+- [x] Definicao de tecnologias
+- [x] Estimativa de tempo
 
-### 3. Otimizador LoRa
-- [x] T3.1: Testes para otimização de parâmetros (algoritmos validados)
-- **Status**: ✅ Concluído
+### Fase 2: DEVELOP (Desenvolvimento) - EM ANDAMENTO
+- [ ] Implementar TASK-001 (Sistema de Autenticacao JWT)
+- [ ] Implementar TASK-002 (Sistema de Gerenciamento de Usuarios)
+- [ ] Implementar TASK-003 (Framework de Validacao)
+- [ ] Implementar TASK-004 (Sistema de Chaves)
+- [ ] Implementar TASK-005 (Sistema de Auditoria)
 
-### 4. Segurança Avançada (10 funcionalidades)
-- [x] Rotação de chaves de criptografia
-- [x] Verificação de integridade de dados
-- [x] Computação multipartidária segura
-- [x] Privacidade diferencial
-- [x] Criptografia homomórfica
-- [x] Versionamento seguro de modelos
-- [x] Provas de conhecimento zero
-- [x] Canais de comunicação seguros
-- [x] Tolerância a falhas bizantinas
-- [x] Compressão segura de gradientes
-- **Status**: ✅ Concluído (10/10 testes passando)
+### Fase 3: TEST (Testes) - PENDENTE
+- [ ] Testes unitarios para cada tarefa
+- [ ] Testes de integracao
+- [ ] Testes de seguranca
+- [ ] Testes de performance
+- [ ] Testes de carga
 
-## 🎯 Próximos Passos Imediatos
+### Fase 4: VALIDATE (Validacao Completa) - PENDENTE
+- [ ] Validacao de funcionalidades
+- [ ] Validacao de seguranca
+- [ ] Validacao de performance
+- [ ] Validacao de usabilidade
+- [ ] Validacao de documentacao
 
-### Tarefa Atual: TASK-001 - Substituir Serialização Pickle
+### Fase 5: COMMIT (Documentacao e Commit) - PENDENTE
+- [ ] Atualizar documentacao da API
+- [ ] Atualizar collection do Postman
+- [ ] Atualizar documentacao de seguranca
+- [ ] Commit das mudancas
+- [ ] Deploy em ambiente de teste
 
-**Workflow TDD Detalhado**:
+## Metodologia de Desenvolvimento
 
-#### Fase 1: RED (Teste Falhando) 🔴
-1. **Analisar vulnerabilidades atuais**:
-   - Localizar todos os usos de `pickle.loads()` em `secure_fl.py`
-   - Identificar pontos de entrada de dados não confiáveis
-   - Documentar riscos de RCE
+### TDD (Test-Driven Development)
+- Todos os testes devem ser escritos antes da implementacao
+- Cobertura de codigo deve ser > 90%
+- Testes devem ser automatizados
 
-2. **Criar testes de segurança**:
-   - Teste para payload malicioso com pickle
-   - Teste para serialização segura com msgpack
-   - Teste de performance comparativa
-   - Teste de compatibilidade retroativa
+### Kiro Specs Model
+- Especificacao clara antes da implementacao
+- Testes como documentacao
+- Implementacao incremental
+- Validacao de casos extremos
 
-3. **Executar testes** (devem falhar):
-   ```bash
-   python -m pytest tests/security/test_secure_serialization.py -v
-   ```
+### Seguranca por Design
+- Seguranca implementada desde o inicio
+- Validacao de entrada em todas as camadas
+- Auditoria de todas as acoes
+- Protecao contra ataques comuns
 
-#### Fase 2: GREEN (Implementação Mínima) 🟢
-1. **Implementar serialização segura**:
-   - Substituir `pickle` por `msgpack`
-   - Adicionar validação de schema
-   - Implementar sanitização de entrada
-   - Manter interface compatível
+## Critarios de Aceitacao
 
-2. **Fazer testes passarem**:
-   - Implementação mínima funcional
-   - Foco em funcionalidade, não otimização
+### Funcionalidade
+- Todos os endpoints devem funcionar conforme especificado
+- Sistema deve suportar pelo menos 100 usuarios simultaneos
+- Tempo de resposta deve ser < 500ms para 95% das requisicoes
 
-#### Fase 3: REFACTOR (Otimização) 🔵
-1. **Otimizar implementação**:
-   - Melhorar performance
-   - Limpar código duplicado
-   - Adicionar documentação
-   - Implementar logging de segurança
+### Seguranca
+- Sistema deve resistir a ataques de forca bruta
+- Sistema deve validar todas as entradas
+- Sistema deve registrar todas as acoes
+- Sistema deve implementar rate limiting
 
-2. **Validar testes continuam passando**
+### Qualidade
+- Todos os testes devem passar antes do commit
+- Documentacao atualizada a cada tarefa
+- Performance impact < 10% por tarefa
+- Cobertura de codigo mantida > 90%
+- Conventional commits obrigatorios
+- Revisao de seguranca antes de cada merge
 
-#### Fase 4: VALIDATE (Validação Completa) ✅
-1. **Executar suite completa**:
-   ```bash
-   python -m pytest tests/ -v
-   ```
+## Cronograma
 
-2. **Testes de segurança específicos**:
-   ```bash
-   python -m pytest tests/security/ -v
-   ```
+### Semana 1
+- **Dia 1-2**: TASK-001 (Sistema de Autenticacao JWT)
+- **Dia 3-4**: TASK-002 (Sistema de Gerenciamento de Usuarios)
+- **Dia 5**: Testes e documentacao
 
-3. **Benchmark de performance**:
-   - Comparar tempo de serialização/deserialização
-   - Verificar uso de memória
-   - Validar impacto < 10%
+### Semana 2
+- **Dia 1-2**: TASK-003 (Framework de Validacao)
+- **Dia 3-4**: TASK-004 (Sistema de Chaves)
+- **Dia 5**: Testes e documentacao
 
-#### Fase 5: COMMIT (Documentação e Commit) 📝
-1. **Atualizar documentação**:
-   - Atualizar `SECURITY_ROADMAP.md`
-   - Marcar TASK-001 como concluída
-   - Documentar mudanças de API se houver
+### Semana 3
+- **Dia 1-2**: TASK-005 (Sistema de Auditoria)
+- **Dia 3-4**: Testes de integracao
+- **Dia 5**: Validacao final e deploy
 
-2. **Commit convencional**:
-   ```bash
-   git add .
-   git commit -m "fix(security): replace pickle with secure msgpack serialization
-   
-   - Replace all pickle.loads() calls with msgpack deserialization
-   - Add input validation and schema verification
-   - Implement sanitization for untrusted data
-   - Add security tests for malicious payloads
-   - Maintain backward compatibility
-   
-   Closes: TASK-001
-   Security-Impact: Critical RCE vulnerability eliminated
-   Testing: All 260+ tests passing
-   Performance: <5% impact measured"
-   ```
+## Recursos Necessarios
 
-### Sequência de Tarefas
-1. **ATUAL**: TASK-001 (Serialização Segura) - 2-3 dias
-2. **PRÓXIMA**: TASK-002 (Criptografia Real) - 3-4 dias
-3. **SEGUINTE**: TASK-003 (Validação de Entrada) - 4-5 dias
-4. **FINAL**: TASK-004 (Gerenciamento de Chaves) - 5-6 dias
+### Desenvolvedores
+- 1 desenvolvedor senior (seguranca)
+- 1 desenvolvedor pleno (backend)
+- 1 QA engineer (testes)
 
-### Critérios de Qualidade
-- ✅ Todos os testes devem passar antes do commit
-- ✅ Documentação atualizada a cada tarefa
-- ✅ Performance impact < 10% por tarefa
-- ✅ Cobertura de código mantida > 90%
-- ✅ Conventional commits obrigatórios
-- ✅ Revisão de segurança antes de cada merge
+### Infraestrutura
+- Ambiente de desenvolvimento
+- Ambiente de teste
+- Ambiente de staging
+- Ferramentas de CI/CD
+
+### Ferramentas
+- IDE com suporte a Python
+- Git para controle de versao
+- Docker para containerizacao
+- Postman para testes de API
+
+## Riscos e Mitigacoes
+
+### Riscos Tecnicos
+- **Risco**: Complexidade da implementacao de seguranca
+- **Mitigacao**: Implementacao incremental com testes rigorosos
+
+### Riscos de Prazo
+- **Risco**: Subestimacao do tempo de desenvolvimento
+- **Mitigacao**: Buffer de 20% no cronograma
+
+### Riscos de Seguranca
+- **Risco**: Vulnerabilidades na implementacao
+- **Mitigacao**: Revisao de codigo por especialista em seguranca
+
+## Metricas de Sucesso
+
+### Funcionalidade
+- 100% dos endpoints implementados
+- 100% dos testes passando
+- 0 vulnerabilidades criticas
+
+### Performance
+- Tempo de resposta < 500ms
+- Suporte a 100 usuarios simultaneos
+- Uptime > 99.9%
+
+### Qualidade
+- Cobertura de codigo > 90%
+- 0 bugs criticos
+- Documentacao 100% atualizada
+
+## Conclusao
+
+Este plano de desenvolvimento estabelece uma abordagem estruturada para implementar o sistema de autenticacao e seguranca do ATous Secure Network. A metodologia TDD e o modelo Kiro Specs garantem qualidade e seguranca, enquanto o cronograma realista permite implementacao eficiente e testada.

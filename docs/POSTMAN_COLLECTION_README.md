@@ -1,281 +1,285 @@
-# 📚 Collection do Postman - ATous Secure Network
+# Guia da Collection do Postman - ATous Secure Network
 
-## 🚀 Visão Geral
+Este documento fornece instrucoes detalhadas para usar a collection do Postman do sistema ATous Secure Network.
 
-Esta collection do Postman contém todos os endpoints implementados no sistema ATous Secure Network, organizados de forma lógica e com testes automatizados para facilitar o desenvolvimento e teste da API.
+## Pre-requisitos
 
-## 📋 Pré-requisitos
+- **Postman**: Versao 8.0 ou superior
+- **Servidor**: ATous Secure Network rodando em http://127.0.0.1:8000
+- **Conhecimento**: Basico de APIs REST e autenticacao
 
-- **Postman**: Versão 8.0 ou superior
-- **Servidor ATous**: Rodando em `http://127.0.0.1:8000`
-- **Variáveis configuradas**: Conforme descrito abaixo
+## Configuracao Inicial
 
-## 🔧 Configuração Inicial
-
-### 1. Importar a Collection
+### 1. Importar Collection
 
 1. Abra o Postman
-2. Clique em "Import" (botão azul no canto superior esquerdo)
-3. Arraste o arquivo `collection.json` ou clique em "Upload Files"
-4. Selecione o arquivo e clique em "Import"
+2. Clique em "Import"
+3. Selecione o arquivo `docs/collection.json`
+4. A collection sera importada com todas as pastas e endpoints
 
-### 2. Configurar Variáveis
+### 2. Configurar Variaveis
 
-A collection usa as seguintes variáveis que devem ser configuradas:
-
-| Variável | Valor Padrão | Descrição |
-|----------|---------------|-----------|
-| `base_url` | `http://127.0.0.1:8000` | URL base do servidor |
-| `admin_api_key` | `dev-admin` | Chave de API para endpoints admin |
-| `jwt_token` | `your-jwt-token-here` | Token JWT (quando implementado) |
-| `timestamp` | `{{$timestamp}}` | Timestamp dinâmico |
-
-**Para configurar as variáveis:**
-
-1. Clique no ícone de engrenagem (⚙️) ao lado do nome da collection
+1. Clique no icone de engrenagem ao lado do nome da collection
 2. Vá para a aba "Variables"
-3. Configure os valores conforme necessário
-4. Clique em "Save"
+3. Configure as seguintes variaveis:
 
-## 📊 Estrutura da Collection
+**Variaveis Globais:**
+- `base_url`: http://127.0.0.1:8000
+- `admin_api_key`: dev-admin
+- `jwt_token`: (sera preenchido apos login)
+- `refresh_token`: (sera preenchido apos login)
+- `timestamp`: {{$timestamp}}
 
-### 🏠 Sistema Principal
-- **Root**: Informações básicas da API
-- **Documentação**: Swagger, ReDoc, OpenAPI Schema
+### 3. Verificar Conectividade
 
-### 🏥 Health Check
-- **Health Principal**: Status geral dos sistemas
-- **Health Detalhado**: Informações detalhadas
-- **Ping**: Teste simples de conectividade
+Execute primeiro o endpoint "Teste de Conectividade" para verificar se o servidor esta respondendo.
 
-### 🔐 Admin (MVP)
-- **Visão Geral**: Status administrativo do sistema
-- **Status dos Sistemas**: Status detalhado de todos os componentes
-- **Configurações**: Configurações atuais do sistema
-- **Logs**: Logs recentes para monitoramento
+## Estrutura da Collection
 
-### 🌐 Discovery
-- **Registrar Nó**: Registra um novo nó na rede
-- **Buscar Serviços**: Busca serviços por nome específico
-- **Resolver Endereços**: Resolve endereços com preferências
-- **Detalhes do Agente**: Obtém informações de um agente específico
+### Sistema Principal
+- Root - Informacoes da API
+- Documentacao Swagger
+- Documentacao ReDoc
+- OpenAPI Schema
 
-### 📡 Relay
-- **Heartbeat**: Registra presença do agente
-- **Enviar Mensagem**: Envia mensagens através do relay
-- **Consultar Mensagens**: Busca mensagens para um agente específico
+### Health Check
+- Status Geral do Sistema
+- Status Detalhado dos Componentes
 
-### 🤖 Agents
-- **Registrar Agente**: Registra novo agente com certificado
-- **Heartbeat**: Envia status e métricas do agente
+### Autenticacao e Usuarios
+- Registrar Usuario
+- Login de Usuario
+- Refresh Token
+- Perfil do Usuario
+- Atualizar Perfil
+- Alterar Senha
+- Sessoes Ativas
+- Logout
+- Listar Usuarios (Admin)
+- Estatisticas de Seguranca
+- Logs de Acesso
+- Estatisticas de Tokens
+- Limpeza de Manutencao (Admin)
 
-### 📋 Policies
-- **Políticas Ativas**: Consulta políticas ativas para um agente específico
+### Admin (MVP)
+- Visao Geral do Sistema
+- Eventos do Sistema
 
-### 🔒 Segurança Avançada
-- **Status NNIS**: Status do sistema imunológico de rede
-- **Relatório de Segurança**: Relatório detalhado de segurança
-- **Inteligência de Ameaças**: Informações sobre ameaças detectadas
+### Discovery
+- Buscar Servicos por Nome
 
-### 🔐 Criptografia
-- **Criptografar via /api/crypto/encrypt**: Endpoint principal de criptografia
-- **Criptografar via /api/security/encrypt**: Criptografia focada em segurança
-- **Criptografar via /encrypt**: Interface simplificada
+### Relay
+- Status do Relay
+- Enviar Mensagem via Relay
+- Configurar Relay
 
-### 🌐 WebSocket Endpoints
-- **/ws**: WebSocket principal para comunicação em tempo real
-- **/api/ws**: WebSocket da API para comunicação estruturada
-- **/websocket**: WebSocket genérico para compatibilidade
+### Agents
+- Listar Agentes
+- Status do Agente
+- Comando para Agente
 
-### 🧪 Testes de Carga e Performance
-- **Rate Limiting**: Testa proteção contra spam
-- **Payload Grande**: Testa limites de tamanho e proteção DDoS
+### Policies
+- Listar Politicas
+- Criar Nova Politica
 
-### 🔧 Utilitários e Debug
-- **Tempo de Resposta**: Verifica métricas de performance
-- **Headers Customizados**: Testa processamento de headers
+### Seguranca Avancada
+- Status ABISS
+- Status NNIS
+- Configurar Preset de Seguranca
 
-## 🎯 Ordem Recomendada de Testes
+### Criptografia
+- Criptografar Dados (endpoints disponíveis: `/api/crypto/encrypt`, `/api/security/encrypt`, `/encrypt`)
+- **Nota**: Endpoints de descriptografia não estão implementados na versão atual
+- **Nota**: Geração de chaves é feita internamente pelo sistema
 
-### 1. Teste de Conectividade
-Execute primeiro o endpoint **"🔧 Teste de Conectividade"** em `📖 Documentação e Instruções` para verificar se o servidor está respondendo.
+### WebSocket Endpoints
+- **WebSocket Principal** (`/ws`) - Conexão principal para comunicação em tempo real
+- **WebSocket API** (`/api/ws`) - Endpoint específico da API
+- **WebSocket Genérico** (`/websocket`) - Para testes e desenvolvimento
+- **WebSocket Test Node** (`/ws/test_node`) - Para teste de conectividade de nós
+- **Nota**: Use ferramentas como wscat ou Postman para testar conexões WebSocket
 
-### 2. Verificação Básica
-- **Root**: `/` - Informações básicas da API
-- **Health Check**: `/health` - Status dos sistemas
-- **API Info**: `/api/info` - Recursos disponíveis
+### Testes de Carga e Performance
+- Teste de Conectividade Multipla
+- Teste de Rate Limiting
 
-### 3. Funcionalidades Admin
-- **Admin Overview**: `/v1/admin/overview` - Visão geral administrativa
-- **Eventos do Sistema**: `/v1/admin/events` - Listar e registrar eventos
+### Utilitarios e Debug
+- Logs do Sistema
+- Status de Memoria
 
-### 4. Funcionalidades Específicas
-Teste as funcionalidades conforme sua necessidade:
-- **Discovery**: Para redes P2P
-- **Relay**: Para comunicação entre nós
-- **Agents**: Para gerenciamento de agentes
-- **Policies**: Para políticas de segurança
-- **Presets**: Para configurações de segurança
+## Ordem Recomendada de Testes
 
-### 5. Testes de Segurança
-- **Criptografia**: Teste os endpoints de criptografia
-- **Rate Limiting**: Execute múltiplas requisições rapidamente
-- **WebSocket**: Teste comunicação em tempo real
+Execute primeiro o endpoint **"Teste de Conectividade"** em `Documentacao e Instrucoes` para verificar se o servidor esta respondendo.
 
-## 🛡️ Recursos de Segurança
+### Sequencia de Testes
 
-### Rate Limiting
-O sistema implementa rate limiting para proteger contra spam e ataques DDoS. Execute múltiplas requisições rapidamente para testar:
+1. **Conectividade Basica**
+   - Teste de Conectividade
+   - Health Check
 
-```bash
-# Execute qualquer endpoint múltiplas vezes rapidamente
-curl -X GET http://127.0.0.1:8000/health
-curl -X GET http://127.0.0.1:8000/health
-curl -X GET http://127.0.0.1:8000/health
-# O sistema deve retornar 429 Too Many Requests
-```
+2. **Autenticacao**
+   - Registrar Usuario
+   - Login de Usuario
+   - Verificar JWT Token
 
-### Sistemas de Segurança
-O sistema implementa múltiplas camadas de segurança:
+3. **Funcionalidades Basicas**
+   - Perfil do Usuario
+   - Refresh Token
+   - Logout
 
-- **ABISS**: Sistema de detecção de ameaças comportamentais
-- **NNIS**: Sistema imunológico de rede
-- **Middleware**: Configurações de segurança e rate limiting
+4. **Funcionalidades Avancadas**
+   - Admin Overview
+   - Discovery
+   - Criptografia
 
-### Autenticação Admin
-Endpoints administrativos requerem o header `X-Admin-Api-Key`:
+5. **Testes de Seguranca**
+   - Rate Limiting
+   - Validacao de Entrada
+   - Protecao contra Ataques
 
-```bash
-curl -H "X-Admin-Api-Key: dev-admin" \
-  http://127.0.0.1:8000/v1/admin/overview
-```
+## Recursos de Seguranca
 
-## 📝 Logs e Debug
+### Autenticacao
+- **JWT Tokens**: Access tokens com validade de 1 hora
+- **Refresh Tokens**: Renovacao automatica de tokens
+- **Rate Limiting**: Protecao contra ataques de forca bruta
+
+### Controle de Acesso
+- **RBAC**: Controle de acesso baseado em roles
+- **Permissoes Granulares**: Controle fino de acesso
+- **Auditoria**: Logs de todas as acoes
+
+### Protecao de Sistema
+- **Input Validation**: Validacao rigorosa de entrada
+- **DDoS Protection**: Protecao contra ataques distribuidos
+- **Security Headers**: Headers de seguranca automaticos
+
+### Presets de Seguranca
+- **Development**: Configuracao para desenvolvimento
+- **Production**: Configuracao para producao
+- **High Security**: Configuracao de alta seguranca
+
+## Logs e Debug
 
 ### Console do Postman
-Todos os requests incluem logs automáticos no console do Postman:
+Todos os requests incluem logs automaticos no console do Postman:
 
-1. Abra o Postman
-2. Clique em "Console" (ícone de terminal no canto inferior esquerdo)
-3. Execute qualquer request da collection
-4. Veja os logs detalhados no console
+- **Pre-request Scripts**: Logs antes de cada request
+- **Test Scripts**: Logs apos cada response
+- **Variaveis**: Logs de variaveis de ambiente
+- **Headers**: Logs de headers importantes
+
+### Metricas Coletadas
+- Tempo de resposta
+- Tamanho da resposta
+- Status codes
+- Headers de resposta
+- Timestamps
 
 ### Testes Automatizados
-Cada request inclui testes automáticos que verificam:
+- Status code nao e 500 (erro interno)
+- Tempo de resposta menor que 5 segundos
+- Content-Type valido
+- Estrutura JSON valida (quando aplicavel)
+- Respostas adequadas para endpoints de seguranca
 
-- ✅ Status code não é 500 (erro interno)
-- ⚡ Tempo de resposta menor que 5 segundos
-- 📄 Content-Type válido
-- 🔍 Estrutura JSON válida (quando aplicável)
-- 🛡️ Respostas adequadas para endpoints de segurança
-
-### Métricas Coletadas
-A collection coleta automaticamente métricas de performance:
-
-- URL do request
-- Método HTTP
-- Status code
-- Tempo de resposta
-- Timestamp
-
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comuns
 
-#### 1. Servidor não responde
-```
-❌ Error: connect ECONNREFUSED 127.0.0.1:8000
-```
-**Solução**: Verifique se o servidor está rodando:
-```bash
-# No diretório do projeto
-./venv/Scripts/python.exe -m uvicorn atous_sec_network.api.server:app --host 127.0.0.1 --port 8000
-```
+#### 1. Servidor Nao Responde
+- Verifique se o servidor esta rodando
+- Confirme a URL base nas variaveis
+- Verifique firewall/proxy
 
-#### 2. Erro 401 Unauthorized
-```
-❌ 401 Unauthorized
-```
-**Solução**: Verifique se a chave admin está configurada corretamente:
-- Confirme que `admin_api_key` está definida como `dev-admin`
-- Verifique se o header `X-Admin-Api-Key` está sendo enviado
+#### 2. Erro de Autenticacao
+- Verifique se o JWT token esta configurado
+- Confirme se o token nao expirou
+- Use o refresh token para renovar
 
-#### 3. Erro 429 Too Many Requests
-```
-❌ 429 Too Many Requests
-```
-**Solução**: Este é o comportamento esperado do rate limiting. Aguarde alguns segundos e tente novamente.
+#### 3. Rate Limiting
+- Aguarde o tempo de bloqueio
+- Reduza a frequencia de requests
+- Verifique os limites configurados
 
-#### 4. Erro 403 Forbidden
-```
-❌ 403 Forbidden
-```
-**Solução**: A requisição foi bloqueada pelo sistema de segurança. Verifique:
-- Se não está enviando payloads suspeitos
-- Se não está excedendo limites de tamanho
-- Se não está usando padrões maliciosos
+#### 4. Erro de Permissao
+- Verifique se o usuario tem as permissoes necessarias
+- Confirme se o role esta configurado corretamente
+- Use um usuario com permissoes adequadas
 
-### Verificação de Status
+### Logs de Erro
 
-Para verificar o status geral do sistema:
+#### Console do Postman
+- Verifique o console para logs detalhados
+- Procure por mensagens de erro especificas
+- Verifique os timestamps dos erros
 
-```bash
-# Health check básico
-curl http://127.0.0.1:8000/health
+#### Headers de Resposta
+- `X-RateLimit-Remaining`: Requests restantes
+- `X-RateLimit-Reset`: Tempo para reset do limite
+- `X-Request-ID`: ID unico para rastreamento
 
-# Status de segurança
-curl http://127.0.0.1:8000/api/security/status
+## Exemplos de Uso
 
-# Informações da API
-curl http://127.0.0.1:8000/api/info
-```
+### Fluxo de Autenticacao
 
-## 📚 Recursos Adicionais
+1. **Registrar Usuario**
+   ```bash
+   POST {{base_url}}/auth/register
+   ```
 
-### Documentação da API
-- **Swagger UI**: `http://127.0.0.1:8000/docs`
-- **ReDoc**: `http://127.0.0.1:8000/redoc`
-- **OpenAPI Schema**: `http://127.0.0.1:8000/openapi.json`
+2. **Fazer Login**
+   ```bash
+   POST {{base_url}}/auth/login
+   ```
 
-### Scripts de Teste
-O projeto inclui scripts de teste automatizados:
+3. **Usar Token**
+   ```bash
+   GET {{base_url}}/auth/profile
+   Authorization: Bearer {{jwt_token}}
+   ```
 
-```bash
-# Health check para CI/CD
-python scripts/ci_health_check.py
+4. **Refresh Token**
+   ```bash
+   POST {{base_url}}/auth/refresh
+   ```
 
-# Aplicar presets de segurança
-python scripts/apply_security_preset.py production
-```
+### Testes de Seguranca
 
-### Configurações de Segurança
-Arquivos de configuração disponíveis:
+1. **Rate Limiting**
+   - Execute multiplos requests rapidamente
+   - Verifique se retorna 429 (Too Many Requests)
 
-- `config/security_presets.yaml`: Configurações dos presets
-- `docs/security/README.md`: Documentação de segurança
-- `docs/technical/ENDPOINTS_MAP.md`: Mapa completo de endpoints
+2. **Validacao de Entrada**
+   - Envie dados invalidos
+   - Verifique se retorna 400 (Bad Request)
 
-## 🤝 Contribuição
+3. **Autenticacao**
+   - Envie requests sem token
+   - Verifique se retorna 401 (Unauthorized)
 
-Para contribuir com a collection:
+## Manutencao
 
-1. **Teste novos endpoints**: Adicione novos endpoints conforme implementados
-2. **Melhore testes**: Adicione testes específicos para funcionalidades
-3. **Documentação**: Mantenha as descrições atualizadas
-4. **Exemplos**: Adicione exemplos de payloads e respostas
+### Atualizacoes da Collection
 
-## 📞 Suporte
+- A collection e atualizada regularmente
+- Novos endpoints sao adicionados conforme implementados
+- Testes sao atualizados para novas funcionalidades
 
-Se encontrar problemas:
+### Backup
 
-1. Verifique os logs no console do Postman
-2. Execute o health check para verificar status do sistema
-3. Consulte a documentação técnica em `docs/`
-4. Use os scripts de teste para diagnóstico
+- Faca backup da collection antes de atualizacoes
+- Exporte a collection para arquivo JSON
+- Mantenha versoes anteriores se necessario
 
----
+### Suporte
 
-**Versão da Collection**: 4.0.0  
-**Última Atualização**: Janeiro 2025  
-**Compatibilidade**: Postman 8.0+  
-**Sistema**: ATous Secure Network 2.0.0
+- Para problemas tecnicos, consulte a documentacao
+- Para bugs na collection, abra uma issue
+- Para sugestoes, envie um pull request
+
+## Conclusao
+
+Esta collection do Postman fornece uma ferramenta completa para testar e validar o sistema ATous Secure Network. Com testes automatizados, logs detalhados e exemplos praticos, ela facilita o desenvolvimento e teste da API.
+
+Siga sempre a ordem recomendada de testes e verifique os logs para identificar problemas rapidamente. A collection e mantida atualizada com as ultimas funcionalidades implementadas.

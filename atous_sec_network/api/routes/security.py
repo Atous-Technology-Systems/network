@@ -11,8 +11,8 @@ from datetime import datetime, UTC
 import time
 from pydantic import BaseModel
 
-from ...security.abiss_system import ABISSSystem
-from ...security.nnis_system import NNISSystem
+# Lazy imports para evitar problemas com dependências pesadas
+from ...security import get_abiss_system, get_nnis_system
 from ...core.logging_config import get_logger
 
 # Import security middleware for management
@@ -30,40 +30,45 @@ router = APIRouter(prefix="/security", tags=["security"])
 # Função para obter instâncias dos sistemas
 def get_abiss_system():
     try:
-        from ...api.server import get_abiss_system as _get_abiss_system
-        return _get_abiss_system()
+        from ...security.abiss_system import ABISSSystem
+        # Retornar instância mock para testes ou criar nova instância
+        # Em produção, isso deve ser gerenciado pelo sistema principal
+        return ABISSSystem()
     except Exception as e:
         logger.error(f"Erro ao obter sistema ABISS: {e}")
         raise HTTPException(status_code=503, detail="ABISS system not available")
 
 def get_nnis_system():
     try:
-        from ...api.server import get_nnis_system as _get_nnis_system
-        return _get_nnis_system()
+        from ...security.nnis_system import NNISSystem
+        # Retornar instância mock para testes ou criar nova instância
+        # Em produção, isso deve ser gerenciado pelo sistema principal
+        return NNISSystem()
     except Exception as e:
         logger.error(f"Erro ao obter sistema NNIS: {e}")
         raise HTTPException(status_code=503, detail="NNIS system not available")
 
 
 @router.get("/abiss/status")
-async def get_abiss_status(abiss: ABISSSystem = Depends(get_abiss_system)) -> JSONResponse:
-    """Obtém o status do sistema ABISS"""
+async def get_abiss_status(abiss = Depends(get_abiss_system)) -> JSONResponse:
+    """
+    Obter status e saúde do sistema ABISS
+    
+    Endpoint que retorna informações sobre o estado atual do sistema
+    ABISS (Adaptive Behaviour Intelligence Security System), incluindo
+    status de inicialização, thresholds configurados e contadores
+    de padrões de ameaça.
+    
+    Returns:
+        JSONResponse: Status completo do sistema ABISS com timestamp
+        
+    Raises:
+        HTTPException: Se sistema ABISS não disponível ou erro interno
+    """
     try:
-        
-        # Obter informações do modelo
-        model_info = abiss.get_model_info()
-        
-        status_data = {
-            "status": "operational",
-            "model_info": model_info,
-            "threat_patterns_count": len(abiss.threat_patterns),
-            "adaptive_responses_count": len(abiss.adaptive_responses),
-            "is_monitoring": abiss.is_monitoring,
-            "threat_stats": dict(abiss.threat_stats),
-            "response_stats": dict(abiss.response_stats),
-            "false_positive_rate": abiss.false_positive_rate,
-            "timestamp": datetime.now(UTC).isoformat()
-        }
+        # Obter status usando o método correto
+        status_data = abiss.get_status()
+        status_data["timestamp"] = datetime.now(UTC).isoformat()
         
         return JSONResponse(content=status_data)
         
@@ -72,63 +77,77 @@ async def get_abiss_status(abiss: ABISSSystem = Depends(get_abiss_system)) -> JS
         raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 
 
-@router.post("/abiss/detect")
-async def detect_threat(network_data: Dict[str, Any], abiss: ABISSSystem = Depends(get_abiss_system)) -> JSONResponse:
-    """Detecta ameaças usando o sistema ABISS"""
+@router.get("/abiss/config")
+async def get_abiss_config(abiss = Depends(get_abiss_system)) -> JSONResponse:
+    """
+    Obter configuração atual do sistema ABISS
+    
+    Endpoint que retorna a configuração completa do sistema ABISS,
+    incluindo thresholds de bloqueio e monitoramento, whitelist de
+    endpoints e parâmetros de aprendizado e memória.
+    
+    Returns:
+        JSONResponse: Configuração completa do sistema ABISS com timestamp
+        
+    Raises:
+        HTTPException: Se sistema ABISS não disponível ou erro interno
+    """
     try:
+        # Obter configuração usando o método correto
+        config_data = abiss.get_config()
+        config_data["timestamp"] = datetime.now(UTC).isoformat()
         
-        # Detectar ameaça
-        start_time = time.time()
-        threat_score, threat_description = abiss.detect_threat(network_data)
-        detection_time = (time.time() - start_time) * 1000
-        
-        response_data = {
-            "threat_detected": threat_score > 0.5,
-            "threat_score": threat_score,
-            "threat_description": threat_description,
-            "detection_time_ms": round(detection_time, 2),
-            "timestamp": datetime.now(UTC).isoformat()
-        }
-        
-        # Log da detecção
-        if threat_score > 0.5:
-            logger.warning(f"Ameaça detectada: {threat_description} (score: {threat_score})")
-        
-        return JSONResponse(content=response_data)
+        return JSONResponse(content=config_data)
         
     except Exception as e:
-        logger.error(f"Erro na detecção de ameaças: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro na detecção: {str(e)}")
+        logger.error(f"Erro ao obter configuração do ABISS: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 
 
-@router.post("/abiss/analyze-behavior")
-async def analyze_behavior(user_behavior: Dict[str, Any], abiss: ABISSSystem = Depends(get_abiss_system)) -> JSONResponse:
-    """Analisa comportamento do usuário usando ABISS"""
+@router.get("/abiss/stats")
+async def get_abiss_stats(abiss = Depends(get_abiss_system)) -> JSONResponse:
+    """
+    Obter estatísticas e métricas do sistema ABISS
+    
+    Endpoint que retorna estatísticas detalhadas sobre o funcionamento
+    do sistema ABISS, incluindo total de requisições analisadas,
+    requisições bloqueadas, taxa média de ameaça e contadores
+    de IPs únicos monitorados.
+    
+    Returns:
+        JSONResponse: Estatísticas completas do sistema ABISS com timestamp
+        
+    Raises:
+        HTTPException: Se sistema ABISS não disponível ou erro interno
+    """
     try:
+        # Obter estatísticas usando o método correto
+        stats_data = abiss.get_stats()
+        stats_data["timestamp"] = datetime.now(UTC).isoformat()
         
-        # Analisar comportamento
-        start_time = time.time()
-        anomaly_score, anomalies = abiss.analyze_behavior(user_behavior)
-        analysis_time = (time.time() - start_time) * 1000
-        
-        response_data = {
-            "anomaly_detected": anomaly_score > 0.7,
-            "anomaly_score": anomaly_score,
-            "anomalies": anomalies,
-            "analysis_time_ms": round(analysis_time, 2),
-            "timestamp": datetime.now(UTC).isoformat()
-        }
-        
-        return JSONResponse(content=response_data)
+        return JSONResponse(content=stats_data)
         
     except Exception as e:
-        logger.error(f"Erro na análise de comportamento: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro na análise: {str(e)}")
+        logger.error(f"Erro ao obter estatísticas do ABISS: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 
 
 @router.get("/nnis/status")
-async def get_nnis_status(nnis: NNISSystem = Depends(get_nnis_system)) -> JSONResponse:
-    """Obtém o status do sistema NNIS"""
+
+async def get_nnis_status(nnis = Depends(get_nnis_system)) -> JSONResponse:
+    """
+    Obter status e saúde do sistema NNIS
+    
+    Endpoint que retorna informações sobre o estado atual do sistema
+    NNIS (Neural Network Immune System), incluindo saúde do sistema
+    imune, contadores de células imunes e status de memória.
+    
+    Returns:
+        JSONResponse: Status completo do sistema NNIS com timestamp
+        
+    Raises:
+        HTTPException: Se sistema NNIS não disponível ou erro interno
+    """
     try:
         
         # Obter saúde do sistema imune
@@ -153,8 +172,25 @@ async def get_nnis_status(nnis: NNISSystem = Depends(get_nnis_system)) -> JSONRe
 
 
 @router.post("/nnis/detect-antigens")
-async def detect_antigens(network_data: Dict[str, Any], nnis: NNISSystem = Depends(get_nnis_system)) -> JSONResponse:
-    """Detecta antígenos de ameaças usando o sistema NNIS"""
+async def detect_antigens(network_data: Dict[str, Any], nnis = Depends(get_nnis_system)) -> JSONResponse:
+    """
+    Detectar antígenos de ameaças usando o sistema NNIS
+    
+    Endpoint que analisa dados de rede para detectar padrões
+    de ameaça usando o sistema neural imune. O NNIS processa
+    dados de tráfego e identifica possíveis ameaças baseadas
+    em padrões aprendidos e reconhecimento de antígenos.
+    
+    Args:
+        network_data: Dados de rede para análise (tráfego, conexões, etc.)
+        nnis: Sistema NNIS injetado via dependency
+        
+    Returns:
+        JSONResponse: Resultado da detecção com antígenos encontrados e métricas
+        
+    Raises:
+        HTTPException: Se sistema NNIS não disponível ou erro interno
+    """
     try:
         
         # Detectar antígenos
@@ -195,8 +231,25 @@ async def detect_antigens(network_data: Dict[str, Any], nnis: NNISSystem = Depen
 
 
 @router.post("/nnis/generate-response")
-async def generate_immune_response(threat_data: Dict[str, Any], nnis: NNISSystem = Depends(get_nnis_system)) -> JSONResponse:
-    """Gera resposta imune para uma ameaça específica"""
+async def generate_immune_response(threat_data: Dict[str, Any], nnis = Depends(get_nnis_system)) -> JSONResponse:
+    """
+    Gerar resposta imune para uma ameaça específica
+    
+    Endpoint que permite ao sistema NNIS gerar uma resposta
+    imune personalizada para uma ameaça detectada. O sistema
+    analisa os dados da ameaça e gera ações de resposta
+    apropriadas baseadas em padrões aprendidos.
+    
+    Args:
+        threat_data: Dados da ameaça para análise (tipo, confiança, origem)
+        nnis: Sistema NNIS injetado via dependency
+        
+    Returns:
+        JSONResponse: Resposta imune gerada com tipo, intensidade e ações
+        
+    Raises:
+        HTTPException: Se sistema NNIS não disponível ou erro interno
+    """
     try:
         
         # Criar antígeno a partir dos dados da ameaça
@@ -231,10 +284,27 @@ async def generate_immune_response(threat_data: Dict[str, Any], nnis: NNISSystem
 
 @router.get("/threat-intelligence")
 async def get_threat_intelligence(
-    abiss: ABISSSystem = Depends(get_abiss_system),
-    nnis: NNISSystem = Depends(get_nnis_system)
+    abiss = Depends(get_abiss_system),
+    nnis = Depends(get_nnis_system)
 ) -> JSONResponse:
-    """Obtém inteligência de ameaças combinada de ABISS e NNIS"""
+    """
+    Obter inteligência de ameaças combinada dos sistemas ABISS e NNIS
+    
+    Endpoint que consolida informações de inteligência de ameaças
+    de ambos os sistemas de segurança, fornecendo uma visão
+    unificada dos padrões de ameaça, respostas imunes e métricas
+    de segurança em tempo real.
+    
+    Args:
+        abiss: Sistema ABISS injetado via dependency
+        nnis: Sistema NNIS injetado via dependency
+        
+    Returns:
+        JSONResponse: Inteligência consolidada de ameaças com dados de ambos os sistemas
+        
+    Raises:
+        HTTPException: Se sistemas não disponíveis ou erro interno
+    """
     try:
         threat_intel = {
             "abiss_available": True,
@@ -267,6 +337,22 @@ async def get_threat_intelligence(
 # Endpoints para teste e configuração do middleware de segurança
 @router.post("/middleware/test")
 async def test_security_middleware(request_data: Dict[str, Any]) -> JSONResponse:
+    """
+    Testar funcionalidade do middleware de segurança
+    
+    Endpoint para testar e validar o funcionamento do middleware
+    de segurança, permitindo simular requisições e verificar
+    respostas de segurança, análise ABISS e validação de entrada.
+    
+    Args:
+        request_data: Dados da requisição para teste (método, path, headers, body)
+        
+    Returns:
+        JSONResponse: Resultado do teste com análise de segurança e métricas
+        
+    Raises:
+        HTTPException: Se dados de teste inválidos ou erro interno
+    """
     """Endpoint para testar o middleware de segurança com dados simulados"""
     try:
         # Este endpoint será interceptado pelo middleware de segurança
@@ -288,7 +374,19 @@ async def test_security_middleware(request_data: Dict[str, Any]) -> JSONResponse
 
 @router.get("/middleware/config")
 async def get_middleware_config() -> JSONResponse:
-    """Obtém a configuração atual do middleware de segurança"""
+    """
+    Obter configuração atual do middleware de segurança
+    
+    Endpoint que retorna a configuração completa do middleware
+    de segurança, incluindo thresholds de ameaça, configurações
+    de análise ABISS/NNIS e parâmetros de operação.
+    
+    Returns:
+        JSONResponse: Configuração completa do middleware de segurança
+        
+    Raises:
+        HTTPException: Se erro interno ao obter configuração
+    """
     try:
         config = {
             "abiss_threat_threshold": 0.7,
@@ -308,7 +406,22 @@ async def get_middleware_config() -> JSONResponse:
 
 @router.post("/middleware/simulate-attack")
 async def simulate_attack(attack_type: str = "sql_injection") -> JSONResponse:
-    """Simula diferentes tipos de ataques para testar o middleware"""
+    """
+    Simular diferentes tipos de ataques para testar o middleware
+    
+    Endpoint para testar a eficácia do middleware de segurança
+    simulando diferentes tipos de ataques conhecidos. Útil para
+    validação de segurança e testes de penetração controlados.
+    
+    Args:
+        attack_type: Tipo de ataque a simular (sql_injection, xss, command_injection)
+        
+    Returns:
+        JSONResponse: Resultado da simulação com payload e análise de segurança
+        
+    Raises:
+        HTTPException: Se tipo de ataque inválido ou erro interno
+    """
     try:
         attack_payloads = {
             "sql_injection": {
@@ -393,7 +506,20 @@ def get_security_middleware():
 
 @router.get("/middleware/stats")
 async def get_middleware_stats() -> JSONResponse:
-    """Get comprehensive security middleware statistics"""
+    """
+    Obter estatísticas abrangentes do middleware de segurança
+    
+    Endpoint que retorna estatísticas detalhadas sobre o funcionamento
+    do middleware de segurança, incluindo métricas de clientes,
+    requisições analisadas, IPs bloqueados e status dos sistemas
+    de segurança integrados.
+    
+    Returns:
+        JSONResponse: Estatísticas completas do middleware de segurança
+        
+    Raises:
+        HTTPException: Se erro interno ao obter estatísticas
+    """
     try:
         middleware = get_security_middleware()
         if middleware and hasattr(middleware, 'get_security_stats'):
@@ -430,7 +556,22 @@ async def get_middleware_stats() -> JSONResponse:
 
 @router.post("/middleware/block-ip")
 async def block_ip(request: IPBlockRequest) -> JSONResponse:
-    """Block an IP address"""
+    """
+    Bloquear endereço IP específico
+    
+    Endpoint administrativo que permite bloquear um endereço IP
+    específico no sistema de segurança. O IP bloqueado será
+    rejeitado por todas as rotas protegidas pelo middleware.
+    
+    Args:
+        request: Dados da requisição com IP e motivo do bloqueio
+        
+    Returns:
+        JSONResponse: Confirmação do bloqueio com detalhes
+        
+    Raises:
+        HTTPException: Se middleware não disponível ou erro interno
+    """
     try:
         middleware = get_security_middleware()
         if middleware and hasattr(middleware, 'block_ip'):
@@ -453,7 +594,22 @@ async def block_ip(request: IPBlockRequest) -> JSONResponse:
 
 @router.post("/middleware/unblock-ip")
 async def unblock_ip(request: IPBlockRequest) -> JSONResponse:
-    """Unblock an IP address"""
+    """
+    Desbloquear endereço IP previamente bloqueado
+    
+    Endpoint administrativo que permite remover o bloqueio de um
+    endereço IP, restaurando o acesso normal ao sistema.
+    Útil para desbloqueios manuais após análise de segurança.
+    
+    Args:
+        request: Dados da requisição com IP a desbloquear
+        
+    Returns:
+        JSONResponse: Confirmação do desbloqueio com detalhes
+        
+    Raises:
+        HTTPException: Se middleware não disponível ou erro interno
+    """
     try:
         middleware = get_security_middleware()
         if middleware and hasattr(middleware, 'unblock_ip'):
@@ -475,7 +631,23 @@ async def unblock_ip(request: IPBlockRequest) -> JSONResponse:
 
 @router.post("/validate-input")
 async def validate_input(request: InputValidationRequest) -> JSONResponse:
-    """Validate input data for security threats"""
+    """
+    Validar dados de entrada para ameaças de segurança
+    
+    Endpoint que analisa dados de entrada em busca de padrões
+    maliciosos, incluindo SQL injection, XSS, command injection
+    e outras ameaças conhecidas. Retorna resultado da validação
+    com dados sanitizados e score de confiança.
+    
+    Args:
+        request: Dados da requisição com entrada a validar e contexto
+        
+    Returns:
+        JSONResponse: Resultado da validação com ameaças detectadas e dados sanitizados
+        
+    Raises:
+        HTTPException: Se dados de entrada inválidos ou erro interno
+    """
     try:
         validation_result = validator.validate_input(request.input_data, request.context)
         
@@ -500,7 +672,20 @@ async def validate_input(request: InputValidationRequest) -> JSONResponse:
 
 @router.get("/validation-patterns")
 async def get_validation_patterns() -> JSONResponse:
-    """Get information about validation patterns used by the input validator"""
+    """
+    Obter informações sobre padrões de validação utilizados
+    
+    Endpoint que retorna informações detalhadas sobre os padrões
+    de validação utilizados pelo sistema de validação de entrada,
+    incluindo contadores de padrões por categoria e contextos
+    de segurança suportados.
+    
+    Returns:
+        JSONResponse: Informações sobre padrões de validação e contextos suportados
+        
+    Raises:
+        HTTPException: Se erro interno ao obter padrões
+    """
     try:
         patterns_info = {
             "sql_patterns_count": len(validator.sql_patterns),
@@ -523,7 +708,20 @@ async def get_validation_patterns() -> JSONResponse:
 
 @router.get("/security-report")
 async def get_security_report() -> JSONResponse:
-    """Generate a comprehensive security report"""
+    """
+    Gerar relatório abrangente de segurança
+    
+    Endpoint que consolida informações de todos os sistemas de
+    segurança em um relatório unificado, incluindo estatísticas
+    do middleware, ABISS, NNIS e métricas de validação de entrada.
+    Útil para análise de segurança e auditoria.
+    
+    Returns:
+        JSONResponse: Relatório completo de segurança com todas as métricas
+        
+    Raises:
+        HTTPException: Se erro interno ao gerar relatório
+    """
     try:
         # Get middleware stats
         middleware = get_security_middleware()
@@ -587,7 +785,19 @@ async def get_security_report() -> JSONResponse:
 
 @router.get("/middleware/legacy-stats")
 async def get_legacy_middleware_stats() -> JSONResponse:
-    """Legacy endpoint for backward compatibility"""
+    """
+    Obter estatísticas legacy do middleware (compatibilidade)
+    
+    Endpoint legacy mantido para compatibilidade com versões
+    anteriores do sistema. Retorna estatísticas básicas do
+    middleware de segurança em formato simplificado.
+    
+    Returns:
+        JSONResponse: Estatísticas legacy do middleware de segurança
+        
+    Raises:
+        HTTPException: Se erro interno ao obter estatísticas
+    """
     try:
         # Legacy implementation for backward compatibility
         stats = {

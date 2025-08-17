@@ -24,8 +24,7 @@ from typing import Dict, List, Any, Tuple
 
 from atous_sec_network.security.abiss_system import (
     ABISSSystem, 
-    ThreatPattern, 
-    AdaptiveResponse
+    ThreatPattern
 )
 
 

@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "ATous Secure Network API Collection",
-    "description": "Collection completa para testar todas as funcionalidades do sistema ATous Secure Network via endpoints REST e WebSockets. Esta collection inclui todos os endpoints disponíveis na aplicação, com exemplos de payloads, testes automatizados e documentação detalhada.",
+    "description": "Collection completa para testar todas as funcionalidades do sistema ATous Secure Network via endpoints REST e WebSockets. Esta collection inclui todos os endpoints disponiveis na aplicacao, com exemplos de payloads, testes automatizados e documentacao detalhada.",
     "version": "4.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -16,93 +16,119 @@
       "key": "admin_api_key",
       "value": "dev-admin",
       "type": "string",
-      "description": "Chave de API para autenticação admin"
+      "description": "Chave de API para autenticacao admin"
     },
     {
       "key": "jwt_token",
       "value": "your-jwt-token-here",
       "type": "string",
-      "description": "Token JWT para autenticação Bearer (quando implementado)"
+      "description": "Token JWT para autenticacao Bearer (quando implementado)"
+    },
+    {
+      "key": "refresh_token",
+      "value": "your-refresh-token-here",
+      "type": "string",
+      "description": "Refresh token para renovacao de JWT"
     },
     {
       "key": "timestamp",
       "value": "{{$timestamp}}",
       "type": "string",
-      "description": "Timestamp dinâmico para requisições"
+      "description": "Timestamp dinamico para requisicoes"
     }
   ],
   "item": [
     {
-      "name": "📖 Documentação e Instruções",
+      "name": "Documentacao e Instrucoes",
       "item": [
         {
-          "name": "📋 Como Usar Esta Collection",
+          "name": "Como Usar Esta Collection",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/",
-              "host": ["{{base_url}}"],
-              "path": [""]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
             },
-            "description": "## 🚀 Como Usar Esta Collection\n\n### 📋 Pré-requisitos\n1. **Servidor ATous**: Certifique-se de que o servidor esteja rodando em `http://127.0.0.1:8000`\n2. **Postman**: Versão 8.0 ou superior\n3. **Variáveis**: Configure as variáveis de ambiente se necessário\n\n### 🔧 Configuração Inicial\n1. **Importe a collection** no Postman\n2. **Configure as variáveis**:\n   - `base_url`: URL do servidor (padrão: http://127.0.0.1:8000)\n   - `admin_api_key`: Chave de API admin (padrão: dev-admin)\n3. **Execute o teste de conectividade** primeiro\n\n### 📊 Estrutura da Collection\n- **🏠 Sistema Principal**: Endpoints básicos e documentação\n- **🏥 Health Check**: Verificação de saúde dos sistemas\n- **🔐 Admin**: Interface administrativa (MVP)\n- **🌐 Discovery**: Sistema de descoberta de nós\n- **📡 Relay**: Sistema de retransmissão\n- **🤖 Agents**: Gerenciamento de agentes\n- **📋 Policies**: Gerenciamento de políticas\n- **🔒 Presets de Segurança**: Configurações de segurança\n- **🔐 Criptografia**: Endpoints de criptografia\n- **🌐 WebSocket**: Comunicação em tempo real\n- **🧪 Testes de Carga**: Performance e stress tests\n\n### 🎯 Ordem Recomendada de Testes\n1. **Conectividade**: `/health`\n2. **Status Geral**: `/api/info`\n3. **Admin**: `/v1/admin/overview`\n4. **Funcionalidades Específicas**: Conforme necessário\n\n### 🔍 Interpretando Respostas\n- **200**: Sucesso\n- **400**: Erro de requisição\n- **401**: Não autorizado\n- **403**: Bloqueado por segurança\n- **429**: Rate limit atingido\n- **500**: Erro interno do servidor\n- **503**: Serviço indisponível\n\n### 🛡️ Recursos de Segurança\n- **Rate Limiting**: Proteção contra spam\n- **Input Validation**: Validação de entrada\n- **DDoS Protection**: Proteção contra ataques\n- **Presets de Segurança**: Configurações adaptáveis\n\n### 📝 Logs e Debug\nTodos os requests incluem logs automáticos no console do Postman para facilitar o debug."
+            "description": "## Como Usar Esta Collection\n\n### Pre-requisitos\n1. **Servidor ATous**: Certifique-se de que o servidor esteja rodando em `http://127.0.0.1:8000`\n2. **Postman**: Versao 8.0 ou superior\n3. **Variaveis**: Configure as variaveis de ambiente se necessario\n\n### Configuracao Inicial\n1. **Importe a collection** no Postman\n2. **Configure as variaveis**:\n   - `base_url`: URL do servidor (padrao: http://127.0.0.1:8000)\n   - `admin_api_key`: Chave de API admin (padrao: dev-admin)\n3. **Execute o teste de conectividade** primeiro\n\n### Estrutura da Collection\n- **Sistema Principal**: Endpoints basicos e documentacao\n- **Health Check**: Verificacao de saude dos sistemas\n- **Autenticacao e Usuarios**: Sistema completo de auth e gerenciamento de usuarios\n- **Admin**: Interface administrativa (MVP)\n- **Discovery**: Sistema de descoberta de nos\n- **Relay**: Sistema de retransmissao\n- **Agents**: Gerenciamento de agentes\n- **Policies**: Gerenciamento de politicas\n- **Seguranca Avancada**: Sistemas ABISS e NNIS\n- **Criptografia**: Endpoints de criptografia\n- **WebSocket**: Comunicacao em tempo real\n- **Testes de Carga**: Performance e stress tests\n\n### Ordem Recomendada de Testes\n1. **Conectividade**: `/health`\n2. **Autenticacao**: Registro e login de usuario\n3. **Status Geral**: `/api/info`\n4. **Admin**: `/v1/admin/overview`\n5. **Funcionalidades Especificas**: Conforme necessario\n\n### Interpretando Respostas\n- **200**: Sucesso\n- **400**: Erro de requisicao\n- **401**: Nao autorizado\n- **403**: Bloqueado por seguranca\n- **429**: Rate limit atingido\n- **500**: Erro interno do servidor\n- **503**: Servico indisponivel\n\n### Recursos de Seguranca\n- **Rate Limiting**: Protecao contra spam\n- **Input Validation**: Validacao de entrada\n- **DDoS Protection**: Protecao contra ataques\n- **Presets de Seguranca**: Configuracoes adaptaveis\n- **JWT + Refresh Tokens**: Autenticacao segura\n- **RBAC**: Controle de acesso baseado em roles\n\n### Logs e Debug\nTodos os requests incluem logs automaticos no console do Postman para facilitar o debug."
           }
         },
         {
-          "name": "🔧 Teste de Conectividade",
+          "name": "Teste de Conectividade",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/health",
-              "host": ["{{base_url}}"],
-              "path": ["health"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
             },
-            "description": "**🎯 Execute este teste primeiro!**\n\nTeste básico de conectividade para verificar se o servidor está respondendo. Deve retornar status de saúde dos sistemas.\n\n**Resposta esperada:**\n```json\n{\n  \"status\": \"healthy\",\n  \"systems\": {\n    \"abiss\": {\"status\": \"healthy\"},\n    \"nnis\": {\"status\": \"healthy\"}\n  }\n}\n```\n\n**Troubleshooting:**\n- Se falhar, verifique se o servidor está rodando\n- Confirme a URL base nas variáveis\n- Verifique firewall/proxy"
+            "description": "**Execute este teste primeiro!**\n\nTeste basico de conectividade para verificar se o servidor esta respondendo. Deve retornar status de saude dos sistemas.\n\n**Resposta esperada:**\n```json\n{\n  \"status\": \"healthy\",\n  \"systems\": {\n    \"abiss\": {\"status\": \"healthy\"},\n    \"nnis\": {\"status\": \"healthy\"}\n  }\n}\n```\n\n**Troubleshooting:**\n- Se falhar, verifique se o servidor esta rodando\n- Confirme a URL base nas variaveis\n- Verifique firewall/proxy"
           }
         }
       ]
     },
     {
-      "name": "🏠 Sistema Principal",
+      "name": "Sistema Principal",
       "item": [
         {
-          "name": "Root - Informações da API",
+          "name": "Root - Informacoes da API",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/",
-              "host": ["{{base_url}}"],
-              "path": [""]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
             },
-            "description": "Endpoint raiz com informações básicas da API e lista de endpoints disponíveis"
+            "description": "Endpoint raiz com informacoes basicas da API e lista de endpoints disponiveis"
           }
         },
         {
-          "name": "Documentação Swagger",
+          "name": "Documentacao Swagger",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/docs",
-              "host": ["{{base_url}}"],
-              "path": ["docs"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "docs"
+              ]
             },
-            "description": "Interface Swagger UI para documentação interativa da API"
+            "description": "Interface Swagger UI para documentacao interativa da API"
           }
         },
         {
-          "name": "Documentação ReDoc",
+          "name": "Documentacao ReDoc",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/redoc",
-              "host": ["{{base_url}}"],
-              "path": ["redoc"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "redoc"
+              ]
             },
-            "description": "Interface ReDoc para documentação da API"
+            "description": "Documentacao ReDoc da API com formato mais legivel"
           }
         },
         {
@@ -112,63 +138,403 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/openapi.json",
-              "host": ["{{base_url}}"],
-              "path": ["openapi.json"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "openapi.json"
+              ]
             },
-            "description": "Schema OpenAPI em formato JSON"
+            "description": "Schema OpenAPI da API em formato JSON"
           }
         }
       ]
     },
     {
-      "name": "🏥 Health Check",
+      "name": "Health Check",
       "item": [
         {
-          "name": "Health Check Principal",
+          "name": "Status Geral do Sistema",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/health",
-              "host": ["{{base_url}}"],
-              "path": ["health"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
             },
-            "description": "Verificação de saúde dos sistemas com métricas detalhadas incluindo ABISS, NNIS e Model Manager"
+            "description": "Verifica o status de saude de todos os sistemas e componentes"
           }
         },
         {
-          "name": "Status de Segurança",
+          "name": "Status Detalhado dos Componentes",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/security/status",
-              "host": ["{{base_url}}"],
-              "path": ["api", "security", "status"]
+              "raw": "{{base_url}}/health/detailed",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health",
+                "detailed"
+              ]
             },
-            "description": "Status dos sistemas de segurança ABISS e NNIS"
-          }
-        },
-        {
-          "name": "Métricas do Sistema",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/metrics",
-              "host": ["{{base_url}}"],
-              "path": ["api", "metrics"]
-            },
-            "description": "Métricas detalhadas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
+            "description": "Status detalhado de cada componente do sistema com metricas"
           }
         }
       ]
     },
     {
-      "name": "🔐 Admin (MVP)",
+      "name": "Autenticacao e Usuarios",
       "item": [
         {
-          "name": "Visão Geral do Sistema",
+          "name": "Registrar Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "**Registrar novo usuário no sistema**\n\nCria uma nova conta de usuário com as credenciais fornecidas. O usuário recebe automaticamente o papel de OPERATOR por padrão.\n\n**Payload:**\n```json\n{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Test123!@#\"\n}\n```\n\n**Resposta esperada:** 201 Created com dados do usuário criado"
+          }
+        },
+        {
+          "name": "Login de Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "**Autenticar usuário e gerar tokens de acesso**\n\nValida as credenciais do usuário e retorna um access token JWT e um refresh token para renovação automática. O sistema também registra a atividade de login para auditoria.\n\n**Payload:**\n```json\n{\n  \"username\": \"testuser\",\n  \"password\": \"Test123!@#\"\n}\n```\n\n**Resposta esperada:** 200 OK com access_token, refresh_token e dados do usuário"
+          }
+        },
+        {
+          "name": "Renovar Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "**Renovar access token usando refresh token**\n\nPermite renovar o access token expirado usando um refresh token válido. O sistema gera um novo access token e rotaciona o refresh token para segurança adicional. Apenas o último refresh token é válido.\n\n**Payload:**\n```json\n{\n  \"refresh_token\": \"{{refresh_token}}\"\n}\n```\n\n**Resposta esperada:** 200 OK com novo access_token e refresh_token rotacionado"
+          }
+        },
+        {
+          "name": "Logout de Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "**Fazer logout do usuário e invalidar tokens**\n\nRealiza o logout do usuário autenticado, revogando o refresh token se fornecido. O access token continua válido até sua expiração natural, mas o refresh token é invalidado para segurança.\n\n**Payload:**\n```json\n{\n  \"refresh_token\": \"{{refresh_token}}\"\n}\n```\n\n**Resposta esperada:** 200 OK com confirmação de logout"
+          }
+        },
+        {
+          "name": "Obter Perfil do Usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            },
+            "description": "**Obter perfil completo do usuário autenticado**\n\nRetorna todas as informações do perfil do usuário logado, incluindo dados pessoais, papéis, permissões e status da conta. Requer autenticação via token JWT válido.\n\n**Resposta esperada:** 200 OK com perfil completo do usuário"
+          }
+        },
+        {
+          "name": "Atualizar Perfil do Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            },
+            "description": "**Atualizar perfil do usuário autenticado**\n\nPermite ao usuário atualizar seus dados pessoais, incluindo email, senha e outros campos configuráveis. Apenas o próprio usuário pode modificar seu perfil. Requer autenticação via token JWT.\n\n**Payload:**\n```json\n{\n  \"email\": \"newemail@example.com\",\n  \"password\": \"NewPassword123!@#\"\n}\n```\n\n**Resposta esperada:** 200 OK com perfil atualizado"
+          }
+        },
+        {
+          "name": "Alterar Senha",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/change-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
+            "description": "**Alterar senha do usuário autenticado**\n\nPermite ao usuário alterar sua senha atual por uma nova. Requer a senha atual para validação e a nova senha deve atender aos critérios de complexidade do sistema.\n\n**Payload:**\n```json\n{\n  \"current_password\": \"Test123!@#\",\n  \"new_password\": \"NewPassword123!@#\"\n}\n```\n\n**Resposta esperada:** 200 OK com confirmação de alteração"
+          }
+        },
+        {
+          "name": "Obter Sessoes Ativas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "sessions"
+              ]
+            },
+            "description": "**Obter sessões ativas do usuário autenticado**\n\nLista todas as sessões ativas do usuário, incluindo informações sobre IPs de origem, User-Agents e timestamps de atividade. Útil para monitorar e gerenciar múltiplas sessões.\n\n**Resposta esperada:** 200 OK com lista de sessões ativas"
+          }
+        },
+        {
+          "name": "Listar Usuarios (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/users?page=1&per_page=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "**Listar usuários do sistema (apenas para administradores)**\n\nEndpoint administrativo que permite visualizar todos os usuários do sistema com paginação. Requer permissão ADMIN_USERS. Útil para administradores monitorarem e gerenciarem contas.\n\n**Resposta esperada:** 200 OK com lista paginada de usuários"
+          }
+        },
+        {
+          "name": "Estatisticas de Seguranca (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/security/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "security",
+                "stats"
+              ]
+            },
+            "description": "**Obter estatísticas de segurança do sistema**\n\nEndpoint que fornece métricas e estatísticas de segurança, incluindo tentativas de login, bloqueios, taxas de sucesso e outras informações relevantes para análise de segurança. Requer permissão SECURITY_READ.\n\n**Resposta esperada:** 200 OK com estatísticas detalhadas de segurança"
+          }
+        },
+        {
+          "name": "Logs de Acesso (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/security/logs?page=1&per_page=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "security",
+                "logs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "**Obter logs de acesso e auditoria do sistema**\n\nEndpoint que fornece acesso aos logs de auditoria do sistema, incluindo tentativas de login, acessos, mudanças de perfil e outras atividades de segurança. Suporta filtros por usuário e paginação. Requer permissão SECURITY_VIEW_LOGS.\n\n**Resposta esperada:** 200 OK com logs de acesso paginados"
+          }
+        },
+        {
+          "name": "Estatisticas de Tokens (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/tokens/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "tokens",
+                "stats"
+              ]
+            },
+            "description": "**Obter estatísticas de refresh tokens e sessões**\n\nEndpoint que fornece métricas sobre o uso de refresh tokens, incluindo tokens ativos, expirados, rotacionados e estatísticas de uso por usuário. Requer permissão SECURITY_READ.\n\n**Resposta esperada:** 200 OK com estatísticas detalhadas de tokens"
+          }
+        },
+        {
+          "name": "Limpeza de Manutencao (Super Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/maintenance/cleanup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "maintenance",
+                "cleanup"
+              ]
+            },
+            "description": "**Limpar dados expirados e realizar manutenção do sistema**\n\nEndpoint administrativo que executa tarefas de limpeza automática, incluindo remoção de sessões expiradas, logs antigos e dados temporários. Requer permissão ADMIN_FULL (super administrador).\n\n**Resposta esperada:** 200 OK com resultado da limpeza"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin (MVP)",
+      "item": [
+        {
+          "name": "Visao Geral do Sistema",
           "request": {
             "method": "GET",
             "header": [
@@ -180,10 +546,16 @@
             ],
             "url": {
               "raw": "{{base_url}}/v1/admin/overview",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "overview"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "overview"
+              ]
             },
-            "description": "Visão geral do sistema administrativo com status dos componentes principais"
+            "description": "Visao geral do sistema administrativo com status dos componentes principais"
           }
         },
         {
@@ -199,627 +571,558 @@
             ],
             "url": {
               "raw": "{{base_url}}/v1/admin/events",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "events"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "events"
+              ]
             },
-            "description": "Lista os últimos eventos do sistema (requer autenticação admin)"
-          }
-        },
-        {
-          "name": "Registrar Evento Admin",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Admin-Api-Key",
-                "value": "{{admin_api_key}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type\": \"system_check\",\n  \"payload\": {\n    \"component\": \"admin_panel\",\n    \"action\": \"status_check\",\n    \"timestamp\": \"{{timestamp}}\"\n  }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/admin/events",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "events"]
-            },
-            "description": "Registra um novo evento administrativo no sistema"
-          }
-        },
-        {
-          "name": "Status de Segurança",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/security/status",
-              "host": ["{{base_url}}"],
-              "path": ["api", "security", "status"]
-            },
-            "description": "Status dos sistemas de segurança ABISS e NNIS"
+            "description": "Lista os ultimos eventos do sistema (requer autenticacao admin)"
           }
         }
       ]
     },
     {
-      "name": "🌐 Discovery",
+      "name": "Discovery",
       "item": [
         {
-          "name": "Buscar Serviços por Nome",
+          "name": "Buscar Servicos por Nome",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/v1/discovery/services?name=abiss",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "services"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "discovery",
+                "services"
+              ],
               "query": [
                 {
                   "key": "name",
                   "value": "abiss",
-                  "description": "Nome do serviço a buscar"
+                  "description": "Nome do servico a ser buscado"
                 }
               ]
             },
-            "description": "Busca agentes que fornecem um serviço específico"
-          }
-        },
-        {
-          "name": "Registrar Novo Nó",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"agent_id\": \"node_001\",\n  \"services\": [\n    {\"name\": \"abiss\"},\n    {\"name\": \"nnis\"},\n    {\"name\": \"lora\"}\n  ],\n  \"addresses\": {\n    \"local\": [\"192.168.1.100:8000\"],\n    \"lan\": [\"192.168.1.100:8000\"],\n    \"wan\": []\n  },\n  \"ttl\": 60\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/discovery/register",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "register"]
-            },
-            "description": "Registra um novo nó na rede de descoberta"
-          }
-        },
-        {
-          "name": "Resolver Endereços",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/v1/discovery/resolve?name=abiss&pref=local,lan,wan",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "resolve"],
-              "query": [
-                {
-                  "key": "name",
-                  "value": "abiss",
-                  "description": "Nome do serviço a resolver"
-                },
-                {
-                  "key": "pref",
-                  "value": "local,lan,wan",
-                  "description": "Preferência de escopo (local,lan,wan)"
-                }
-              ]
-            },
-            "description": "Resolve endereços de um serviço específico com preferência de escopo"
-          }
-        },
-        {
-          "name": "Detalhes do Agente",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/v1/discovery/agents/node_001",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "agents", "node_001"]
-            },
-            "description": "Obtém detalhes completos de um agente específico"
+            "description": "Busca servicos registrados no sistema de descoberta por nome"
           }
         }
       ]
     },
     {
-      "name": "📡 Relay",
+      "name": "Seguranca Avancada",
       "item": [
         {
-          "name": "Heartbeat do Agente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"agent_id\": \"node_001\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/relay/heartbeat",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "heartbeat"]
-            },
-            "description": "Registra heartbeat de um agente no sistema de relay"
-          }
-        },
-        {
-          "name": "Enviar Mensagem via Relay",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"from\": \"node_001\",\n  \"to\": \"node_002\",\n  \"payload\": {\n    \"message\": \"Hello from node_001\",\n    \"priority\": \"normal\",\n    \"timestamp\": \"{{timestamp}}\"\n  }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/relay/send",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "send"]
-            },
-            "description": "Envia uma mensagem através do sistema de relay"
-          }
-        },
-        {
-          "name": "Consultar Mensagens",
+          "name": "Status ABISS",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/relay/poll?agent_id=node_001",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "poll"],
-              "query": [
-                {
-                  "key": "agent_id",
-                  "value": "node_001",
-                  "description": "ID do agente para consultar mensagens"
-                }
+              "raw": "{{base_url}}/api/security/abiss/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "abiss",
+                "status"
               ]
             },
-            "description": "Consulta mensagens pendentes para um agente específico"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🤖 Agents",
-      "item": [
-        {
-          "name": "Enrolar Agente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"device_info\": {\n    \"model\": \"agent_001\",\n    \"platform\": \"linux\",\n    \"location\": \"datacenter-1\"\n  },\n  \"attestation\": null,\n  \"csr_pem\": \"-----BEGIN CERTIFICATE REQUEST-----\\nMIICvDCCAaQCAQAwdzELMAkGA1UEBhMCVVMxDTALBgNVBAgMBFV0YWgxDzANBgNV\\nBAcMBlByb3ZvMQ8wDQYDVQQKDAZCeVVEaXQxDzANBgNVBAsMBlNlY3VyaXR5MQ0w\\nCwYDVQQDDARUZXN0MSAwHgYJKoZIhvcNAQkBFhF0ZXN0QGV4YW1wbGUuY29tMIIB\\nIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END CERTIFICATE REQUEST-----\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/agents/enroll",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "agents", "enroll"]
-            },
-            "description": "Registra um novo agente no sistema"
+            "description": "Status do sistema ABISS (Advanced Behavioral Intelligence Security System)"
           }
         },
-        {
-          "name": "Heartbeat do Agente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"version\": \"1.0.0\",\n  \"services\": [\"abiss\", \"nnis\", \"lora\"],\n  \"metrics\": {\n    \"cpu_usage\": 45.2,\n    \"memory_usage\": 67.8,\n    \"network_latency\": 12.5\n  },\n  \"risk_score\": 0.15\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/agents/agent_001/heartbeat",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "agents", "agent_001", "heartbeat"]
-            },
-            "description": "Envia heartbeat de um agente específico"
-          }
-        }
-      ]
-    },
-    {
-      "name": "📋 Policies",
-      "item": [
-        {
-          "name": "Políticas Ativas",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/v1/policies/active?agent_id=agent_001",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "policies", "active"],
-              "query": [
-                {
-                  "key": "agent_id",
-                  "value": "agent_001",
-                  "description": "ID do agente para consultar políticas"
-                }
-              ]
-            },
-            "description": "Lista as políticas de segurança atualmente ativas para um agente específico"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🔒 Segurança Avançada",
-      "item": [
         {
           "name": "Status NNIS",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/security/nnis/status",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "nnis", "status"]
+              "raw": "{{base_url}}/api/security/nnis/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "nnis",
+                "status"
+              ]
             },
-            "description": "Status do sistema de segurança NNIS"
-          }
-        },
-        {
-          "name": "Relatório de Segurança",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/v1/security/security-report",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "security-report"]
-            },
-            "description": "Relatório detalhado de segurança do sistema"
-          }
-        },
-        {
-          "name": "Inteligência de Ameaças",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/v1/security/threat-intelligence",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "threat-intelligence"]
-            },
-            "description": "Informações sobre ameaças detectadas"
+            "description": "Status do sistema NNIS (Neural Network Intelligence System)"
           }
         }
       ]
     },
     {
-      "name": "📊 API Info e Métricas",
+      "name": "🔌 WebSockets",
       "item": [
         {
-          "name": "Informações da API",
+          "name": "WebSocket Principal",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/info",
-              "host": ["{{base_url}}"],
-              "path": ["api", "info"]
+              "raw": "{{base_url}}/ws",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ws"
+              ]
             },
-            "description": "Informações detalhadas da API, recursos disponíveis e endpoints"
-          }
+            "description": "Endpoint WebSocket principal para comunicação em tempo real"
+          },
+          "response": []
         },
         {
-          "name": "Status de Segurança da API",
+          "name": "WebSocket API",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/security/status",
-              "host": ["{{base_url}}"],
-              "path": ["api", "security", "status"]
+              "raw": "{{base_url}}/api/ws",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ws"
+              ]
             },
-            "description": "Status dos sistemas de segurança com informações detalhadas"
-          }
+            "description": "Endpoint WebSocket da API para funcionalidades específicas"
+          },
+          "response": []
         },
         {
-          "name": "Métricas do Sistema",
+          "name": "WebSocket Genérico",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/metrics",
-              "host": ["{{base_url}}"],
-              "path": ["api", "metrics"]
+              "raw": "{{base_url}}/websocket",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "websocket"
+              ]
             },
-            "description": "Métricas detalhadas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
-          }
+            "description": "Endpoint WebSocket genérico para testes e desenvolvimento"
+          },
+          "response": []
+        },
+        {
+          "name": "WebSocket Test Node",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ws/test_node",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ws",
+                "test_node"
+              ]
+            },
+            "description": "Endpoint WebSocket para teste de conectividade de nós"
+          },
+          "response": []
         }
-      ]
+      ],
+      "description": "Endpoints WebSocket para comunicação em tempo real. Use ferramentas como wscat ou Postman para testar conexões WebSocket."
     },
     {
-      "name": "🔐 Criptografia",
+      "name": "Seguranca Avancada",
       "item": [
         {
-          "name": "Criptografar via /api/crypto/encrypt",
+          "name": "Status do Sistema ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "abiss",
+                "status"
+              ]
+            },
+            "description": "**Obter status e saúde do sistema ABISS**\n\nEndpoint que retorna informações sobre o estado atual do sistema ABISS (Adaptive Behaviour Intelligence Security System), incluindo status de inicialização, thresholds configurados e contadores de padrões de ameaça.\n\n**Resposta esperada:** 200 OK com status completo do sistema ABISS"
+          }
+        },
+        {
+          "name": "Configuracao do Sistema ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "abiss",
+                "config"
+              ]
+            },
+            "description": "**Obter configuração atual do sistema ABISS**\n\nEndpoint que retorna a configuração completa do sistema ABISS, incluindo thresholds de bloqueio e monitoramento, whitelist de endpoints e parâmetros de aprendizado e memória.\n\n**Resposta esperada:** 200 OK com configuração completa do sistema ABISS"
+          }
+        },
+        {
+          "name": "Estatisticas do Sistema ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "abiss",
+                "stats"
+              ]
+            },
+            "description": "**Obter estatísticas e métricas do sistema ABISS**\n\nEndpoint que retorna estatísticas detalhadas sobre o funcionamento do sistema ABISS, incluindo total de requisições analisadas, requisições bloqueadas, taxa média de ameaça e contadores de IPs únicos monitorados.\n\n**Resposta esperada:** 200 OK com estatísticas completas do sistema ABISS"
+          }
+        },
+        {
+          "name": "Status do Sistema NNIS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/nnis/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "nnis",
+                "status"
+              ]
+            },
+            "description": "**Obter status e saúde do sistema NNIS**\n\nEndpoint que retorna informações sobre o estado atual do sistema NNIS (Neural Network Immune System), incluindo saúde do sistema imune, contadores de células imunes e status de memória.\n\n**Resposta esperada:** 200 OK com status completo do sistema NNIS"
+          }
+        },
+        {
+          "name": "Detectar Antigenos (NNIS)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"message\": \"Dados confidenciais para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"crypto-key-001\"\n}"
-            },
             "url": {
-              "raw": "{{base_url}}/api/crypto/encrypt",
-              "host": ["{{base_url}}"],
-              "path": ["api", "crypto", "encrypt"]
+              "raw": "{{base_url}}/api/security/nnis/detect-antigens",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "nnis",
+                "detect-antigens"
+              ]
             },
-            "description": "Endpoint de criptografia via /api/crypto/encrypt - Criptografa dados usando algoritmos seguros"
+            "description": "**Detectar antígenos de ameaças usando o sistema NNIS**\n\nEndpoint que analisa dados de rede para detectar padrões de ameaça usando o sistema neural imune. O NNIS processa dados de tráfego e identifica possíveis ameaças baseadas em padrões aprendidos e reconhecimento de antígenos.\n\n**Payload:**\n```json\n{\n  \"traffic_pattern\": \"normal\",\n  \"connection_count\": 10,\n  \"data_volume\": 1024\n}\n```\n\n**Resposta esperada:** 200 OK com antígenos detectados"
           }
         },
         {
-          "name": "Criptografar via /api/security/encrypt",
+          "name": "Gerar Resposta Imune (NNIS)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"message\": \"Dados de segurança para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"security-key-001\"\n}"
-            },
             "url": {
-              "raw": "{{base_url}}/api/security/encrypt",
-              "host": ["{{base_url}}"],
-              "path": ["api", "security", "encrypt"]
+              "raw": "{{base_url}}/api/security/nnis/generate-response",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "nnis",
+                "generate-response"
+              ]
             },
-            "description": "Endpoint de criptografia via /api/security/encrypt - Criptografia focada em segurança"
+            "description": "**Gerar resposta imune para uma ameaça específica**\n\nEndpoint que permite ao sistema NNIS gerar uma resposta imune personalizada para uma ameaça detectada. O sistema analisa os dados da ameaça e gera ações de resposta apropriadas baseadas em padrões aprendidos.\n\n**Payload:**\n```json\n{\n  \"threat_type\": \"sql_injection\",\n  \"confidence\": 0.8,\n  \"source\": \"192.168.1.100\"\n}\n```\n\n**Resposta esperada:** 200 OK com resposta imune gerada"
           }
         },
         {
-          "name": "Criptografar via /encrypt",
+          "name": "Inteligencia de Ameacas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/threat-intelligence",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "threat-intelligence"
+              ]
+            },
+            "description": "**Obter inteligência de ameaças combinada dos sistemas ABISS e NNIS**\n\nEndpoint que consolida informações de inteligência de ameaças de ambos os sistemas de segurança, fornecendo uma visão unificada dos padrões de ameaça, respostas imunes e métricas de segurança em tempo real.\n\n**Resposta esperada:** 200 OK com inteligência consolidada de ameaças"
+          }
+        },
+        {
+          "name": "Testar Middleware de Seguranca",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"message\": \"Dados simples para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"simple-key-001\"\n}"
-            },
             "url": {
-              "raw": "{{base_url}}/encrypt",
-              "host": ["{{base_url}}"],
-              "path": ["encrypt"]
+              "raw": "{{base_url}}/api/security/middleware/test",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "middleware",
+                "test"
+              ]
             },
-            "description": "Endpoint de criptografia simples via /encrypt - Interface simplificada"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🌐 WebSocket Endpoints",
-      "item": [
-        {
-          "name": "WebSocket Principal (/ws)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "ws://127.0.0.1:8000/ws",
-              "protocol": "ws",
-              "host": ["127.0.0.1"],
-              "port": "8000",
-              "path": ["ws"]
-            },
-            "description": "Endpoint WebSocket principal para comunicação em tempo real. Aceita mensagens JSON e texto simples, retornando echo das mensagens recebidas."
+            "description": "**Testar funcionalidade do middleware de segurança**\n\nEndpoint para testar e validar o funcionamento do middleware de segurança, permitindo simular requisições e verificar respostas de segurança, análise ABISS e validação de entrada.\n\n**Payload:**\n```json\n{\n  \"method\": \"POST\",\n  \"path\": \"/auth/login\",\n  \"headers\": {\"User-Agent\": \"Test\"},\n  \"body\": {\"username\": \"test\", \"password\": \"test123\"}\n}\n```\n\n**Resposta esperada:** 200 OK com resultado do teste"
           }
         },
         {
-          "name": "WebSocket API (/api/ws)",
+          "name": "Configuracao do Middleware",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "ws://127.0.0.1:8000/api/ws",
-              "protocol": "ws",
-              "host": ["127.0.0.1"],
-              "port": "8000",
-              "path": ["api", "ws"]
+              "raw": "{{base_url}}/api/security/middleware/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "middleware",
+                "config"
+              ]
             },
-            "description": "Endpoint WebSocket da API para comunicação estruturada. Ideal para integrações que precisam de comunicação bidirecional."
+            "description": "**Obter configuração atual do middleware de segurança**\n\nEndpoint que retorna a configuração completa do middleware de segurança, incluindo thresholds de ameaça, configurações de análise ABISS/NNIS e parâmetros de operação.\n\n**Resposta esperada:** 200 OK com configuração completa do middleware"
           }
         },
         {
-          "name": "WebSocket Genérico (/websocket)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "ws://127.0.0.1:8000/websocket",
-              "protocol": "ws",
-              "host": ["127.0.0.1"],
-              "port": "8000",
-              "path": ["websocket"]
-            },
-            "description": "Endpoint WebSocket genérico para compatibilidade com diferentes clientes WebSocket."
-          }
-        }
-      ]
-    },
-    {
-      "name": "🧪 Testes de Carga e Performance",
-      "item": [
-        {
-          "name": "Teste de Rate Limiting",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/health",
-              "host": ["{{base_url}}"],
-              "path": ["health"]
-            },
-            "description": "Execute múltiplas vezes rapidamente para testar rate limiting. O sistema deve bloquear requisições excessivas com status 429."
-          }
-        },
-        {
-          "name": "Teste de Payload Grande",
+          "name": "Simular Ataque",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/x-www-form-urlencoded"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"large_data\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\",\n  \"repeated_field\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"test_type\": \"large_payload\",\n  \"timestamp\": \"{{timestamp}}\",\n  \"request_id\": \"{{$randomUUID}}\"\n}"
-            },
             "url": {
-              "raw": "{{base_url}}/v1/admin/events",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "events"]
+              "raw": "{{base_url}}/api/security/middleware/simulate-attack?attack_type=sql_injection",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "middleware",
+                "simulate-attack"
+              ],
+              "query": [
+                {
+                  "key": "attack_type",
+                  "value": "sql_injection"
+                }
+              ]
             },
-            "description": "Testa o sistema com payload grande para verificar limites de tamanho e proteção contra DDoS"
+            "description": "**Simular diferentes tipos de ataques para testar o middleware**\n\nEndpoint para testar a eficácia do middleware de segurança simulando diferentes tipos de ataques conhecidos. Útil para validação de segurança e testes de penetração controlados.\n\n**Tipos de ataque:** sql_injection, xss, command_injection, ddos_simulation\n\n**Resposta esperada:** 200 OK com resultado da simulação"
           }
-        }
-      ]
-    },
-    {
-      "name": "🔧 Utilitários e Debug",
-      "item": [
+        },
         {
-          "name": "Verificar Tempo de Resposta",
+          "name": "Estatisticas do Middleware",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/metrics",
-              "host": ["{{base_url}}"],
-              "path": ["api", "metrics"]
+              "raw": "{{base_url}}/api/security/middleware/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "middleware",
+                "stats"
+              ]
             },
-            "description": "Verifica métricas de performance e tempo de resposta do sistema"
+            "description": "**Obter estatísticas abrangentes do middleware de segurança**\n\nEndpoint que retorna estatísticas detalhadas sobre o funcionamento do middleware de segurança, incluindo métricas de clientes, requisições analisadas, IPs bloqueados e status dos sistemas de segurança integrados.\n\n**Resposta esperada:** 200 OK com estatísticas completas do middleware"
           }
         },
         {
-          "name": "Teste de Headers Customizados",
+          "name": "Bloquear IP",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
-                "key": "X-Test-Header",
-                "value": "PostmanTest",
-                "type": "text"
-              },
-              {
-                "key": "X-Request-ID",
-                "value": "{{$randomUUID}}",
-                "type": "text"
-              },
-              {
-                "key": "User-Agent",
-                "value": "ATous-Test-Client/1.0",
-                "type": "text"
+                "key": "Content-Type",
+                "value": "application/json"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/",
-              "host": ["{{base_url}}"],
-              "path": [""]
+              "raw": "{{base_url}}/api/security/middleware/block-ip",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "middleware",
+                "block-ip"
+              ]
             },
-            "description": "Testa como o sistema processa headers customizados"
+            "description": "**Bloquear endereço IP específico**\n\nEndpoint administrativo que permite bloquear um endereço IP específico no sistema de segurança. O IP bloqueado será rejeitado por todas as rotas protegidas pelo middleware.\n\n**Payload:**\n```json\n{\n  \"ip_address\": \"192.168.1.100\",\n  \"reason\": \"Tentativa de ataque detectada\"\n}\n```\n\n**Resposta esperada:** 200 OK com confirmação do bloqueio"
+          }
+        },
+        {
+          "name": "Desbloquear IP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/security/middleware/unblock-ip",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "middleware",
+                "unblock-ip"
+              ]
+            },
+            "description": "**Desbloquear endereço IP previamente bloqueado**\n\nEndpoint administrativo que permite remover o bloqueio de um endereço IP, restaurando o acesso normal ao sistema. Útil para desbloqueios manuais após análise de segurança.\n\n**Payload:**\n```json\n{\n  \"ip_address\": \"192.168.1.100\"\n}\n```\n\n**Resposta esperada:** 200 OK com confirmação do desbloqueio"
+          }
+        },
+        {
+          "name": "Validar Entrada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/security/validate-input",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "validate-input"
+              ]
+            },
+            "description": "**Validar dados de entrada para ameaças de segurança**\n\nEndpoint que analisa dados de entrada em busca de padrões maliciosos, incluindo SQL injection, XSS, command injection e outras ameaças conhecidas. Retorna resultado da validação com dados sanitizados e score de confiança.\n\n**Payload:**\n```json\n{\n  \"input_data\": \"<script>alert('xss')</script>\",\n  \"context\": \"html\"\n}\n```\n\n**Resposta esperada:** 200 OK com resultado da validação"
+          }
+        },
+        {
+          "name": "Padroes de Validacao",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/validation-patterns",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "validation-patterns"
+              ]
+            },
+            "description": "**Obter informações sobre padrões de validação utilizados**\n\nEndpoint que retorna informações detalhadas sobre os padrões de validação utilizados pelo sistema de validação de entrada, incluindo contadores de padrões por categoria e contextos de segurança suportados.\n\n**Resposta esperada:** 200 OK com informações sobre padrões de validação"
+          }
+        },
+        {
+          "name": "Relatorio de Seguranca",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/security-report",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "security",
+                "security-report"
+              ]
+            },
+            "description": "**Gerar relatório abrangente de segurança**\n\nEndpoint que consolida informações de todos os sistemas de segurança em um relatório unificado, incluindo estatísticas do middleware, ABISS, NNIS e métricas de validação de entrada. Útil para análise de segurança e auditoria.\n\n**Resposta esperada:** 200 OK com relatório completo de segurança"
           }
         }
       ]
     }
   ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{jwt_token}}",
-        "type": "string"
-      }
-    ]
-  },
   "event": [
     {
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// Script para executar antes de cada requisição",
-          "console.log('🚀 Executando requisição para:', pm.request.url.toString());",
+          "// Script executado antes de cada request",
+          "console.log('Iniciando request para:', pm.request.url.toString());",
+          "console.log('Metodo:', pm.request.method);",
+          "console.log('Timestamp:', new Date().toISOString());",
           "",
-          "// Adicionar timestamp dinâmico",
-          "pm.globals.set('timestamp', new Date().toISOString());",
+          "// Log de variaveis de ambiente",
+          "console.log('Base URL:', pm.environment.get('base_url') || pm.globals.get('base_url'));",
+          "console.log('Admin API Key:', pm.environment.get('admin_api_key') || pm.globals.get('admin_api_key'));",
           "",
-          "// Adicionar ID único para cada requisição",
-          "pm.globals.set('requestId', pm.variables.replaceIn('{{$randomUUID}}'));",
-          "",
-          "// Log de informações da requisição",
-          "console.log('📅 Timestamp:', pm.globals.get('timestamp'));",
-          "console.log('🆔 Request ID:', pm.globals.get('requestId'));",
-          "",
-          "// Verificar se é um endpoint de segurança",
-          "const url = pm.request.url.toString();",
-          "if (url.includes('/security/') || url.includes('/admin/')) {",
-          "    console.log('🛡️ Endpoint de segurança/admin detectado');",
-          "}",
-          "",
-          "// Verificar se é um WebSocket",
-          "if (url.startsWith('ws://') || url.startsWith('wss://')) {",
-          "    console.log('🌐 Conexão WebSocket detectada');",
+          "// Validacao de variaveis obrigatorias",
+          "const baseUrl = pm.environment.get('base_url') || pm.globals.get('base_url');",
+          "if (!baseUrl) {",
+          "    console.warn('Aviso: base_url nao configurada');",
           "}"
         ]
       }
@@ -829,85 +1132,52 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// Testes automáticos para todas as requisições",
-          "pm.test('✅ Status code não é 500 (erro interno)', function () {",
+          "// Testes automaticos para todas as requisicoes",
+          "pm.test('Status code nao e 500 (erro interno)', function () {",
           "    pm.expect(pm.response.code).to.not.equal(500);",
           "});",
           "",
-          "pm.test('⚡ Tempo de resposta menor que 5 segundos', function () {",
+          "pm.test('Tempo de resposta menor que 5 segundos', function () {",
           "    pm.expect(pm.response.responseTime).to.be.below(5000);",
           "});",
           "",
-          "pm.test('📄 Resposta tem Content-Type válido', function () {",
+          "pm.test('Resposta tem Content-Type valido', function () {",
           "    const contentType = pm.response.headers.get('Content-Type');",
           "    if (contentType) {",
           "        pm.expect(contentType).to.match(/application\\/json|text\\/html|text\\/plain/);",
           "    }",
           "});",
           "",
-          "// Teste específico para endpoints JSON",
-          "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
-          "    pm.test('🔍 Resposta JSON tem timestamp', function () {",
-          "        try {",
-          "            const jsonData = pm.response.json();",
-          "            if (jsonData.timestamp) {",
-          "                pm.expect(jsonData.timestamp).to.be.a('string');",
-          "                pm.expect(jsonData.timestamp).to.match(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
-          "            }",
-          "        } catch (e) {",
-          "            console.log('⚠️ Não foi possível parsear JSON ou timestamp não encontrado');",
-          "        }",
-          "    });",
-          "",
-          "    pm.test('🔍 Resposta JSON tem estrutura válida', function () {",
-          "        try {",
-          "            const jsonData = pm.response.json();",
-          "            pm.expect(jsonData).to.be.an('object');",
-          "        } catch (e) {",
-          "            console.log('⚠️ Resposta não é um JSON válido');",
-          "        }",
-          "    });",
-          "}",
-          "",
           "// Teste para endpoints de admin",
           "const url = pm.request.url.toString();",
           "if (url.includes('/admin/')) {",
-          "    pm.test('🔐 Endpoint admin respondeu adequadamente', function () {",
+          "    pm.test('Endpoint admin respondeu adequadamente', function () {",
           "        pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 401, 403, 429]);",
           "    });",
           "}",
           "",
           "// Teste para rate limiting",
           "if (pm.response.code === 429) {",
-          "    pm.test('⏱️ Rate limiting ativo - resposta adequada', function () {",
+          "    pm.test('Rate limiting ativo - resposta adequada', function () {",
           "        pm.expect(pm.response.code).to.equal(429);",
-          "        console.log('🚫 Rate limit atingido - sistema funcionando corretamente');",
+          "        console.log('Rate limit atingido - sistema funcionando corretamente');",
           "    });",
           "}",
           "",
-          "// Teste para bloqueios de segurança",
+          "// Teste para bloqueios de seguranca",
           "if (pm.response.code === 403) {",
-          "    pm.test('🚫 Bloqueio de segurança - resposta adequada', function () {",
+          "    pm.test('Bloqueio de seguranca - resposta adequada', function () {",
           "        pm.expect(pm.response.code).to.equal(403);",
-          "        console.log('🛡️ Requisição bloqueada por segurança - sistema funcionando');",
+          "        console.log('Requisicao bloqueada por seguranca - sistema funcionando');",
           "    });",
           "}",
           "",
           "// Log detalhado da resposta para debug",
-          "console.log('📊 Status da resposta:', pm.response.status);",
-          "console.log('⏱️ Tempo de resposta:', pm.response.responseTime + 'ms');",
-          "console.log('📏 Tamanho da resposta:', pm.response.responseSize + ' bytes');",
+          "console.log('Status da resposta:', pm.response.status);",
+          "console.log('Tempo de resposta:', pm.response.responseTime + 'ms');",
+          "console.log('Tamanho da resposta:', pm.response.responseSize + ' bytes');",
           "",
-          "// Log de headers importantes",
-          "const importantHeaders = ['Content-Type', 'Content-Length', 'X-RateLimit-Remaining', 'X-Request-ID'];",
-          "importantHeaders.forEach(header => {",
-          "    const value = pm.response.headers.get(header);",
-          "    if (value) {",
-          "        console.log(`📋 ${header}:`, value);",
-          "    }",
-          "});",
-          "",
-          "// Salvar métricas para relatório",
+          "// Salvar metricas para relatorio",
           "if (!pm.globals.get('testMetrics')) {",
           "    pm.globals.set('testMetrics', JSON.stringify([]));",
           "}",

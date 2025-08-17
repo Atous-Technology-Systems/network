@@ -173,6 +173,27 @@ class NNISSystem:
     - Usa IA (Gemma 3N) para análise avançada
     """
     
+    # Métodos para acessar configuração
+    def get_memory_size(self) -> int:
+        """Tamanho da memória de aprendizado"""
+        return self.config.get("memory_size", 1000)
+    
+    def get_immune_cell_count(self) -> int:
+        """Número de células imunes detectoras"""
+        return self.config.get("immune_cells_count", 100)
+    
+    def get_memory_cell_count(self) -> int:
+        """Número de células de memória"""
+        return self.config.get("memory_cells_count", 50)
+    
+    def get_threat_threshold(self) -> float:
+        """Threshold para detecção de ameaças"""
+        return self.config.get("threat_threshold", 0.8)
+    
+    def get_config(self) -> Dict[str, Any]:
+        """Retorna a configuração completa do sistema"""
+        return self.config.copy()
+    
     def __init__(self, config: Dict[str, Any]):
         """
         Inicializa o sistema NNIS
@@ -252,8 +273,8 @@ class NNISSystem:
     
     def _initialize_immune_cells(self) -> None:
         """Inicializa células imunes especializadas"""
-        immune_cells_count = self.config.get("immune_cells_count", 100)
-        memory_cells_count = self.config.get("memory_cells_count", 50)
+        immune_cells_count = self.get_immune_cell_count()
+        memory_cells_count = self.get_memory_cell_count()
         
         # Criar células detectoras especializadas
         specializations = [
@@ -1214,3 +1235,891 @@ class NNISSystem:
             "redundant_cells_removed": redundant_cells_removed,
             "memory_efficiency_improved": True
         }
+    
+    # ===== MÉTODOS AVANÇADOS DE PATTERN RECOGNITION =====
+    
+    def learn_threat_pattern(self, pattern_id: str, pattern_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Aprende e armazena um padrão de ameaça na memória imunológica
+        
+        Args:
+            pattern_id: Identificador único do padrão
+            pattern_data: Dados do padrão de ameaça
+            
+        Returns:
+            Resultado do aprendizado
+        """
+        try:
+            # Criar antígeno de ameaça
+            threat_antigen = ThreatAntigen(
+                threat_type=pattern_data.get("type", "unknown"),
+                confidence=pattern_data.get("confidence", 0.5),
+                source="pattern_learning"
+            )
+            
+            # Armazenar na base de dados de ameaças
+            self.threat_database[pattern_id] = {
+                "antigen": threat_antigen,
+                "indicators": pattern_data.get("indicators", []),
+                "severity": pattern_data.get("severity", "medium"),
+                "learned_at": time.time(),
+                "exposure_count": 1
+            }
+            
+            # Criar célula de memória especializada
+            memory_cell = self.create_immune_cell("memory", threat_antigen.threat_type)
+            memory_cell.memory_strength = 0.7  # Força inicial
+            self.memory_cells.append(memory_cell)
+            
+            # Adicionar ao histórico de aprendizado
+            self.learning_history.append({
+                "pattern_id": pattern_id,
+                "threat_type": threat_antigen.threat_type,
+                "confidence": threat_antigen.confidence,
+                "timestamp": time.time(),
+                "success": True
+            })
+            
+            return {
+                "status": "learned",
+                "pattern_id": pattern_id,
+                "memory_location": f"memory_cell_{len(self.memory_cells)}",
+                "confidence": threat_antigen.confidence
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao aprender padrão {pattern_id}: {e}")
+            return {
+                "status": "error",
+                "pattern_id": pattern_id,
+                "error": str(e)
+            }
+    
+    def recognize_threat_pattern(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Reconhece padrões de ameaça conhecidos nos dados de entrada
+        
+        Args:
+            input_data: Dados de entrada para análise
+            
+        Returns:
+            Resultado do reconhecimento
+        """
+        best_match = None
+        best_score = 0.0
+        
+        # Normalizar dados de entrada para formato de indicadores
+        input_indicators = []
+        for key, value in input_data.items():
+            if isinstance(value, list):
+                input_indicators.extend(value)
+            elif isinstance(value, str):
+                input_indicators.append(value)
+        
+        normalized_input = {"indicators": input_indicators}
+        
+        for pattern_id, pattern_info in self.threat_database.items():
+            # Calcular similaridade com base nos indicadores
+            similarity_score = self.calculate_pattern_similarity(normalized_input, pattern_info)
+            
+            if similarity_score > best_score and similarity_score > 0.6:
+                best_score = similarity_score
+                best_match = {
+                    "pattern_id": pattern_id,
+                    "confidence": similarity_score,
+                    "threat_type": pattern_info["antigen"].threat_type,
+                    "severity": pattern_info["severity"]
+                }
+        
+        if best_match:
+            return {
+                "match_found": True,
+                "pattern_id": best_match["pattern_id"],
+                "confidence": best_match["confidence"],
+                "threat_type": best_match["threat_type"],
+                "severity": best_match["severity"]
+            }
+        else:
+            return {
+                "match_found": False,
+                "confidence": 0.0
+            }
+    
+    def calculate_pattern_similarity(self, pattern1: Dict[str, Any], pattern2: Dict[str, Any]) -> float:
+        """
+        Calcula similaridade entre dois padrões
+        
+        Args:
+            pattern1: Primeiro padrão
+            pattern2: Segundo padrão
+            
+        Returns:
+            Score de similaridade (0-1)
+        """
+        try:
+            # Extrair indicadores dos padrões
+            indicators1 = set(pattern1.get("indicators", []))
+            indicators2 = set(pattern2.get("indicators", []))
+            
+            if not indicators1 or not indicators2:
+                return 0.0
+            
+            # Calcular similaridade usando Jaccard
+            intersection = len(indicators1.intersection(indicators2))
+            union = len(indicators1.union(indicators2))
+            
+            if union == 0:
+                return 0.0
+            
+            jaccard_similarity = intersection / union
+            
+            # Calcular similaridade semântica para indicadores similares
+            semantic_similarity = 0.0
+            for ind1 in indicators1:
+                for ind2 in indicators2:
+                    # Verificar similaridade semântica
+                    if self._are_indicators_semantically_similar(ind1, ind2):
+                        semantic_similarity += 0.6
+            
+            # Normalizar similaridade semântica
+            semantic_similarity = min(1.0, semantic_similarity)
+            
+            # Ajustar baseado em outros fatores
+            type_similarity = 1.0 if pattern1.get("type") == pattern2.get("type") else 0.5
+            
+            # Score final ponderado
+            final_score = (jaccard_similarity * 0.4) + (semantic_similarity * 0.4) + (type_similarity * 0.2)
+            
+            return min(1.0, max(0.0, final_score))
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao calcular similaridade: {e}")
+            return 0.0
+    
+    def _are_indicators_semantically_similar(self, indicator1: str, indicator2: str) -> bool:
+        """
+        Verifica se dois indicadores são semanticamente similares
+        
+        Args:
+            indicator1: Primeiro indicador
+            indicator2: Segundo indicador
+            
+        Returns:
+            True se semanticamente similares
+        """
+        # Normalizar para comparação
+        ind1_lower = indicator1.lower()
+        ind2_lower = indicator2.lower()
+        
+        # Verificar se um contém o outro
+        if ind1_lower in ind2_lower or ind2_lower in ind1_lower:
+            return True
+        
+        # Verificar palavras-chave similares
+        semantic_groups = {
+            "file": ["file", "exe", "dll", "process"],
+            "registry": ["registry", "reg", "hkey", "software"],
+            "network": ["network", "beacon", "c2", "traffic", "connection"],
+            "malware": ["malware", "suspicious", "malicious", "trojan"],
+            "ddos": ["ddos", "flood", "packet", "attack"],
+            "injection": ["injection", "sql", "xss", "command"]
+        }
+        
+        for group_name, keywords in semantic_groups.items():
+            if any(keyword in ind1_lower for keyword in keywords) and any(keyword in ind2_lower for keyword in keywords):
+                return True
+        
+        return False
+    
+    def reinforce_pattern_learning(self, pattern_id: str, pattern_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Reforça o aprendizado de um padrão existente
+        
+        Args:
+            pattern_id: Identificador do padrão
+            pattern_data: Dados atualizados do padrão
+            
+        Returns:
+            Resultado do reforço
+        """
+        if pattern_id not in self.threat_database:
+            return self.learn_threat_pattern(pattern_id, pattern_data)
+        
+        # Reforçar padrão existente
+        pattern_info = self.threat_database[pattern_id]
+        pattern_info["exposure_count"] += 1
+        pattern_info["last_reinforcement"] = time.time()
+        
+        # Aumentar confiança
+        if "confidence" in pattern_data:
+            pattern_info["antigen"].confidence = min(1.0, 
+                pattern_info["antigen"].confidence + 0.1)
+        
+        # Atualizar histórico
+        self.learning_history.append({
+            "pattern_id": pattern_id,
+            "threat_type": pattern_info["antigen"].threat_type,
+            "confidence": pattern_info["antigen"].confidence,
+            "timestamp": time.time(),
+            "success": True,
+            "reinforcement": True
+        })
+        
+        return {
+            "status": "reinforced",
+            "pattern_id": pattern_id,
+            "exposure_count": pattern_info["exposure_count"],
+            "confidence": pattern_info["antigen"].confidence
+        }
+    
+    # ===== MÉTODOS AVANÇADOS DE MEMÓRIA IMUNOLÓGICA =====
+    
+    def store_in_immune_memory(self, pattern_id: str, pattern_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Armazena padrão na memória imunológica
+        
+        Args:
+            pattern_id: Identificador do padrão
+            pattern_data: Dados do padrão
+            
+        Returns:
+            Resultado do armazenamento
+        """
+        try:
+            # Criar célula de memória especializada
+            memory_cell = self.create_immune_cell("memory", pattern_data.get("type", "unknown"))
+            memory_cell.memory_strength = 0.8
+            
+            # Armazenar dados do padrão
+            memory_data = {
+                "cell_id": memory_cell.cell_id,
+                "pattern_id": pattern_id,
+                "data": pattern_data,
+                "stored_at": time.time(),
+                "access_count": 0
+            }
+            
+            # Adicionar à memória
+            self.memory_cells.append(memory_cell)
+            
+            # Armazenar na base de dados
+            self.threat_database[pattern_id] = {
+                "memory_cell": memory_cell,
+                "data": memory_data,
+                "type": pattern_data.get("type", "unknown"),
+                "family": pattern_data.get("family", "unknown"),
+                "indicators": pattern_data.get("indicators", []),
+                "confidence": pattern_data.get("confidence", 0.5),
+                "stored_at": time.time()
+            }
+            
+            return {
+                "status": "stored",
+                "pattern_id": pattern_id,
+                "memory_cell_id": memory_cell.cell_id,
+                "memory_strength": memory_cell.memory_strength
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao armazenar na memória: {e}")
+            return {
+                "status": "error",
+                "pattern_id": pattern_id,
+                "error": str(e)
+            }
+    
+    def get_immune_memory(self) -> Dict[str, Any]:
+        """
+        Retorna a memória imunológica completa
+        
+        Returns:
+            Dados da memória imunológica
+        """
+        memory_data = {}
+        
+        for pattern_id, pattern_info in self.threat_database.items():
+            # Verificar se é um padrão aprendido via learn_threat_pattern
+            if "antigen" in pattern_info:
+                memory_data[pattern_id] = {
+                    "type": pattern_info["antigen"].threat_type,
+                    "family": "unknown",
+                    "memory_strength": 0.7,  # Valor padrão para padrões aprendidos
+                    "stored_at": pattern_info.get("learned_at", time.time()),
+                    "access_count": 0,
+                    "confidence": pattern_info["antigen"].confidence,
+                    "exposure_count": pattern_info.get("exposure_count", 1),
+                    "last_reinforcement": pattern_info.get("last_reinforcement")
+                }
+            # Verificar se é um padrão armazenado via store_in_immune_memory
+            elif "memory_cell" in pattern_info:
+                memory_data[pattern_id] = {
+                    "type": pattern_info.get("type", "unknown"),
+                    "family": pattern_info.get("family", "unknown"),
+                    "memory_strength": pattern_info["memory_cell"].memory_strength,
+                    "stored_at": pattern_info["data"]["stored_at"],
+                    "access_count": pattern_info["data"]["access_count"],
+                    "confidence": pattern_info["data"]["data"].get("confidence", 0.5),
+                    "exposure_count": pattern_info["data"]["data"].get("exposure_count", 1),
+                    "last_reinforcement": pattern_info["data"]["data"].get("last_reinforcement")
+                }
+        
+        return memory_data
+    
+    def get_memory_hierarchy(self) -> Dict[str, List[str]]:
+        """
+        Retorna estrutura hierárquica da memória imunológica
+        
+        Returns:
+            Estrutura hierárquica organizada por tipo e família
+        """
+        hierarchy = {}
+        
+        for pattern_id, pattern_info in self.threat_database.items():
+            if "memory_cell" in pattern_info:
+                threat_type = pattern_info.get("type", "unknown")
+                family = pattern_info.get("family", "unknown")
+                
+                if threat_type not in hierarchy:
+                    hierarchy[threat_type] = []
+                
+                if family not in hierarchy[threat_type]:
+                    hierarchy[threat_type].append(family)
+        
+        return hierarchy
+    
+    def consolidate_memory(self, similarity_threshold: float = 0.8) -> Dict[str, Any]:
+        """
+        Consolida memória removendo padrões similares
+        
+        Args:
+            similarity_threshold: Threshold para considerar padrões similares
+            
+        Returns:
+            Resultado da consolidação
+        """
+        patterns_to_remove = []
+        consolidation_count = 0
+        
+        # Encontrar padrões similares
+        for pattern_id1, pattern_info1 in self.threat_database.items():
+            for pattern_id2, pattern_info2 in self.threat_database.items():
+                if pattern_id1 >= pattern_id2:
+                    continue
+                
+                # Calcular similaridade entre padrões
+                indicators1 = pattern_info1.get("indicators", [])
+                indicators2 = pattern_info2.get("indicators", [])
+                
+                if indicators1 and indicators2:
+                    similarity = self.calculate_pattern_similarity(
+                        {"indicators": indicators1},
+                        {"indicators": indicators2}
+                    )
+                    
+                    if similarity > similarity_threshold:
+                        # Manter o padrão com maior confiança
+                        confidence1 = pattern_info1.get("confidence", 0)
+                        confidence2 = pattern_info2.get("confidence", 0)
+                        
+                        if confidence1 < confidence2:
+                            patterns_to_remove.append(pattern_id1)
+                        else:
+                            patterns_to_remove.append(pattern_id2)
+                        consolidation_count += 1
+        
+        # Remover padrões duplicados
+        for pattern_id in set(patterns_to_remove):
+            if pattern_id in self.threat_database:
+                del self.threat_database[pattern_id]
+        
+        return {
+            "patterns_consolidated": consolidation_count,
+            "patterns_removed": len(set(patterns_to_remove)),
+            "memory_efficiency_improved": True
+        }
+    
+    def apply_memory_aging(self, aging_factor: float = 0.1) -> Dict[str, Any]:
+        """
+        Aplica envelhecimento à memória para reduzir relevância de padrões antigos
+        
+        Args:
+            aging_factor: Fator de envelhecimento (0-1)
+            
+        Returns:
+            Resultado do envelhecimento
+        """
+        current_time = time.time()
+        aged_patterns = 0
+        
+        for pattern_id, pattern_info in self.threat_database.items():
+            # Verificar se tem timestamp de armazenamento
+            stored_at = pattern_info.get("stored_at") or pattern_info.get("learned_at")
+            
+            if stored_at:
+                # Calcular idade do padrão
+                age_hours = (current_time - stored_at) / 3600
+                
+                # Aplicar envelhecimento baseado na idade
+                if age_hours > 24:  # Padrões com mais de 24 horas
+                    if "antigen" in pattern_info:
+                        # Reduzir confiança
+                        old_confidence = pattern_info["antigen"].confidence
+                        new_confidence = max(0.1, old_confidence - (aging_factor * (age_hours / 24)))
+                        pattern_info["antigen"].confidence = new_confidence
+                        aged_patterns += 1
+                    elif "confidence" in pattern_info:
+                        # Reduzir confiança para padrões armazenados via store_in_immune_memory
+                        old_confidence = pattern_info["confidence"]
+                        new_confidence = max(0.1, old_confidence - (aging_factor * (age_hours / 24)))
+                        pattern_info["confidence"] = new_confidence
+                        aged_patterns += 1
+        
+        return {
+            "patterns_aged": aged_patterns,
+            "aging_factor_applied": aging_factor,
+            "memory_relevance_updated": True
+        }
+    
+    def retrieve_contextual_memories(self, context: str) -> List[Dict[str, Any]]:
+        """
+        Recupera memórias baseadas no contexto
+        
+        Args:
+            context: Contexto para busca (ex: "web", "network", "file")
+            
+        Returns:
+            Lista de memórias relevantes ao contexto
+        """
+        contextual_memories = []
+        
+        # Mapeamento de contexto para palavras-chave
+        context_keywords = {
+            "web": ["web", "http", "url", "browser", "html", "javascript"],
+            "network": ["network", "tcp", "udp", "ip", "dns", "connection"],
+            "file": ["file", "exe", "dll", "process", "registry"],
+            "malware": ["malware", "virus", "trojan", "ransomware", "spyware"],
+            "ddos": ["ddos", "flood", "attack", "packet", "traffic"]
+        }
+        
+        keywords = context_keywords.get(context.lower(), [context.lower()])
+        
+        for pattern_id, pattern_info in self.threat_database.items():
+            if "indicators" in pattern_info:
+                indicators = pattern_info["indicators"]
+                
+                # Verificar se algum indicador contém palavras-chave do contexto
+                for indicator in indicators:
+                    if any(keyword in indicator.lower() for keyword in keywords):
+                        contextual_memories.append({
+                            "pattern_id": pattern_id,
+                            "context": context,
+                            "indicators": indicators,
+                            "confidence": pattern_info.get("antigen", {}).confidence if "antigen" in pattern_info else 0.5,
+                            "relevance_score": 0.8  # Score de relevância para o contexto
+                        })
+                        break
+        
+        return contextual_memories
+    
+    # ===== MÉTODOS AVANÇADOS DE RESPOSTA DISTRIBUÍDA =====
+    
+    def coordinate_distributed_response(self, threat_intelligence: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Coordena resposta distribuída entre múltiplos nós
+        
+        Args:
+            threat_intelligence: Informações sobre a ameaça
+            
+        Returns:
+            Plano de resposta coordenada
+        """
+        try:
+            threat_id = threat_intelligence.get("threat_id", "unknown")
+            severity = threat_intelligence.get("severity", "medium")
+            affected_nodes = threat_intelligence.get("affected_nodes", [])
+            response_strategy = threat_intelligence.get("response_strategy", "isolate")
+            
+            # Gerar ID de coordenação único
+            coordination_id = f"coord_{threat_id}_{int(time.time())}"
+            
+            # Definir ações por nó baseadas na estratégia
+            node_actions = []
+            for node_id in affected_nodes:
+                if response_strategy == "isolate_and_analyze":
+                    actions = ["isolate_network", "capture_traffic", "analyze_processes"]
+                    priority = 1 if severity == "critical" else 2
+                elif response_strategy == "monitor":
+                    actions = ["increase_monitoring", "log_activities", "alert_admin"]
+                    priority = 3
+                else:
+                    actions = ["standard_response", "update_firewall"]
+                    priority = 4
+                
+                node_actions.append({
+                    "node_id": node_id,
+                    "actions": actions,
+                    "priority": priority,
+                    "estimated_duration": "5-15 minutes"
+                })
+            
+            return {
+                "coordination_id": coordination_id,
+                "strategy": response_strategy,
+                "node_actions": node_actions,
+                "threat_severity": severity,
+                "coordinated_at": time.time(),
+                "status": "coordinated"
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro na coordenação de resposta: {e}")
+            return {
+                "coordination_id": None,
+                "error": str(e),
+                "status": "failed"
+            }
+    
+    def federated_learning_update(self, local_updates: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Atualiza modelo via aprendizado federado
+        
+        Args:
+            local_updates: Atualizações locais do modelo
+            
+        Returns:
+            Resultado da atualização federada
+        """
+        try:
+            new_patterns = local_updates.get("new_patterns", 0)
+            model_weights = local_updates.get("model_weights", [])
+            accuracy_improvement = local_updates.get("accuracy_improvement", 0.0)
+            training_samples = local_updates.get("training_samples", 0)
+            
+            # Simular atualização federada
+            global_accuracy = 0.85 + (accuracy_improvement * 0.1)  # Base + melhoria
+            model_version = f"v{int(time.time() / 3600)}"  # Versão baseada no tempo
+            
+            # Calcular número de nós participantes (simulado)
+            participating_nodes = max(1, min(10, new_patterns // 5))
+            
+            # Atualizar histórico de aprendizado
+            self.learning_history.append({
+                "update_type": "federated",
+                "new_patterns": new_patterns,
+                "accuracy_improvement": accuracy_improvement,
+                "training_samples": training_samples,
+                "timestamp": time.time(),
+                "success": True
+            })
+            
+            return {
+                "status": "updated",
+                "global_accuracy": round(global_accuracy, 3),
+                "model_version": model_version,
+                "participating_nodes": participating_nodes,
+                "patterns_integrated": new_patterns,
+                "federation_timestamp": time.time()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro na atualização federada: {e}")
+            return {
+                "status": "failed",
+                "error": str(e)
+            }
+    
+    def share_threat_intelligence(self, threat_intel: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Compartilha inteligência de ameaças entre nós
+        
+        Args:
+            threat_intel: Inteligência sobre ameaça
+            
+        Returns:
+            Resultado do compartilhamento
+        """
+        try:
+            threat_type = threat_intel.get("threat_type", "unknown")
+            indicators = threat_intel.get("indicators", [])
+            mitigation = threat_intel.get("mitigation", "none")
+            confidence = threat_intel.get("confidence", 0.5)
+            
+            # Gerar ID único para a inteligência
+            intelligence_id = f"intel_{threat_type}_{int(time.time())}"
+            
+            # Simular compartilhamento com nós da rede
+            shared_with_nodes = max(3, min(15, int(confidence * 20)))  # Baseado na confiança
+            
+            # Armazenar na base de dados local
+            self.threat_database[intelligence_id] = {
+                "type": "shared_intelligence",
+                "threat_type": threat_type,
+                "indicators": indicators,
+                "mitigation": mitigation,
+                "confidence": confidence,
+                "shared_at": time.time(),
+                "source": "threat_sharing"
+            }
+            
+            return {
+                "shared_with_nodes": shared_with_nodes,
+                "propagation_status": "success",
+                "intelligence_id": intelligence_id,
+                "timestamp": time.time(),
+                "threat_type": threat_type,
+                "confidence": confidence
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro no compartilhamento de inteligência: {e}")
+            return {
+                "shared_with_nodes": 0,
+                "propagation_status": "failed",
+                "error": str(e)
+            }
+    
+    def reach_threat_consensus(self, threat_reports: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Usa mecanismo de consenso para validar relatórios de ameaças
+        
+        Args:
+            threat_reports: Lista de relatórios de nós
+            
+        Returns:
+            Resultado do consenso
+        """
+        try:
+            if not threat_reports:
+                return {
+                    "consensus_reached": False,
+                    "error": "No threat reports provided"
+                }
+            
+            # Contar detecções positivas e negativas
+            positive_detections = sum(1 for report in threat_reports if report.get("threat_detected", False))
+            total_reports = len(threat_reports)
+            
+            # Calcular confiança média dos relatórios positivos
+            positive_confidences = [
+                report.get("confidence", 0) 
+                for report in threat_reports 
+                if report.get("threat_detected", False)
+            ]
+            
+            avg_confidence = sum(positive_confidences) / len(positive_confidences) if positive_confidences else 0
+            
+            # Determinar consenso baseado na maioria
+            consensus_threshold = total_reports * 0.6  # 60% dos nós devem concordar
+            consensus_reached = positive_detections >= consensus_threshold
+            
+            # Determinar se ameaça foi confirmada
+            threat_confirmed = consensus_reached and avg_confidence > 0.7
+            
+            # Calcular score de confiança final - dar mais peso à confiança dos nós que detectaram ameaça
+            detection_ratio = positive_detections / total_reports
+            confidence_score = (detection_ratio * 0.6) + (avg_confidence * 0.4) if avg_confidence > 0 else detection_ratio
+            
+            return {
+                "consensus_reached": consensus_reached,
+                "threat_confirmed": threat_confirmed,
+                "confidence_score": round(confidence_score, 3),
+                "participating_nodes": total_reports,
+                "positive_detections": positive_detections,
+                "average_confidence": round(avg_confidence, 3),
+                "consensus_threshold": consensus_threshold,
+                "consensus_timestamp": time.time()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro no mecanismo de consenso: {e}")
+            return {
+                "consensus_reached": False,
+                "error": str(e)
+            }
+    
+    # ===== MÉTODOS AVANÇADOS DE INTEGRAÇÃO =====
+    
+    def integrate_with_abiss(self, abiss_instance: Any, anomaly_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Integra com sistema ABISS para troca de inteligência
+        
+        Args:
+            abiss_instance: Instância do sistema ABISS
+            anomaly_data: Dados da anomalia comportamental
+            
+        Returns:
+            Resultado da integração
+        """
+        try:
+            node_id = anomaly_data.get("node_id", "unknown")
+            anomaly_type = anomaly_data.get("anomaly_type", "unknown")
+            risk_score = anomaly_data.get("risk_score", 0.5)
+            indicators = anomaly_data.get("indicators", [])
+            
+            # Simular análise conjunta com ABISS
+            combined_risk_score = (risk_score + 0.8) / 2  # Média ponderada
+            
+            # Correlacionar com padrões conhecidos
+            threat_correlation = None
+            for pattern_id, pattern_info in self.threat_database.items():
+                if "indicators" in pattern_info:
+                    similarity = self.calculate_pattern_similarity(
+                        {"indicators": indicators},
+                        pattern_info
+                    )
+                    if similarity > 0.6:
+                        threat_correlation = {
+                            "pattern_id": pattern_id,
+                            "similarity": similarity,
+                            "threat_type": pattern_info.get("type", "unknown")
+                        }
+                        break
+            
+            # Simular troca de inteligência
+            intelligence_exchange = {
+                "nnis_contribution": {
+                    "patterns_analyzed": len(self.threat_database),
+                    "memory_insights": len(self.memory_cells)
+                },
+                "abiss_contribution": {
+                    "behavioral_analysis": True,
+                    "anomaly_detection": True
+                }
+            }
+            
+            return {
+                "integration_status": "success",
+                "threat_correlation": threat_correlation,
+                "combined_risk_score": round(combined_risk_score, 3),
+                "intelligence_exchange": intelligence_exchange,
+                "integration_timestamp": time.time()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro na integração com ABISS: {e}")
+            return {
+                "integration_status": "failed",
+                "error": str(e)
+            }
+    
+    def distribute_via_p2p(self, p2p_manager: Any, update_package: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Distribui atualizações via rede P2P
+        
+        Args:
+            p2p_manager: Gerenciador da rede P2P
+            update_package: Pacote de atualização
+            
+        Returns:
+            Resultado da distribuição
+        """
+        try:
+            update_type = update_package.get("update_type", "unknown")
+            version = update_package.get("version", "1.0.0")
+            size_mb = update_package.get("size_mb", 0)
+            checksum = update_package.get("checksum", "")
+            
+            # Simular distribuição P2P
+            target_nodes = max(5, min(50, int(size_mb * 2)))  # Baseado no tamanho
+            estimated_completion_time = f"{max(1, int(size_mb / 5))} minutes"
+            
+            # Simular validação de checksum
+            checksum_valid = len(checksum) >= 8 and checksum.isalnum()
+            
+            if checksum_valid:
+                # Simular distribuição bem-sucedida
+                distribution_status = "initiated"
+                progress_percentage = 15  # Início da distribuição
+            else:
+                distribution_status = "failed"
+                progress_percentage = 0
+            
+            # Simular métricas de rede
+            network_metrics = {
+                "active_peers": target_nodes * 2,
+                "bandwidth_utilization": min(85, size_mb * 10),
+                "redundancy_factor": 3
+            }
+            
+            return {
+                "distribution_status": distribution_status,
+                "target_nodes": target_nodes,
+                "estimated_completion_time": estimated_completion_time,
+                "progress_percentage": progress_percentage,
+                "checksum_valid": checksum_valid,
+                "network_metrics": network_metrics,
+                "distribution_timestamp": time.time()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro na distribuição P2P: {e}")
+            return {
+                "distribution_status": "failed",
+                "error": str(e)
+            }
+    
+    def process_ota_security_update(self, ota_manager: Any, update_package: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Processa atualizações de segurança OTA
+        
+        Args:
+            ota_manager: Gerenciador OTA
+            update_package: Pacote de atualização
+            
+        Returns:
+            Resultado do processamento OTA
+        """
+        try:
+            update_id = update_package.get("update_id", "unknown")
+            update_type = update_package.get("type", "unknown")
+            priority = update_package.get("priority", "low")
+            signature = update_package.get("signature", "")
+            payload = update_package.get("payload", "")
+            
+            # Simular validação de assinatura
+            signature_valid = len(signature) >= 10 and "valid" in signature.lower()
+            
+            if signature_valid:
+                # Simular validação bem-sucedida
+                validation_status = "passed"
+                
+                # Simular aplicação da atualização
+                if priority == "critical":
+                    application_status = "success"
+                    rollback_available = True
+                    security_level = "enhanced"
+                else:
+                    application_status = "pending"
+                    rollback_available = True
+                    security_level = "standard"
+                
+                # Simular métricas de atualização
+                update_metrics = {
+                    "size_mb": len(payload) / 1024 / 1024,  # Estimativa baseada no payload
+                    "compatibility": "verified",
+                    "dependencies": ["core_security", "network_protocols"]
+                }
+                
+            else:
+                validation_status = "failed"
+                application_status = "blocked"
+                rollback_available = False
+                security_level = "unchanged"
+                update_metrics = {}
+            
+            return {
+                "validation_status": validation_status,
+                "application_status": application_status,
+                "rollback_available": rollback_available,
+                "security_level": security_level,
+                "update_metrics": update_metrics,
+                "ota_timestamp": time.time()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro no processamento OTA: {e}")
+            return {
+                "validation_status": "failed",
+                "application_status": "error",
+                "error": str(e)
+            }

@@ -1,0 +1,3294 @@
+{
+  "GET_/": {
+    "status_code": 200,
+    "success": true,
+    "response_time": 5.196907,
+    "content_type": "application/json",
+    "content_length": 251,
+    "data": {
+      "name": "ATous Secure Network API",
+      "version": "2.0.0",
+      "status": "operational",
+      "timestamp": "2025-08-17T11:49:24.685175+00:00",
+      "endpoints": {
+        "health": "/health",
+        "status": "/api/v1/status",
+        "security": "/api/v1/security/status",
+        "docs": "/docs",
+        "redoc": "/redoc"
+      }
+    }
+  },
+  "GET_/health": {
+    "status_code": 200,
+    "success": true,
+    "response_time": 0.01978,
+    "content_type": "application/json",
+    "content_length": 475,
+    "data": {
+      "status": "healthy",
+      "systems": {
+        "abiss": {
+          "status": "not_initialized",
+          "initialized": false,
+          "last_check": "2025-08-17T11:49:24.705680+00:00"
+        },
+        "nnis": {
+          "status": "not_initialized",
+          "initialized": false,
+          "last_check": "2025-08-17T11:49:24.705680+00:00"
+        },
+        "model_manager": {
+          "status": "healthy",
+          "initialized": true,
+          "last_check": "2025-08-17T11:49:24.705680+00:00"
+        }
+      },
+      "timestamp": "2025-08-17T11:49:24.706208+00:00",
+      "metrics": {
+        "response_time_ms": 0.0,
+        "memory_usage_mb": 228.24,
+        "uptime_seconds": 19.58
+      }
+    }
+  },
+  "GET_/docs": {
+    "status_code": 200,
+    "success": true,
+    "response_time": 0.009525,
+    "content_type": "text/html; charset=utf-8",
+    "content_length": 948,
+    "data": "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <link type=\"text/css\" rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css\">\n    <link rel=\"shortcut icon\" href=\"https://"
+  },
+  "GET_/openapi.json": {
+    "status_code": 200,
+    "success": true,
+    "response_time": 0.04861,
+    "content_type": "application/json",
+    "content_length": 56786,
+    "data": {
+      "openapi": "3.1.0",
+      "info": {
+        "title": "ATous Secure Network API",
+        "description": "API para gerenciamento da rede segura ATous com Federated Learning",
+        "version": "2.0.0"
+      },
+      "paths": {
+        "/api/security/abiss/status": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Abiss Status",
+            "description": "Obter status e sa\u00fade do sistema ABISS\n\nEndpoint que retorna informa\u00e7\u00f5es sobre o estado atual do sistema\nABISS (Adaptive Behaviour Intelligence Security System), incluindo\nstatus de inicializa\u00e7\u00e3o, thresholds configurados e contadores\nde padr\u00f5es de amea\u00e7a.\n\nReturns:\n    JSONResponse: Status completo do sistema ABISS com timestamp\n    \nRaises:\n    HTTPException: Se sistema ABISS n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "get_abiss_status_api_security_abiss_status_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/abiss/config": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Abiss Config",
+            "description": "Obter configura\u00e7\u00e3o atual do sistema ABISS\n\nEndpoint que retorna a configura\u00e7\u00e3o completa do sistema ABISS,\nincluindo thresholds de bloqueio e monitoramento, whitelist de\nendpoints e par\u00e2metros de aprendizado e mem\u00f3ria.\n\nReturns:\n    JSONResponse: Configura\u00e7\u00e3o completa do sistema ABISS com timestamp\n    \nRaises:\n    HTTPException: Se sistema ABISS n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "get_abiss_config_api_security_abiss_config_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/abiss/stats": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Abiss Stats",
+            "description": "Obter estat\u00edsticas e m\u00e9tricas do sistema ABISS\n\nEndpoint que retorna estat\u00edsticas detalhadas sobre o funcionamento\ndo sistema ABISS, incluindo total de requisi\u00e7\u00f5es analisadas,\nrequisi\u00e7\u00f5es bloqueadas, taxa m\u00e9dia de amea\u00e7a e contadores\nde IPs \u00fanicos monitorados.\n\nReturns:\n    JSONResponse: Estat\u00edsticas completas do sistema ABISS com timestamp\n    \nRaises:\n    HTTPException: Se sistema ABISS n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "get_abiss_stats_api_security_abiss_stats_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/nnis/status": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Nnis Status",
+            "description": "Obter status e sa\u00fade do sistema NNIS\n\nEndpoint que retorna informa\u00e7\u00f5es sobre o estado atual do sistema\nNNIS (Neural Network Immune System), incluindo sa\u00fade do sistema\nimune, contadores de c\u00e9lulas imunes e status de mem\u00f3ria.\n\nReturns:\n    JSONResponse: Status completo do sistema NNIS com timestamp\n    \nRaises:\n    HTTPException: Se sistema NNIS n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "get_nnis_status_api_security_nnis_status_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/nnis/detect-antigens": {
+          "post": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Detect Antigens",
+            "description": "Detectar ant\u00edgenos de amea\u00e7as usando o sistema NNIS\n\nEndpoint que analisa dados de rede para detectar padr\u00f5es\nde amea\u00e7a usando o sistema neural imune. O NNIS processa\ndados de tr\u00e1fego e identifica poss\u00edveis amea\u00e7as baseadas\nem padr\u00f5es aprendidos e reconhecimento de ant\u00edgenos.\n\nArgs:\n    network_data: Dados de rede para an\u00e1lise (tr\u00e1fego, conex\u00f5es, etc.)\n    nnis: Sistema NNIS injetado via dependency\n    \nReturns:\n    JSONResponse: Resultado da detec\u00e7\u00e3o com ant\u00edgenos encontrados e m\u00e9tricas\n    \nRaises:\n    HTTPException: Se sistema NNIS n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "detect_antigens_api_security_nnis_detect_antigens_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "title": "Network Data"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/nnis/generate-response": {
+          "post": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Generate Immune Response",
+            "description": "Gerar resposta imune para uma amea\u00e7a espec\u00edfica\n\nEndpoint que permite ao sistema NNIS gerar uma resposta\nimune personalizada para uma amea\u00e7a detectada. O sistema\nanalisa os dados da amea\u00e7a e gera a\u00e7\u00f5es de resposta\napropriadas baseadas em padr\u00f5es aprendidos.\n\nArgs:\n    threat_data: Dados da amea\u00e7a para an\u00e1lise (tipo, confian\u00e7a, origem)\n    nnis: Sistema NNIS injetado via dependency\n    \nReturns:\n    JSONResponse: Resposta imune gerada com tipo, intensidade e a\u00e7\u00f5es\n    \nRaises:\n    HTTPException: Se sistema NNIS n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "generate_immune_response_api_security_nnis_generate_response_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "title": "Threat Data"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/threat-intelligence": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Threat Intelligence",
+            "description": "Obter intelig\u00eancia de amea\u00e7as combinada dos sistemas ABISS e NNIS\n\nEndpoint que consolida informa\u00e7\u00f5es de intelig\u00eancia de amea\u00e7as\nde ambos os sistemas de seguran\u00e7a, fornecendo uma vis\u00e3o\nunificada dos padr\u00f5es de amea\u00e7a, respostas imunes e m\u00e9tricas\nde seguran\u00e7a em tempo real.\n\nArgs:\n    abiss: Sistema ABISS injetado via dependency\n    nnis: Sistema NNIS injetado via dependency\n    \nReturns:\n    JSONResponse: Intelig\u00eancia consolidada de amea\u00e7as com dados de ambos os sistemas\n    \nRaises:\n    HTTPException: Se sistemas n\u00e3o dispon\u00edveis ou erro interno",
+            "operationId": "get_threat_intelligence_api_security_threat_intelligence_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/middleware/test": {
+          "post": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Test Security Middleware",
+            "description": "Testar funcionalidade do middleware de seguran\u00e7a\n\nEndpoint para testar e validar o funcionamento do middleware\nde seguran\u00e7a, permitindo simular requisi\u00e7\u00f5es e verificar\nrespostas de seguran\u00e7a, an\u00e1lise ABISS e valida\u00e7\u00e3o de entrada.\n\nArgs:\n    request_data: Dados da requisi\u00e7\u00e3o para teste (m\u00e9todo, path, headers, body)\n    \nReturns:\n    JSONResponse: Resultado do teste com an\u00e1lise de seguran\u00e7a e m\u00e9tricas\n    \nRaises:\n    HTTPException: Se dados de teste inv\u00e1lidos ou erro interno",
+            "operationId": "test_security_middleware_api_security_middleware_test_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "title": "Request Data"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/middleware/config": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Middleware Config",
+            "description": "Obter configura\u00e7\u00e3o atual do middleware de seguran\u00e7a\n\nEndpoint que retorna a configura\u00e7\u00e3o completa do middleware\nde seguran\u00e7a, incluindo thresholds de amea\u00e7a, configura\u00e7\u00f5es\nde an\u00e1lise ABISS/NNIS e par\u00e2metros de opera\u00e7\u00e3o.\n\nReturns:\n    JSONResponse: Configura\u00e7\u00e3o completa do middleware de seguran\u00e7a\n    \nRaises:\n    HTTPException: Se erro interno ao obter configura\u00e7\u00e3o",
+            "operationId": "get_middleware_config_api_security_middleware_config_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/middleware/simulate-attack": {
+          "post": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Simulate Attack",
+            "description": "Simular diferentes tipos de ataques para testar o middleware\n\nEndpoint para testar a efic\u00e1cia do middleware de seguran\u00e7a\nsimulando diferentes tipos de ataques conhecidos. \u00datil para\nvalida\u00e7\u00e3o de seguran\u00e7a e testes de penetra\u00e7\u00e3o controlados.\n\nArgs:\n    attack_type: Tipo de ataque a simular (sql_injection, xss, command_injection)\n    \nReturns:\n    JSONResponse: Resultado da simula\u00e7\u00e3o com payload e an\u00e1lise de seguran\u00e7a\n    \nRaises:\n    HTTPException: Se tipo de ataque inv\u00e1lido ou erro interno",
+            "operationId": "simulate_attack_api_security_middleware_simulate_attack_post",
+            "parameters": [
+              {
+                "name": "attack_type",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "type": "string",
+                  "default": "sql_injection",
+                  "title": "Attack Type"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/middleware/stats": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Middleware Stats",
+            "description": "Obter estat\u00edsticas abrangentes do middleware de seguran\u00e7a\n\nEndpoint que retorna estat\u00edsticas detalhadas sobre o funcionamento\ndo middleware de seguran\u00e7a, incluindo m\u00e9tricas de clientes,\nrequisi\u00e7\u00f5es analisadas, IPs bloqueados e status dos sistemas\nde seguran\u00e7a integrados.\n\nReturns:\n    JSONResponse: Estat\u00edsticas completas do middleware de seguran\u00e7a\n    \nRaises:\n    HTTPException: Se erro interno ao obter estat\u00edsticas",
+            "operationId": "get_middleware_stats_api_security_middleware_stats_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/middleware/block-ip": {
+          "post": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Block Ip",
+            "description": "Bloquear endere\u00e7o IP espec\u00edfico\n\nEndpoint administrativo que permite bloquear um endere\u00e7o IP\nespec\u00edfico no sistema de seguran\u00e7a. O IP bloqueado ser\u00e1\nrejeitado por todas as rotas protegidas pelo middleware.\n\nArgs:\n    request: Dados da requisi\u00e7\u00e3o com IP e motivo do bloqueio\n    \nReturns:\n    JSONResponse: Confirma\u00e7\u00e3o do bloqueio com detalhes\n    \nRaises:\n    HTTPException: Se middleware n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "block_ip_api_security_middleware_block_ip_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/IPBlockRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/middleware/unblock-ip": {
+          "post": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Unblock Ip",
+            "description": "Desbloquear endere\u00e7o IP previamente bloqueado\n\nEndpoint administrativo que permite remover o bloqueio de um\nendere\u00e7o IP, restaurando o acesso normal ao sistema.\n\u00datil para desbloqueios manuais ap\u00f3s an\u00e1lise de seguran\u00e7a.\n\nArgs:\n    request: Dados da requisi\u00e7\u00e3o com IP a desbloquear\n    \nReturns:\n    JSONResponse: Confirma\u00e7\u00e3o do desbloqueio com detalhes\n    \nRaises:\n    HTTPException: Se middleware n\u00e3o dispon\u00edvel ou erro interno",
+            "operationId": "unblock_ip_api_security_middleware_unblock_ip_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/IPBlockRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/validate-input": {
+          "post": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Validate Input",
+            "description": "Validar dados de entrada para amea\u00e7as de seguran\u00e7a\n\nEndpoint que analisa dados de entrada em busca de padr\u00f5es\nmaliciosos, incluindo SQL injection, XSS, command injection\ne outras amea\u00e7as conhecidas. Retorna resultado da valida\u00e7\u00e3o\ncom dados sanitizados e score de confian\u00e7a.\n\nArgs:\n    request: Dados da requisi\u00e7\u00e3o com entrada a validar e contexto\n    \nReturns:\n    JSONResponse: Resultado da valida\u00e7\u00e3o com amea\u00e7as detectadas e dados sanitizados\n    \nRaises:\n    HTTPException: Se dados de entrada inv\u00e1lidos ou erro interno",
+            "operationId": "validate_input_api_security_validate_input_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/InputValidationRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/validation-patterns": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Validation Patterns",
+            "description": "Obter informa\u00e7\u00f5es sobre padr\u00f5es de valida\u00e7\u00e3o utilizados\n\nEndpoint que retorna informa\u00e7\u00f5es detalhadas sobre os padr\u00f5es\nde valida\u00e7\u00e3o utilizados pelo sistema de valida\u00e7\u00e3o de entrada,\nincluindo contadores de padr\u00f5es por categoria e contextos\nde seguran\u00e7a suportados.\n\nReturns:\n    JSONResponse: Informa\u00e7\u00f5es sobre padr\u00f5es de valida\u00e7\u00e3o e contextos suportados\n    \nRaises:\n    HTTPException: Se erro interno ao obter padr\u00f5es",
+            "operationId": "get_validation_patterns_api_security_validation_patterns_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/security-report": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Security Report",
+            "description": "Gerar relat\u00f3rio abrangente de seguran\u00e7a\n\nEndpoint que consolida informa\u00e7\u00f5es de todos os sistemas de\nseguran\u00e7a em um relat\u00f3rio unificado, incluindo estat\u00edsticas\ndo middleware, ABISS, NNIS e m\u00e9tricas de valida\u00e7\u00e3o de entrada.\n\u00datil para an\u00e1lise de seguran\u00e7a e auditoria.\n\nReturns:\n    JSONResponse: Relat\u00f3rio completo de seguran\u00e7a com todas as m\u00e9tricas\n    \nRaises:\n    HTTPException: Se erro interno ao gerar relat\u00f3rio",
+            "operationId": "get_security_report_api_security_security_report_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/middleware/legacy-stats": {
+          "get": {
+            "tags": [
+              "security",
+              "security"
+            ],
+            "summary": "Get Legacy Middleware Stats",
+            "description": "Obter estat\u00edsticas legacy do middleware (compatibilidade)\n\nEndpoint legacy mantido para compatibilidade com vers\u00f5es\nanteriores do sistema. Retorna estat\u00edsticas b\u00e1sicas do\nmiddleware de seguran\u00e7a em formato simplificado.\n\nReturns:\n    JSONResponse: Estat\u00edsticas legacy do middleware de seguran\u00e7a\n    \nRaises:\n    HTTPException: Se erro interno ao obter estat\u00edsticas",
+            "operationId": "get_legacy_middleware_stats_api_security_middleware_legacy_stats_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/agents/enroll": {
+          "post": {
+            "tags": [
+              "agents"
+            ],
+            "summary": "Enroll Agent",
+            "operationId": "enroll_agent_v1_agents_enroll_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/EnrollRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/EnrollResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/agents/{agent_id}/heartbeat": {
+          "post": {
+            "tags": [
+              "agents"
+            ],
+            "summary": "Agent Heartbeat",
+            "operationId": "agent_heartbeat_v1_agents__agent_id__heartbeat_post",
+            "parameters": [
+              {
+                "name": "agent_id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "title": "Agent Id"
+                }
+              }
+            ],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/atous_sec_network__api__routes__agents__HeartbeatRequest"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/atous_sec_network__api__routes__agents__HeartbeatResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/policies/active": {
+          "get": {
+            "tags": [
+              "policies"
+            ],
+            "summary": "Get Active Policy",
+            "operationId": "get_active_policy_v1_policies_active_get",
+            "parameters": [
+              {
+                "name": "agent_id",
+                "in": "query",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "title": "Agent Id"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ActivePolicyResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/relay/heartbeat": {
+          "post": {
+            "tags": [
+              "relay"
+            ],
+            "summary": "Relay Heartbeat",
+            "operationId": "relay_heartbeat_v1_relay_heartbeat_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/atous_sec_network__api__routes__relay__HeartbeatRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/atous_sec_network__api__routes__relay__HeartbeatResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/relay/send": {
+          "post": {
+            "tags": [
+              "relay"
+            ],
+            "summary": "Relay Send",
+            "operationId": "relay_send_v1_relay_send_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RelaySendRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/RelaySendResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/relay/poll": {
+          "get": {
+            "tags": [
+              "relay"
+            ],
+            "summary": "Relay Poll",
+            "operationId": "relay_poll_v1_relay_poll_get",
+            "parameters": [
+              {
+                "name": "agent_id",
+                "in": "query",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "title": "Agent Id"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/RelayPollResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/admin/overview": {
+          "get": {
+            "tags": [
+              "admin"
+            ],
+            "summary": "Admin Overview",
+            "description": "Obter vis\u00e3o geral do sistema administrativo\n\nEndpoint que fornece uma vis\u00e3o consolidada do estado do sistema,\nincluindo agentes de descoberta ativos, status do relay,\npol\u00edticas configuradas e m\u00e9tricas do servidor em tempo real.\n\nReturns:\n    dict: Vis\u00e3o geral completa do sistema com m\u00e9tricas e status\n    \nRaises:\n    HTTPException: Se erro interno ao obter dados do sistema",
+            "operationId": "admin_overview_v1_admin_overview_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/admin/events": {
+          "get": {
+            "tags": [
+              "admin"
+            ],
+            "summary": "Get Events",
+            "description": "Obter eventos administrativos do sistema\n\nEndpoint que retorna eventos administrativos recentes do sistema,\nincluindo a\u00e7\u00f5es de usu\u00e1rios, mudan\u00e7as de configura\u00e7\u00e3o e eventos\nde seguran\u00e7a. Requer autentica\u00e7\u00e3o via API key administrativa.\n\nArgs:\n    limit: N\u00famero m\u00e1ximo de eventos a retornar (1-500, padr\u00e3o: 100)\n    \nReturns:\n    dict: Lista de eventos administrativos com limite especificado\n    \nRaises:\n    HTTPException: Se n\u00e3o autorizado ou erro interno",
+            "operationId": "get_events_v1_admin_events_get",
+            "parameters": [
+              {
+                "name": "limit",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "type": "integer",
+                  "maximum": 500,
+                  "minimum": 1,
+                  "default": 100,
+                  "title": "Limit"
+                }
+              },
+              {
+                "name": "x-admin-api-key",
+                "in": "header",
+                "required": false,
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "X-Admin-Api-Key"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "post": {
+            "tags": [
+              "admin"
+            ],
+            "summary": "Post Event",
+            "description": "Postar evento administrativo no sistema\n\nEndpoint que permite registrar eventos administrativos no sistema,\nincluindo a\u00e7\u00f5es de usu\u00e1rios, mudan\u00e7as de configura\u00e7\u00e3o e eventos\nde auditoria. Requer autentica\u00e7\u00e3o via API key administrativa.\nCampos sens\u00edveis s\u00e3o automaticamente redatados.\n\nArgs:\n    evt: Evento administrativo a ser registrado\n    \nReturns:\n    dict: Confirma\u00e7\u00e3o de registro do evento\n    \nRaises:\n    HTTPException: Se n\u00e3o autorizado, payload inv\u00e1lido ou evento muito grande",
+            "operationId": "post_event_v1_admin_events_post",
+            "parameters": [
+              {
+                "name": "x-admin-api-key",
+                "in": "header",
+                "required": false,
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "X-Admin-Api-Key"
+                }
+              }
+            ],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AdminEvent"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/discovery/register": {
+          "post": {
+            "tags": [
+              "discovery"
+            ],
+            "summary": "Discovery Register",
+            "operationId": "discovery_register_v1_discovery_register_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RegisterRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/RegisterResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/discovery/services": {
+          "get": {
+            "tags": [
+              "discovery"
+            ],
+            "summary": "Discovery Services",
+            "operationId": "discovery_services_v1_discovery_services_get",
+            "parameters": [
+              {
+                "name": "name",
+                "in": "query",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "title": "Name"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ProvidersResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/discovery/agents/{agent_id}": {
+          "get": {
+            "tags": [
+              "discovery"
+            ],
+            "summary": "Discovery Agent Detail",
+            "operationId": "discovery_agent_detail_v1_discovery_agents__agent_id__get",
+            "parameters": [
+              {
+                "name": "agent_id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "title": "Agent Id"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/v1/discovery/resolve": {
+          "get": {
+            "tags": [
+              "discovery"
+            ],
+            "summary": "Discovery Resolve",
+            "operationId": "discovery_resolve_v1_discovery_resolve_get",
+            "parameters": [
+              {
+                "name": "name",
+                "in": "query",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "title": "Name"
+                }
+              },
+              {
+                "name": "pref",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "type": "string",
+                  "default": "local,lan,wan",
+                  "title": "Pref"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResolveResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/register": {
+          "post": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Register User",
+            "description": "Registrar novo usu\u00e1rio no sistema\n\nCria uma nova conta de usu\u00e1rio com as credenciais fornecidas.\nO usu\u00e1rio recebe automaticamente o papel de OPERATOR por padr\u00e3o.\n\nArgs:\n    user_data: Dados do usu\u00e1rio a ser criado\n    request: Objeto da requisi\u00e7\u00e3o HTTP\n    \nReturns:\n    UserResponse: Dados do usu\u00e1rio criado com sucesso\n    \nRaises:\n    HTTPException: Se dados inv\u00e1lidos, usu\u00e1rio j\u00e1 existe ou erro interno",
+            "operationId": "register_user_auth_register_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserCreate"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "201": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/login": {
+          "post": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Login User",
+            "description": "Autenticar usu\u00e1rio e gerar tokens de acesso\n\nValida as credenciais do usu\u00e1rio e retorna um access token JWT\ne um refresh token para renova\u00e7\u00e3o autom\u00e1tica. O sistema tamb\u00e9m\nregistra a atividade de login para auditoria.\n\nArgs:\n    login_data: Credenciais de login (username e password)\n    request: Objeto da requisi\u00e7\u00e3o HTTP\n    \nReturns:\n    TokenResponse: Access token, refresh token e informa\u00e7\u00f5es do usu\u00e1rio\n    \nRaises:\n    HTTPException: Se credenciais inv\u00e1lidas, conta bloqueada ou erro interno",
+            "operationId": "login_user_auth_login_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserLogin"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/TokenResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/refresh": {
+          "post": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Refresh Token",
+            "description": "Renovar access token usando refresh token\n\nPermite renovar o access token expirado usando um refresh token v\u00e1lido.\nO sistema gera um novo access token e rotaciona o refresh token\npara seguran\u00e7a adicional. Apenas o \u00faltimo refresh token \u00e9 v\u00e1lido.\n\nArgs:\n    refresh_data: Refresh token atual v\u00e1lido\n    request: Objeto da requisi\u00e7\u00e3o HTTP\n    \nReturns:\n    RefreshTokenResponse: Novo access token e refresh token rotacionado\n    \nRaises:\n    HTTPException: Se refresh token inv\u00e1lido, expirado ou erro interno",
+            "operationId": "refresh_token_auth_refresh_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RefreshTokenRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/RefreshTokenResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/logout": {
+          "post": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Logout User",
+            "description": "Fazer logout do usu\u00e1rio e invalidar tokens\n\nRealiza o logout do usu\u00e1rio autenticado, revogando o refresh token\nse fornecido. O access token continua v\u00e1lido at\u00e9 sua expira\u00e7\u00e3o natural,\nmas o refresh token \u00e9 invalidado para seguran\u00e7a.\n\nArgs:\n    logout_data: Dados de logout (opcional refresh token para revogar)\n    current_user: Usu\u00e1rio autenticado (obtido via token JWT)\n    request: Objeto da requisi\u00e7\u00e3o HTTP\n    \nReturns:\n    LogoutResponse: Confirma\u00e7\u00e3o de logout com timestamp\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado ou erro interno",
+            "operationId": "logout_user_auth_logout_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/LogoutRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/LogoutResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          }
+        },
+        "/auth/profile": {
+          "get": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Get User Profile",
+            "description": "Obter perfil completo do usu\u00e1rio autenticado\n\nRetorna todas as informa\u00e7\u00f5es do perfil do usu\u00e1rio logado,\nincluindo dados pessoais, pap\u00e9is, permiss\u00f5es e status da conta.\nRequer autentica\u00e7\u00e3o via token JWT v\u00e1lido.\n\nArgs:\n    current_user: Usu\u00e1rio autenticado (obtido via token JWT)\n    \nReturns:\n    UserResponse: Perfil completo do usu\u00e1rio com todos os dados\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado ou n\u00e3o encontrado",
+            "operationId": "get_user_profile_auth_profile_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          },
+          "put": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Update User Profile",
+            "description": "Atualizar perfil do usu\u00e1rio autenticado\n\nPermite ao usu\u00e1rio atualizar seus dados pessoais, incluindo email,\nsenha e outros campos configur\u00e1veis. Apenas o pr\u00f3prio usu\u00e1rio\npode modificar seu perfil. Requer autentica\u00e7\u00e3o via token JWT.\n\nArgs:\n    user_update: Dados de atualiza\u00e7\u00e3o (campos opcionais)\n    current_user: Usu\u00e1rio autenticado (obtido via token JWT)\n    \nReturns:\n    UserResponse: Perfil atualizado com dados modificados\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado, dados inv\u00e1lidos ou erro interno",
+            "operationId": "update_user_profile_auth_profile_put",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserUpdate"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          }
+        },
+        "/auth/change-password": {
+          "post": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Change Password",
+            "description": "Alterar senha do usu\u00e1rio autenticado\n\nPermite ao usu\u00e1rio alterar sua senha atual por uma nova.\nRequer a senha atual para valida\u00e7\u00e3o e a nova senha deve\natender aos crit\u00e9rios de complexidade do sistema.\n\nArgs:\n    password_data: Dados de mudan\u00e7a de senha (senha atual e nova)\n    current_user: Usu\u00e1rio autenticado (obtido via token JWT)\n    \nReturns:\n    dict: Confirma\u00e7\u00e3o de altera\u00e7\u00e3o de senha bem-sucedida\n    \nRaises:\n    HTTPException: Se senha atual incorreta, nova senha inv\u00e1lida ou erro interno",
+            "operationId": "change_password_auth_change_password_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PasswordChangeRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          }
+        },
+        "/auth/sessions": {
+          "get": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Get User Sessions",
+            "description": "Obter sess\u00f5es ativas do usu\u00e1rio autenticado\n\nLista todas as sess\u00f5es ativas do usu\u00e1rio, incluindo informa\u00e7\u00f5es\nsobre IPs de origem, User-Agents e timestamps de atividade.\n\u00datil para monitorar e gerenciar m\u00faltiplas sess\u00f5es.\n\nArgs:\n    current_user: Usu\u00e1rio autenticado (obtido via token JWT)\n    \nReturns:\n    List[UserSessionInfo]: Lista de sess\u00f5es ativas com detalhes\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado ou erro interno",
+            "operationId": "get_user_sessions_auth_sessions_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "items": {
+                        "$ref": "#/components/schemas/UserSessionInfo"
+                      },
+                      "type": "array",
+                      "title": "Response Get User Sessions Auth Sessions Get"
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          }
+        },
+        "/auth/users": {
+          "get": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "List Users",
+            "description": "Listar usu\u00e1rios do sistema (apenas para administradores)\n\nEndpoint administrativo que permite visualizar todos os usu\u00e1rios\ndo sistema com pagina\u00e7\u00e3o. Requer permiss\u00e3o ADMIN_USERS.\n\u00datil para administradores monitorarem e gerenciarem contas.\n\nArgs:\n    page: N\u00famero da p\u00e1gina (padr\u00e3o: 1)\n    per_page: Usu\u00e1rios por p\u00e1gina (padr\u00e3o: 10, m\u00e1ximo: 100)\n    current_user: Usu\u00e1rio autenticado com permiss\u00e3o ADMIN_USERS\n    \nReturns:\n    UserListResponse: Lista paginada de usu\u00e1rios com metadados\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado, sem permiss\u00e3o ou erro interno",
+            "operationId": "list_users_auth_users_get",
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "page",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "type": "integer",
+                  "default": 1,
+                  "title": "Page"
+                }
+              },
+              {
+                "name": "per_page",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "type": "integer",
+                  "default": 10,
+                  "title": "Per Page"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UserListResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/security/stats": {
+          "get": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Get Security Stats",
+            "description": "Obter estat\u00edsticas de seguran\u00e7a do sistema\n\nEndpoint que fornece m\u00e9tricas e estat\u00edsticas de seguran\u00e7a,\nincluindo tentativas de login, bloqueios, taxas de sucesso\ne outras informa\u00e7\u00f5es relevantes para an\u00e1lise de seguran\u00e7a.\nRequer permiss\u00e3o SECURITY_READ.\n\nArgs:\n    current_user: Usu\u00e1rio autenticado com permiss\u00e3o SECURITY_READ\n    \nReturns:\n    SecurityStatsResponse: Estat\u00edsticas detalhadas de seguran\u00e7a\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado, sem permiss\u00e3o ou erro interno",
+            "operationId": "get_security_stats_auth_security_stats_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/SecurityStatsResponse"
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          }
+        },
+        "/auth/security/logs": {
+          "get": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Get Access Logs",
+            "description": "Obter logs de acesso e auditoria do sistema\n\nEndpoint que fornece acesso aos logs de auditoria do sistema,\nincluindo tentativas de login, acessos, mudan\u00e7as de perfil\ne outras atividades de seguran\u00e7a. Suporta filtros por usu\u00e1rio\ne pagina\u00e7\u00e3o. Requer permiss\u00e3o SECURITY_VIEW_LOGS.\n\nArgs:\n    page: N\u00famero da p\u00e1gina (padr\u00e3o: 1)\n    per_page: Logs por p\u00e1gina (padr\u00e3o: 50, m\u00e1ximo: 200)\n    user_id: Filtrar por usu\u00e1rio espec\u00edfico (opcional)\n    current_user: Usu\u00e1rio autenticado com permiss\u00e3o SECURITY_VIEW_LOGS\n    \nReturns:\n    AccessLogResponse: Lista paginada de logs de acesso com metadados\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado, sem permiss\u00e3o ou erro interno",
+            "operationId": "get_access_logs_auth_security_logs_get",
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "page",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "type": "integer",
+                  "default": 1,
+                  "title": "Page"
+                }
+              },
+              {
+                "name": "per_page",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "type": "integer",
+                  "default": 50,
+                  "title": "Per Page"
+                }
+              },
+              {
+                "name": "user_id",
+                "in": "query",
+                "required": false,
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "User Id"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/AccessLogResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/tokens/stats": {
+          "get": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Get Token Stats",
+            "description": "Obter estat\u00edsticas de refresh tokens e sess\u00f5es\n\nEndpoint que fornece m\u00e9tricas sobre o uso de refresh tokens,\nincluindo tokens ativos, expirados, rotacionados e estat\u00edsticas\nde uso por usu\u00e1rio. Requer permiss\u00e3o SECURITY_READ.\n\nArgs:\n    current_user: Usu\u00e1rio autenticado com permiss\u00e3o SECURITY_READ\n    \nReturns:\n    dict: Estat\u00edsticas detalhadas de tokens e sess\u00f5es\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado, sem permiss\u00e3o ou erro interno",
+            "operationId": "get_token_stats_auth_tokens_stats_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          }
+        },
+        "/auth/maintenance/cleanup": {
+          "post": {
+            "tags": [
+              "authentication",
+              "authentication"
+            ],
+            "summary": "Cleanup Expired Data",
+            "description": "Limpar dados expirados e realizar manuten\u00e7\u00e3o do sistema\n\nEndpoint administrativo que executa tarefas de limpeza autom\u00e1tica,\nincluindo remo\u00e7\u00e3o de sess\u00f5es expiradas, logs antigos e dados\ntempor\u00e1rios. Requer permiss\u00e3o ADMIN_FULL (super administrador).\n\nArgs:\n    current_user: Usu\u00e1rio autenticado com permiss\u00e3o ADMIN_FULL\n    \nReturns:\n    dict: Resultado da limpeza com estat\u00edsticas e timestamp\n    \nRaises:\n    HTTPException: Se usu\u00e1rio n\u00e3o autenticado, sem permiss\u00e3o ou erro interno",
+            "operationId": "cleanup_expired_data_auth_maintenance_cleanup_post",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "HTTPBearer": []
+              }
+            ]
+          }
+        },
+        "/api/crypto/encrypt": {
+          "post": {
+            "summary": "Encrypt Crypto Endpoint",
+            "description": "Endpoint de criptografia via /api/crypto/encrypt",
+            "operationId": "encrypt_crypto_endpoint_api_crypto_encrypt_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CryptoRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/CryptoResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/encrypt": {
+          "post": {
+            "summary": "Encrypt Security Endpoint",
+            "description": "Endpoint de criptografia via /api/security/encrypt",
+            "operationId": "encrypt_security_endpoint_api_security_encrypt_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CryptoRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/CryptoResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/encrypt": {
+          "post": {
+            "summary": "Encrypt Simple Endpoint",
+            "description": "Endpoint de criptografia simples via /encrypt",
+            "operationId": "encrypt_simple_endpoint_encrypt_post",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CryptoRequest"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/CryptoResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/health": {
+          "get": {
+            "summary": "Health Check",
+            "description": "Endpoint de health check com informa\u00e7\u00f5es detalhadas dos sistemas",
+            "operationId": "health_check_health_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/ready": {
+          "get": {
+            "summary": "Ready Check",
+            "description": "Basic readiness endpoint (extend with external deps in future).",
+            "operationId": "ready_check_ready_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/v1/status": {
+          "get": {
+            "summary": "Get System Status",
+            "description": "Status geral do sistema",
+            "operationId": "get_system_status_api_v1_status_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/v1/security/status": {
+          "get": {
+            "summary": "Get Security Status",
+            "description": "Status espec\u00edfico dos sistemas de seguran\u00e7a",
+            "operationId": "get_security_status_api_v1_security_status_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/": {
+          "get": {
+            "summary": "Root",
+            "description": "Endpoint raiz com informa\u00e7\u00f5es da API",
+            "operationId": "root__get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/info": {
+          "get": {
+            "summary": "Api Info",
+            "description": "Informa\u00e7\u00f5es detalhadas da API",
+            "operationId": "api_info_api_info_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/security/status": {
+          "get": {
+            "summary": "Security Status",
+            "description": "Status dos sistemas de seguran\u00e7a",
+            "operationId": "security_status_api_security_status_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/metrics": {
+          "get": {
+            "summary": "System Metrics",
+            "description": "M\u00e9tricas do sistema",
+            "operationId": "system_metrics_api_metrics_get",
+            "responses": {
+              "200": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "AccessLogEntry": {
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Timestamp",
+                "description": "Timestamp do acesso"
+              },
+              "user_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "User Id",
+                "description": "ID do usu\u00e1rio (se autenticado)"
+              },
+              "ip_address": {
+                "type": "string",
+                "title": "Ip Address",
+                "description": "Endere\u00e7o IP"
+              },
+              "endpoint": {
+                "type": "string",
+                "title": "Endpoint",
+                "description": "Endpoint acessado"
+              },
+              "method": {
+                "type": "string",
+                "title": "Method",
+                "description": "M\u00e9todo HTTP"
+              },
+              "success": {
+                "type": "boolean",
+                "title": "Success",
+                "description": "Acesso bem-sucedido"
+              },
+              "failure_reason": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Failure Reason",
+                "description": "Motivo da falha"
+              },
+              "user_agent": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "User Agent",
+                "description": "User agent"
+              }
+            },
+            "type": "object",
+            "required": [
+              "timestamp",
+              "ip_address",
+              "endpoint",
+              "method",
+              "success"
+            ],
+            "title": "AccessLogEntry",
+            "description": "Modelo para entrada de log de acesso"
+          },
+          "AccessLogResponse": {
+            "properties": {
+              "logs": {
+                "items": {
+                  "$ref": "#/components/schemas/AccessLogEntry"
+                },
+                "type": "array",
+                "title": "Logs",
+                "description": "Lista de logs de acesso"
+              },
+              "total": {
+                "type": "integer",
+                "title": "Total",
+                "description": "Total de logs"
+              },
+              "page": {
+                "type": "integer",
+                "title": "Page",
+                "description": "P\u00e1gina atual"
+              },
+              "per_page": {
+                "type": "integer",
+                "title": "Per Page",
+                "description": "Logs por p\u00e1gina"
+              }
+            },
+            "type": "object",
+            "required": [
+              "logs",
+              "total",
+              "page",
+              "per_page"
+            ],
+            "title": "AccessLogResponse",
+            "description": "Modelo para resposta de logs de acesso"
+          },
+          "ActivePolicyResponse": {
+            "properties": {
+              "policy_version": {
+                "type": "string",
+                "title": "Policy Version"
+              },
+              "actions": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "title": "Actions"
+              }
+            },
+            "type": "object",
+            "required": [
+              "policy_version",
+              "actions"
+            ],
+            "title": "ActivePolicyResponse"
+          },
+          "AdminEvent": {
+            "properties": {
+              "type": {
+                "type": "string",
+                "title": "Type"
+              },
+              "payload": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            },
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "title": "AdminEvent"
+          },
+          "CryptoRequest": {
+            "properties": {
+              "message": {
+                "type": "string",
+                "title": "Message"
+              },
+              "algorithm": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Algorithm",
+                "default": "AES-256"
+              },
+              "key_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Key Id"
+              }
+            },
+            "type": "object",
+            "required": [
+              "message"
+            ],
+            "title": "CryptoRequest"
+          },
+          "CryptoResponse": {
+            "properties": {
+              "encrypted_data": {
+                "type": "string",
+                "title": "Encrypted Data"
+              },
+              "algorithm": {
+                "type": "string",
+                "title": "Algorithm"
+              },
+              "key_id": {
+                "type": "string",
+                "title": "Key Id"
+              },
+              "timestamp": {
+                "type": "string",
+                "title": "Timestamp"
+              }
+            },
+            "type": "object",
+            "required": [
+              "encrypted_data",
+              "algorithm",
+              "key_id",
+              "timestamp"
+            ],
+            "title": "CryptoResponse"
+          },
+          "EnrollRequest": {
+            "properties": {
+              "device_info": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Device Info"
+              },
+              "attestation": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Attestation"
+              },
+              "csr_pem": {
+                "type": "string",
+                "title": "Csr Pem"
+              }
+            },
+            "type": "object",
+            "required": [
+              "csr_pem"
+            ],
+            "title": "EnrollRequest"
+          },
+          "EnrollResponse": {
+            "properties": {
+              "agent_id": {
+                "type": "string",
+                "title": "Agent Id"
+              },
+              "certificate_pem": {
+                "type": "string",
+                "title": "Certificate Pem"
+              },
+              "ca_chain_pem": {
+                "type": "string",
+                "title": "Ca Chain Pem"
+              }
+            },
+            "type": "object",
+            "required": [
+              "agent_id",
+              "certificate_pem",
+              "ca_chain_pem"
+            ],
+            "title": "EnrollResponse"
+          },
+          "HTTPValidationError": {
+            "properties": {
+              "detail": {
+                "items": {
+                  "$ref": "#/components/schemas/ValidationError"
+                },
+                "type": "array",
+                "title": "Detail"
+              }
+            },
+            "type": "object",
+            "title": "HTTPValidationError"
+          },
+          "IPBlockRequest": {
+            "properties": {
+              "ip_address": {
+                "type": "string",
+                "title": "Ip Address"
+              },
+              "reason": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Reason"
+              }
+            },
+            "type": "object",
+            "required": [
+              "ip_address"
+            ],
+            "title": "IPBlockRequest"
+          },
+          "InputValidationRequest": {
+            "properties": {
+              "input_data": {
+                "type": "string",
+                "title": "Input Data"
+              },
+              "context": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Context",
+                "default": "general"
+              }
+            },
+            "type": "object",
+            "required": [
+              "input_data"
+            ],
+            "title": "InputValidationRequest"
+          },
+          "LogoutRequest": {
+            "properties": {
+              "refresh_token": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Refresh Token",
+                "description": "Refresh token para logout completo"
+              }
+            },
+            "type": "object",
+            "title": "LogoutRequest",
+            "description": "Modelo para requisi\u00e7\u00e3o de logout"
+          },
+          "LogoutResponse": {
+            "properties": {
+              "message": {
+                "type": "string",
+                "title": "Message",
+                "description": "Mensagem de confirma\u00e7\u00e3o"
+              },
+              "logout_time": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Logout Time",
+                "description": "Hor\u00e1rio do logout"
+              }
+            },
+            "type": "object",
+            "required": [
+              "message",
+              "logout_time"
+            ],
+            "title": "LogoutResponse",
+            "description": "Modelo para resposta de logout"
+          },
+          "PasswordChangeRequest": {
+            "properties": {
+              "current_password": {
+                "type": "string",
+                "title": "Current Password",
+                "description": "Senha atual"
+              },
+              "new_password": {
+                "type": "string",
+                "minLength": 8,
+                "title": "New Password",
+                "description": "Nova senha"
+              }
+            },
+            "type": "object",
+            "required": [
+              "current_password",
+              "new_password"
+            ],
+            "title": "PasswordChangeRequest",
+            "description": "Modelo para requisi\u00e7\u00e3o de mudan\u00e7a de senha"
+          },
+          "ProvidersResponse": {
+            "properties": {
+              "providers": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array",
+                "title": "Providers"
+              }
+            },
+            "type": "object",
+            "required": [
+              "providers"
+            ],
+            "title": "ProvidersResponse"
+          },
+          "RefreshTokenRequest": {
+            "properties": {
+              "refresh_token": {
+                "type": "string",
+                "title": "Refresh Token",
+                "description": "Refresh token v\u00e1lido"
+              }
+            },
+            "type": "object",
+            "required": [
+              "refresh_token"
+            ],
+            "title": "RefreshTokenRequest",
+            "description": "Modelo para requisi\u00e7\u00e3o de refresh de token"
+          },
+          "RefreshTokenResponse": {
+            "properties": {
+              "access_token": {
+                "type": "string",
+                "title": "Access Token",
+                "description": "Novo JWT access token"
+              },
+              "refresh_token": {
+                "type": "string",
+                "title": "Refresh Token",
+                "description": "Novo refresh token"
+              },
+              "token_type": {
+                "type": "string",
+                "title": "Token Type",
+                "description": "Tipo do token",
+                "default": "bearer"
+              },
+              "expires_in": {
+                "type": "integer",
+                "title": "Expires In",
+                "description": "Tempo de expira\u00e7\u00e3o em segundos"
+              }
+            },
+            "type": "object",
+            "required": [
+              "access_token",
+              "refresh_token",
+              "expires_in"
+            ],
+            "title": "RefreshTokenResponse",
+            "description": "Modelo para resposta de refresh de token"
+          },
+          "RegisterRequest": {
+            "properties": {
+              "agent_id": {
+                "type": "string",
+                "title": "Agent Id"
+              },
+              "services": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array",
+                "title": "Services",
+                "default": []
+              },
+              "addresses": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Addresses",
+                "default": {}
+              },
+              "ttl": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Ttl"
+              }
+            },
+            "type": "object",
+            "required": [
+              "agent_id"
+            ],
+            "title": "RegisterRequest"
+          },
+          "RegisterResponse": {
+            "properties": {
+              "registered": {
+                "type": "boolean",
+                "title": "Registered"
+              },
+              "expires_in": {
+                "type": "integer",
+                "title": "Expires In"
+              }
+            },
+            "type": "object",
+            "required": [
+              "registered",
+              "expires_in"
+            ],
+            "title": "RegisterResponse"
+          },
+          "RelayPollResponse": {
+            "properties": {
+              "messages": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array",
+                "title": "Messages"
+              }
+            },
+            "type": "object",
+            "required": [
+              "messages"
+            ],
+            "title": "RelayPollResponse"
+          },
+          "RelaySendRequest": {
+            "properties": {
+              "from": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "From"
+              },
+              "to": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "To"
+              },
+              "payload": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            },
+            "type": "object",
+            "title": "RelaySendRequest"
+          },
+          "RelaySendResponse": {
+            "properties": {
+              "enqueued": {
+                "type": "boolean",
+                "title": "Enqueued"
+              }
+            },
+            "type": "object",
+            "required": [
+              "enqueued"
+            ],
+            "title": "RelaySendResponse"
+          },
+          "ResolveResponse": {
+            "properties": {
+              "candidates": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "title": "Candidates"
+              }
+            },
+            "type": "object",
+            "required": [
+              "candidates"
+            ],
+            "title": "ResolveResponse"
+          },
+          "Role": {
+            "type": "string",
+            "enum": [
+              "super_admin",
+              "admin",
+              "security_analyst",
+              "operator",
+              "monitor",
+              "guest"
+            ],
+            "title": "Role",
+            "description": "System roles with predefined permissions"
+          },
+          "SecurityStatsResponse": {
+            "properties": {
+              "total_users": {
+                "type": "integer",
+                "title": "Total Users",
+                "description": "Total de usu\u00e1rios"
+              },
+              "active_sessions": {
+                "type": "integer",
+                "title": "Active Sessions",
+                "description": "Sess\u00f5es ativas"
+              },
+              "locked_users": {
+                "type": "integer",
+                "title": "Locked Users",
+                "description": "Usu\u00e1rios bloqueados"
+              },
+              "inactive_users": {
+                "type": "integer",
+                "title": "Inactive Users",
+                "description": "Usu\u00e1rios inativos"
+              },
+              "successful_logins_24h": {
+                "type": "integer",
+                "title": "Successful Logins 24H",
+                "description": "Logins bem-sucedidos nas \u00faltimas 24h"
+              },
+              "failed_logins_24h": {
+                "type": "integer",
+                "title": "Failed Logins 24H",
+                "description": "Logins falhados nas \u00faltimas 24h"
+              },
+              "total_access_attempts_24h": {
+                "type": "integer",
+                "title": "Total Access Attempts 24H",
+                "description": "Total de tentativas de acesso nas \u00faltimas 24h"
+              },
+              "unique_ips_24h": {
+                "type": "integer",
+                "title": "Unique Ips 24H",
+                "description": "IPs \u00fanicos nas \u00faltimas 24h"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Timestamp",
+                "description": "Timestamp das estat\u00edsticas"
+              }
+            },
+            "type": "object",
+            "required": [
+              "total_users",
+              "active_sessions",
+              "locked_users",
+              "inactive_users",
+              "successful_logins_24h",
+              "failed_logins_24h",
+              "total_access_attempts_24h",
+              "unique_ips_24h",
+              "timestamp"
+            ],
+            "title": "SecurityStatsResponse",
+            "description": "Modelo para estat\u00edsticas de seguran\u00e7a"
+          },
+          "TokenResponse": {
+            "properties": {
+              "access_token": {
+                "type": "string",
+                "title": "Access Token",
+                "description": "JWT access token"
+              },
+              "refresh_token": {
+                "type": "string",
+                "title": "Refresh Token",
+                "description": "Refresh token para renova\u00e7\u00e3o"
+              },
+              "token_type": {
+                "type": "string",
+                "title": "Token Type",
+                "description": "Tipo do token",
+                "default": "bearer"
+              },
+              "expires_in": {
+                "type": "integer",
+                "title": "Expires In",
+                "description": "Tempo de expira\u00e7\u00e3o em segundos"
+              },
+              "user": {
+                "$ref": "#/components/schemas/UserResponse",
+                "description": "Informa\u00e7\u00f5es do usu\u00e1rio autenticado"
+              }
+            },
+            "type": "object",
+            "required": [
+              "access_token",
+              "refresh_token",
+              "expires_in",
+              "user"
+            ],
+            "title": "TokenResponse",
+            "description": "Modelo para resposta de token de autentica\u00e7\u00e3o"
+          },
+          "UserCreate": {
+            "properties": {
+              "username": {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 3,
+                "title": "Username",
+                "description": "Nome de usu\u00e1rio \u00fanico"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "title": "Email",
+                "description": "Email v\u00e1lido do usu\u00e1rio"
+              },
+              "password": {
+                "type": "string",
+                "minLength": 8,
+                "title": "Password",
+                "description": "Senha segura"
+              },
+              "roles": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/Role"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Roles",
+                "description": "Roles do usu\u00e1rio",
+                "default": [
+                  "guest"
+                ]
+              }
+            },
+            "type": "object",
+            "required": [
+              "username",
+              "email",
+              "password"
+            ],
+            "title": "UserCreate",
+            "description": "Modelo para cria\u00e7\u00e3o de usu\u00e1rio"
+          },
+          "UserListResponse": {
+            "properties": {
+              "users": {
+                "items": {
+                  "$ref": "#/components/schemas/UserResponse"
+                },
+                "type": "array",
+                "title": "Users",
+                "description": "Lista de usu\u00e1rios"
+              },
+              "total": {
+                "type": "integer",
+                "title": "Total",
+                "description": "Total de usu\u00e1rios"
+              },
+              "page": {
+                "type": "integer",
+                "title": "Page",
+                "description": "P\u00e1gina atual"
+              },
+              "per_page": {
+                "type": "integer",
+                "title": "Per Page",
+                "description": "Usu\u00e1rios por p\u00e1gina"
+              }
+            },
+            "type": "object",
+            "required": [
+              "users",
+              "total",
+              "page",
+              "per_page"
+            ],
+            "title": "UserListResponse",
+            "description": "Modelo para lista de usu\u00e1rios"
+          },
+          "UserLogin": {
+            "properties": {
+              "username": {
+                "type": "string",
+                "title": "Username",
+                "description": "Nome de usu\u00e1rio ou email"
+              },
+              "password": {
+                "type": "string",
+                "title": "Password",
+                "description": "Senha do usu\u00e1rio"
+              },
+              "remember_me": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Remember Me",
+                "description": "Manter sess\u00e3o ativa por mais tempo",
+                "default": false
+              }
+            },
+            "type": "object",
+            "required": [
+              "username",
+              "password"
+            ],
+            "title": "UserLogin",
+            "description": "Modelo para login de usu\u00e1rio"
+          },
+          "UserResponse": {
+            "properties": {
+              "user_id": {
+                "type": "string",
+                "title": "User Id",
+                "description": "ID \u00fanico do usu\u00e1rio"
+              },
+              "username": {
+                "type": "string",
+                "title": "Username",
+                "description": "Nome de usu\u00e1rio"
+              },
+              "email": {
+                "type": "string",
+                "title": "Email",
+                "description": "Email do usu\u00e1rio"
+              },
+              "roles": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "title": "Roles",
+                "description": "Roles do usu\u00e1rio"
+              },
+              "permissions": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "title": "Permissions",
+                "description": "Permiss\u00f5es do usu\u00e1rio"
+              },
+              "is_active": {
+                "type": "boolean",
+                "title": "Is Active",
+                "description": "Status ativo"
+              },
+              "is_locked": {
+                "type": "boolean",
+                "title": "Is Locked",
+                "description": "Status bloqueado"
+              },
+              "last_login": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Last Login",
+                "description": "\u00daltimo login"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Created At",
+                "description": "Data de cria\u00e7\u00e3o"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Updated At",
+                "description": "\u00daltima atualiza\u00e7\u00e3o"
+              }
+            },
+            "type": "object",
+            "required": [
+              "user_id",
+              "username",
+              "email",
+              "roles",
+              "permissions",
+              "is_active",
+              "is_locked",
+              "created_at",
+              "updated_at"
+            ],
+            "title": "UserResponse",
+            "description": "Modelo para resposta de usu\u00e1rio (sem dados sens\u00edveis)"
+          },
+          "UserSessionInfo": {
+            "properties": {
+              "session_id": {
+                "type": "string",
+                "title": "Session Id",
+                "description": "ID da sess\u00e3o"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Created At",
+                "description": "Data de cria\u00e7\u00e3o da sess\u00e3o"
+              },
+              "last_activity": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Last Activity",
+                "description": "\u00daltima atividade"
+              },
+              "ip_address": {
+                "type": "string",
+                "title": "Ip Address",
+                "description": "Endere\u00e7o IP da sess\u00e3o"
+              },
+              "user_agent": {
+                "type": "string",
+                "title": "User Agent",
+                "description": "User agent da sess\u00e3o"
+              }
+            },
+            "type": "object",
+            "required": [
+              "session_id",
+              "created_at",
+              "last_activity",
+              "ip_address",
+              "user_agent"
+            ],
+            "title": "UserSessionInfo",
+            "description": "Modelo para informa\u00e7\u00f5es de sess\u00e3o do usu\u00e1rio"
+          },
+          "UserUpdate": {
+            "properties": {
+              "email": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Email",
+                "description": "Novo email"
+              },
+              "password": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Password",
+                "description": "Nova senha"
+              },
+              "roles": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/Role"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Roles",
+                "description": "Novos roles"
+              },
+              "is_active": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Is Active",
+                "description": "Status ativo/inativo"
+              },
+              "is_locked": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Is Locked",
+                "description": "Status bloqueado/desbloqueado"
+              }
+            },
+            "type": "object",
+            "title": "UserUpdate",
+            "description": "Modelo para atualiza\u00e7\u00e3o de usu\u00e1rio"
+          },
+          "ValidationError": {
+            "properties": {
+              "loc": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "type": "array",
+                "title": "Location"
+              },
+              "msg": {
+                "type": "string",
+                "title": "Message"
+              },
+              "type": {
+                "type": "string",
+                "title": "Error Type"
+              }
+            },
+            "type": "object",
+            "required": [
+              "loc",
+              "msg",
+              "type"
+            ],
+            "title": "ValidationError"
+          },
+          "atous_sec_network__api__routes__agents__HeartbeatRequest": {
+            "properties": {
+              "version": {
+                "type": "string",
+                "title": "Version"
+              },
+              "services": {
+                "items": {},
+                "type": "array",
+                "title": "Services"
+              },
+              "metrics": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Metrics"
+              },
+              "risk_score": {
+                "type": "number",
+                "title": "Risk Score"
+              }
+            },
+            "type": "object",
+            "required": [
+              "version",
+              "risk_score"
+            ],
+            "title": "HeartbeatRequest"
+          },
+          "atous_sec_network__api__routes__agents__HeartbeatResponse": {
+            "properties": {
+              "policy_version": {
+                "type": "string",
+                "title": "Policy Version"
+              },
+              "actions": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "title": "Actions"
+              }
+            },
+            "type": "object",
+            "required": [
+              "policy_version",
+              "actions"
+            ],
+            "title": "HeartbeatResponse"
+          },
+          "atous_sec_network__api__routes__relay__HeartbeatRequest": {
+            "properties": {
+              "agent_id": {
+                "type": "string",
+                "title": "Agent Id"
+              }
+            },
+            "type": "object",
+            "required": [
+              "agent_id"
+            ],
+            "title": "HeartbeatRequest"
+          },
+          "atous_sec_network__api__routes__relay__HeartbeatResponse": {
+            "properties": {
+              "registered": {
+                "type": "boolean",
+                "title": "Registered"
+              },
+              "expires_in": {
+                "type": "integer",
+                "title": "Expires In"
+              }
+            },
+            "type": "object",
+            "required": [
+              "registered",
+              "expires_in"
+            ],
+            "title": "HeartbeatResponse"
+          }
+        },
+        "securitySchemes": {
+          "HTTPBearer": {
+            "type": "http",
+            "scheme": "bearer"
+          }
+        }
+      }
+    }
+  },
+  "GET_/api/security/status": {
+    "status_code": 200,
+    "success": true,
+    "response_time": 0.002193,
+    "content_type": "application/json",
+    "content_length": 470,
+    "data": {
+      "security_status": "operational",
+      "systems": {
+        "abiss": {
+          "status": "active",
+          "initialized": true,
+          "threats_detected": 0,
+          "last_check": "2025-08-17T11:49:24.772343+00:00"
+        },
+        "nnis": {
+          "status": "active",
+          "initialized": true,
+          "anomalies_detected": 0,
+          "last_check": "2025-08-17T11:49:24.772343+00:00"
+        },
+        "middleware": {
+          "comprehensive_security": true,
+          "abiss_nnis_middleware": true,
+          "rate_limiting": true,
+          "ddos_protection": true
+        }
+      },
+      "overall_health": "healthy",
+      "timestamp": "2025-08-17T11:49:24.772343+00:00"
+    }
+  },
+  "GET_/api/security/abiss/status": {
+    "status_code": 200,
+    "success": true,
+    "response_time": 6.301011,
+    "content_type": "application/json",
+    "content_length": 240,
+    "data": {
+      "status": "healthy",
+      "initialized": true,
+      "last_check": 1755431371.073644,
+      "block_threshold": 0.9,
+      "monitor_threshold": 0.75,
+      "endpoint_whitelist": [],
+      "threat_patterns_count": 1,
+      "behavior_history_size": 1,
+      "timestamp": "2025-08-17T11:49:31.073644+00:00"
+    }
+  },
+  "GET_/api/security/nnis/status": {
+    "status_code": 200,
+    "success": true,
+    "response_time": 0.010131,
+    "content_type": "application/json",
+    "content_length": 329,
+    "data": {
+      "status": "operational",
+      "immune_cells_count": 100,
+      "memory_cells_count": 50,
+      "threat_database_size": 3,
+      "health_metrics": {
+        "total_cells": 150,
+        "active_cells": 100,
+        "memory_cells": 50,
+        "response_efficiency": 0.0,
+        "learning_rate": 0.01,
+        "threat_database_size": 3
+      },
+      "response_stats": {},
+      "threat_stats": {},
+      "timestamp": "2025-08-17T11:49:31.084637+00:00"
+    }
+  },
+  "GET_/api/security/keys": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.003901,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "POST_/api/security/analyze": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.011204,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "POST_/api/auth/register": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.005039,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "POST_/api/auth/login": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.009273,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "POST_/api/auth/refresh": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.011035,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "GET_/api/auth/profile": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.006619,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "GET_/api/overlay/discovery": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.00532,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "POST_/api/overlay/enroll": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.01168,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "POST_/api/overlay/heartbeat": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.006744,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "GET_/api/overlay/policies/active": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.005931,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "POST_/api/overlay/relay": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.010588,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "GET_/api/admin/overview": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.008912,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "GET_/api/admin/events": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.005035,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "GET_/api/admin/agents": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.01141,
+    "content_type": "application/json",
+    "content_length": 22
+  },
+  "GET_/api/admin/policies": {
+    "status_code": 404,
+    "success": false,
+    "response_time": 0.004069,
+    "content_type": "application/json",
+    "content_length": 22
+  }
+}

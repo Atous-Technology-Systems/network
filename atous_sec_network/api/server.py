@@ -21,14 +21,15 @@ from typing import Dict, Any, Optional
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from ..core.logging_config import setup_logging
-from ..security.abiss_system import ABISSSystem
-from ..security.nnis_system import NNISSystem
+# Lazy imports para evitar problemas com dependências pesadas
+from ..security import get_abiss_system, get_nnis_system
 from .routes import security
 from .routes import agents
 from .routes import policies
 from .routes import relay
 from .routes import admin
 from .routes import discovery
+from .routes import auth  # Importar rotas de autenticação
 
 # Import new security middleware
 from ..security.security_middleware import ComprehensiveSecurityMiddleware, RateLimitConfig
@@ -379,19 +380,20 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
                 "method": request_data.get("method", "GET")
             }
             
-            result = abiss.detect_threat(threat_data)
+            # Usar o método correto do ABISS
+            threat_score = abiss.analyze_request({
+                'method': request_data.get("method", "GET"),
+                'path': request_data.get("path", ""),
+                'headers': request_data.get("headers", {}),
+                'body': request_data.get("body_content", ""),
+                'source_ip': request_data.get("client_ip", "unknown")
+            })
             
-            if isinstance(result, tuple):
-                threat_score, anomalies = result
-                return {
-                    "threat_detected": threat_score > 0.5,
-                    "threat_score": threat_score,
-                    "anomalies": anomalies
-                }
-            elif isinstance(result, dict):
-                return result
-            else:
-                return {"threat_detected": False, "threat_score": 0.0, "error": "Invalid result format"}
+            return {
+                "threat_detected": threat_score > 0.5,
+                "threat_score": threat_score,
+                "anomalies": []
+            }
             
         except Exception as e:
             self.logger.error(f"ABISS analysis error: {str(e)}")
@@ -531,12 +533,13 @@ app.state.anomalies_detected = 0
 app.state.rate_limit_hits = 0
 
 # Incluir routers
-app.include_router(security.router, prefix="/api/v1", tags=["security"])
-app.include_router(agents.router, tags=["agents"])  # routes define full paths
-app.include_router(policies.router, tags=["policies"])  # routes define full paths
-app.include_router(relay.router, tags=["relay"])  # routes define full paths
-app.include_router(admin.router, tags=["admin"])  # routes define full paths
-app.include_router(discovery.router, tags=["discovery"])  # routes define full paths
+app.include_router(security.router, prefix="/api", tags=["security"])  # Rotas de segurança
+app.include_router(agents.router, tags=["agents"])  # Rotas de agentes
+app.include_router(policies.router, tags=["policies"])  # Rotas de políticas
+app.include_router(relay.router, tags=["relay"])  # Rotas de relay
+app.include_router(admin.router, tags=["admin"])  # Rotas administrativas
+app.include_router(discovery.router, tags=["discovery"])  # Rotas de descoberta
+app.include_router(auth.router, tags=["authentication"])  # Rotas de autenticação
 
 # Crypto endpoints
 from ..core.crypto_utils import CryptoUtils
