@@ -249,7 +249,6 @@ graph TD
 #### **1. Instalação**
 
 #### 1. Clone o repositório
-
 ```bash
 git clone https://github.com/devrodts/Atous-Sec-Network.git
 cd Atous-Sec-Network
@@ -258,7 +257,6 @@ cd Atous-Sec-Network
 #### 2. Crie e ative o ambiente virtual
 
 #### No Windows
-
 ```bash
 python -m venv venv
 .\\venv\\Scripts\\Activate.ps1
@@ -284,7 +282,6 @@ python debug_import.py
 ```
 
 #### Verifique o status da aplicação
-
 ```bash
 python start_app.py --status
 ```
@@ -323,7 +320,7 @@ python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --
 ##### ** Modo Servidor Web (Production Mode)**
 
 
-#### INICIA o servidor web FastAPI com todos os endpoints
+#### Inicia o servidor web FastAPI com todos os endpoints
 ```bash
 python start_server.py
 ```
@@ -356,9 +353,15 @@ python start_app.py --test
 ```
 
 # Testes específicos
-python -m pytest tests/unit/ -v          # Testes unitários
-python -m pytest tests/integration/ -v   # Testes de integração
-python -m pytest tests/security/ -v      # Testes de segurança
+```bash
+python -m pytest tests/unit/ -v
+```
+bash```
+python -m pytest tests/integration/ -v 
+```
+bash```
+python -m pytest tests/security/ -v
+```
 
 #### Gere um relatório de cobertura de código
 ```bash
@@ -379,42 +382,59 @@ python -m pytest --cov=atous_sec_network --cov-report=html
 
 #### **6. Fluxo de Desenvolvimento Recomendado**
 
+#### 1. Verifique o ambiente e dependências
 ```bash
-# 1. Verifique o ambiente e dependências
 python start_app.py --debug
+```
 
-# 2. Teste importações básicas
+#### 2. Teste importações básicas
+bash```
 python start_app.py --lite
+```
 
-# 3. Execute a suite de testes
+#### 3. Execute a suite de testes
+bash```
 python start_app.py --test
+```
 
-# 4. Verifique inicialização dos sistemas
+#### 4. Verifique inicialização dos sistemas
+bash```
 python start_app.py --full
+```
 
-# 5. Inicie o servidor para desenvolvimento
+#### 5. Inicie o servidor para desenvolvimento
+bash```
 python start_server.py --reload
+````
 
-# 6. Teste os endpoints (em outro terminal)
+#### 6. Teste os endpoints (em outro terminal)
+bash```
 curl http://localhost:8000/health
+```
+bash```
 curl http://localhost:8000/api/security/status
 ```
 
 #### **7. Verificação de Funcionalidade Completa**
 
 Para testar todas as funcionalidades do sistema:
-
+#### 1. Inicie o servidor
 ```bash
-# 1. Inicie o servidor
 python start_server.py
+```
 
-# 2. Execute testes de funcionalidade (em outro terminal)
+#### 2. Execute testes de funcionalidade (em outro terminal)
+bash```
 python test_complete_functionality.py
+```
 
-# 3. Teste WebSockets
+#### 3. Teste WebSockets
+bash``` 
 python test_websocket_fix.py
+``´ 
 
-# 4. Teste segurança
+#### 4. Teste segurança
+bash```
 python test_security_final.py
 ```
 
@@ -433,11 +453,13 @@ Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS**
 
 Seed rápido para demonstração:
 
-```bash
-# 1) Inicie o servidor (terminal 1)
+#### 1) Inicie o servidor (terminal 1)
+bash```
 python start_server.py
+```
 
-# 2) Popule dados de demo (terminal 2)
+#### 2) Popule dados de demo (terminal 2)
+bash```
 python scripts/seed_admin_demo.py --base-url http://localhost:8000 \
   --agent-id agt-demo --service-name api-service --port 8000
 ```
