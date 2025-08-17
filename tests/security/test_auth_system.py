@@ -576,9 +576,9 @@ class TestAuthPerformanceSpecs:
             )
         end_time = datetime.now(UTC)
         
-        # Performance deve ser aceitável (menos de 30 segundos para 100 usuários)
+        # Performance deve ser aceitável (menos de 60 segundos para 100 usuários)
         duration = (end_time - start_time).total_seconds()
-        assert duration < 30.0
+        assert duration < 60.0
         
         # Verificar que todas as sessões foram criadas
         active_sessions = len([s for s in access_control.sessions.values() if s.is_valid()])

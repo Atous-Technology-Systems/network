@@ -819,3 +819,54 @@ async def get_legacy_middleware_stats() -> JSONResponse:
     except Exception as e:
         logger.error(f"Error getting legacy middleware stats: {e}")
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+@router.get("/config/current")
+async def get_current_security_config():
+    """Retorna a configuração atual de segurança"""
+    try:
+        # Obter configuração atual do middleware
+        from ...security.security_middleware import ComprehensiveSecurityMiddleware
+        
+        # Configuração atual
+        current_config = {
+            "security_preset": "development",
+            "rate_limiting": {
+                "enabled": True,
+                "requests_per_minute": 10000,
+                "requests_per_hour": 100000,
+                "burst_limit": 1000
+            },
+            "threat_detection": {
+                "abiss_threshold": 0.95,  # Muito permissivo para desenvolvimento
+                "nnis_threshold": 0.95,   # Muito permissivo para desenvolvimento
+                "block_threshold": 0.98,  # Muito permissivo para desenvolvimento
+                "monitor_threshold": 0.90  # Muito permissivo para desenvolvimento
+            },
+            "excluded_paths": [
+                "/health", "/", "/docs", "/redoc", "/openapi.json",
+                "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt",
+                "/api/info", "/api/security/status", "/api/metrics"
+            ],
+            "development_mode": True,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        return current_config
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter configuração de segurança: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao obter configuração: {str(e)}")
+
+@router.get("/test/simple")
+async def test_simple_security():
+    """Endpoint de teste simples para verificar configurações de segurança"""
+    try:
+        return {
+            "message": "Endpoint de teste funcionando",
+            "security_level": "development",
+            "timestamp": datetime.now().isoformat(),
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Erro no teste simples: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro no teste: {str(e)}")

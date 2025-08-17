@@ -9,10 +9,10 @@ from typing import List
 @dataclass
 class RateLimitConfig:
     """Configuration for rate limiting"""
-    requests_per_minute: int = 60
-    requests_per_hour: int = 1000
-    burst_limit: int = 10
-    block_duration_minutes: int = 15
+    requests_per_minute: int = 10000  # Muito mais permissivo para desenvolvimento
+    requests_per_hour: int = 100000   # Muito mais permissivo para desenvolvimento
+    burst_limit: int = 1000           # Muito mais permissivo para desenvolvimento
+    block_duration_minutes: int = 1   # Mantido baixo para testes
 
 @dataclass
 class SecurityPreset:

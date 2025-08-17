@@ -298,18 +298,45 @@ class TestABISSEndpointsSpecs:
 class TestABISSIntegrationSpecs:
     """Especificações de teste para integração do sistema ABISS"""
     
-    def test_abiss_with_middleware_integration(self):
+    @pytest.mark.asyncio
+    async def test_abiss_with_middleware_integration(self):
         """Testa se o ABISS integra corretamente com o middleware de segurança"""
         # Arrange
         from atous_sec_network.security.security_middleware import ComprehensiveSecurityMiddleware
         from fastapi import FastAPI
+        from unittest.mock import AsyncMock, patch
         
         app = FastAPI()
         middleware = ComprehensiveSecurityMiddleware(app)
         
         # Act & Assert
         assert hasattr(middleware, 'abiss_system'), "Middleware deve ter sistema ABISS"
-        assert middleware.abiss_system is not None, "Sistema ABISS deve ser inicializado"
+        
+        # The ABISS system is lazy loaded, so it should be None initially
+        assert middleware.abiss_system is None, "Sistema ABISS deve ser inicializado apenas quando necessário"
+        
+        # Test that ABISS can be initialized when needed
+        # Mock the request to trigger ABISS initialization
+        mock_request = AsyncMock()
+        mock_request.method = "GET"
+        mock_request.url = "http://test.com/api/test"
+        mock_request.headers = {}
+        
+        # Call the method that triggers ABISS initialization
+        with patch('atous_sec_network.security.abiss_system.ABISSSystem') as mock_abiss_class:
+            mock_abiss_instance = AsyncMock()
+            mock_abiss_class.return_value = mock_abiss_instance
+            mock_abiss_instance.analyze_request.return_value = 0.1
+            mock_abiss_instance.is_request_allowed.return_value = True
+            mock_abiss_instance.monitor_threshold = 0.5
+            mock_abiss_instance.block_threshold = 0.8
+            
+            # This should trigger ABISS initialization
+            result = await middleware._analyze_with_abiss(mock_request, "127.0.0.1")
+            
+            # Verify ABISS was initialized
+            assert middleware.abiss_system is not None, "Sistema ABISS deve ser inicializado após primeira análise"
+            assert result is None, "Análise ABISS deve retornar None para requisições seguras"
     
     def test_abiss_configuration_loading(self):
         """Testa se a configuração do ABISS é carregada corretamente"""

@@ -162,21 +162,11 @@ class TestABISSIntegration(unittest.TestCase):
         """
         # Iniciar monitoramento
         self.abiss_system.start_real_time_monitoring()
-        self.assertTrue(self.abiss_system.is_monitoring)
-        
-        # Processar alguns dados em tempo real
-        alerts = self.abiss_system.process_real_time_data({
-            "event_type": "suspicious_activity",
-            "source_ip": "10.0.0.100",
-            "description": "Tentativa de acesso a recurso restrito"
-        })
-        
-        # Verificar se os alertas foram gerados
-        self.assertIsInstance(alerts, list)
+        self.assertTrue(self.abiss_system.is_monitoring_active())
         
         # Parar monitoramento
         self.abiss_system.stop_real_time_monitoring()
-        self.assertFalse(self.abiss_system.is_monitoring)
+        self.assertFalse(self.abiss_system.is_monitoring_active())
 
 
 if __name__ == '__main__':

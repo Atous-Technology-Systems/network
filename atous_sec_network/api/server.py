@@ -91,7 +91,7 @@ async def lifespan(app: FastAPI):
         abiss_config = {
             "model_name": "google/gemma-3n-2b",
             "memory_size": 1000,
-            "threat_threshold": 0.7,  # Threshold conservador
+            "threat_threshold": 0.95,  # Muito mais permissivo para desenvolvimento
             "learning_rate": 0.01,
             "enable_monitoring": True
         }
@@ -99,9 +99,9 @@ async def lifespan(app: FastAPI):
         nnis_config = {
             "model_name": "google/gemma-3n-2b",
             "memory_size": 1000,
-            "immune_cell_count": 50,
-            "memory_cell_count": 100,
-            "threat_threshold": 0.8  # Threshold conservador
+            "threat_threshold": 0.95,  # Muito mais permissivo para desenvolvimento
+            "learning_rate": 0.01,
+            "enable_monitoring": True
         }
         
         # Inicialização lazy dos sistemas ABISS e NNIS
@@ -156,11 +156,11 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Inicializar configurações na criação do app
+# Inicializar configurações na criação do app (serão sobrescritas no lifespan)
 app.state.abiss_config = {
     "model_name": "google/gemma-3n-2b",
     "memory_size": 1000,
-    "threat_threshold": 0.7,  # Threshold conservador
+    "threat_threshold": 0.95,  # Muito permissivo para desenvolvimento
     "learning_rate": 0.01,
     "enable_monitoring": True
 }
@@ -170,7 +170,7 @@ app.state.nnis_config = {
     "memory_size": 1000,
     "immune_cell_count": 50,
     "memory_cell_count": 100,
-    "threat_threshold": 0.8  # Threshold conservador
+    "threat_threshold": 0.95  # Muito permissivo para desenvolvimento
 }
 
 app.state.systems = {
@@ -464,23 +464,24 @@ class ABISSNNISSecurityMiddleware(BaseHTTPMiddleware):
         
         return False, ""
 
-# Configure comprehensive security middleware with env-driven settings
-rate_limit_config = RateLimitConfig(
-    requests_per_minute=int(os.environ.get("RATE_LIMIT_RPM", "120")),
-    requests_per_hour=int(os.environ.get("RATE_LIMIT_RPH", "2400")),
-    burst_limit=int(os.environ.get("RATE_LIMIT_BURST", "20")),
-    block_duration_minutes=int(os.environ.get("RATE_LIMIT_BLOCK_MIN", "2"))
-)
+# Configure comprehensive security middleware with development preset
+from ..security.security_presets import get_security_preset
+
+# Use development preset for more permissive settings
+dev_preset = get_security_preset("development")
+rate_limit_config = dev_preset.rate_limit_config
 
 # Add comprehensive security middleware (input validation, rate limiting, DDoS protection)
 app.add_middleware(
     ComprehensiveSecurityMiddleware,
+    security_preset="development",  # Use development preset
     rate_limit_config=rate_limit_config,
     enable_input_validation=True,
     enable_rate_limiting=True,
     enable_ddos_protection=True,
-    max_request_size=int(os.environ.get("MAX_REQUEST_SIZE_BYTES", str(1024 * 1024))),
-    blocked_ips=[ip.strip() for ip in os.environ.get("BLOCKED_IPS", "").split(",") if ip.strip()]
+    max_request_size=int(os.environ.get("MAX_REQUEST_SIZE_BYTES", str(50 * 1024 * 1024))),  # 50MB
+    blocked_ips=[ip.strip() for ip in os.environ.get("BLOCKED_IPS", "").split(",") if ip.strip()],
+    excluded_paths=dev_preset.excluded_paths  # Use excluded paths from preset
 )
 
 # Add ABISS/NNIS security middleware
@@ -533,15 +534,20 @@ app.state.anomalies_detected = 0
 app.state.rate_limit_hits = 0
 
 # Incluir routers
-app.include_router(security.router, prefix="/api", tags=["security"])  # Rotas de segurança
-app.include_router(agents.router, tags=["agents"])  # Rotas de agentes
-app.include_router(policies.router, tags=["policies"])  # Rotas de políticas
-app.include_router(relay.router, tags=["relay"])  # Rotas de relay
-app.include_router(admin.router, tags=["admin"])  # Rotas administrativas
-app.include_router(discovery.router, tags=["discovery"])  # Rotas de descoberta
-app.include_router(auth.router, tags=["authentication"])  # Rotas de autenticação
+from .routes import health 
+from .routes import websocket_monitor 
 
-# Crypto endpoints
+app.include_router(health.router, tags=["health"]) 
+app.include_router(websocket_monitor.router, prefix="/api/websocket", tags=["websockets"]) 
+app.include_router(security.router, prefix="/api", tags=["security"]) 
+app.include_router(agents.router, tags=["agents"]) 
+app.include_router(policies.router, tags=["policies"]) 
+app.include_router(relay.router, tags=["relay"]) 
+app.include_router(admin.router, tags=["admin"]) 
+app.include_router(discovery.router, tags=["discovery"]) 
+app.include_router(auth.router, tags=["authentication"]) 
+
+
 from ..core.crypto_utils import CryptoUtils
 from pydantic import BaseModel
 

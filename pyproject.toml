@@ -1,92 +1,163 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "atous-sec-network"
-version = "2.0.0"
-description = "Atous Secure Network - Enhanced IoT Security with Federated Learning and LoRa"
-authors = [
-    {name = "Atous Team", email = "dev@atous.tech"}
-]
+version = "1.0.0"
+description = "Sistema de Rede Segura com Inteligência Artificial - ABISS + NNIS"
 readme = "README.md"
-requires-python = ">=3.8"
-dependencies = [
-    "numpy>=1.21.0",
-    "torch>=1.9.0",
-    "transformers>=4.11.0",
-    "flwr>=1.0.0",
-    "scikit-learn>=1.0.0",
-    "pandas>=1.3.0",
-    "paho-mqtt>=1.6.0",
-    "requests>=2.26.0",
-    "cryptography>=3.4.0",
-    "PyJWT>=2.4.0",
-    "bcrypt>=3.2.0",
-    "pydantic>=1.8.0",
-    "msgpack>=1.0.0",
-    "prometheus-client>=0.11.0",
-    "psutil>=5.8.0",
-    "dash>=2.0.0",
-    "plotly>=5.0.0",
-    "bsdiff4>=0.2.0"
+license = {text = "MIT"}
+authors = [
+    {name = "ATous Technology Systems", email = "dev@atous.tech"}
 ]
-
-[project.scripts]
-atous-agent = "atous_sec_network.agent.cli:main"
+maintainers = [
+    {name = "Rodolfo Rodrigues", email = "rodolfo@atous.tech"}
+]
+keywords = [
+    "security", "network", "ai", "machine-learning", "cybersecurity",
+    "abiss", "nnis", "fastapi", "python", "iot", "federated-learning"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Networking",
+    "Topic :: System :: Networking :: Firewalls",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+    "Topic :: System :: Monitoring",
+    "Topic :: Communications",
+    "Topic :: Internet",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: System :: Hardware",
+    "Topic :: System :: Operating System",
+    "Topic :: System :: Systems Administration :: Authentication/Directory",
+    "Topic :: Utilities",
+    "Typing :: Typed"
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.13.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-multipart>=0.0.6",
+    "cryptography>=41.0.0",
+    "marshmallow>=3.20.0",
+    "msgpack>=1.0.7",
+    "jsonschema>=4.20.0",
+    "torch>=2.1.0",
+    "transformers>=4.36.0",
+    "sentence-transformers>=2.2.0",
+    "scikit-learn>=1.3.0",
+    "numpy>=1.24.0",
+    "pandas>=2.1.0",
+    "psutil>=5.9.0",
+    "requests>=2.31.0",
+    "aiofiles>=0.8.0",
+    "python-dotenv>=1.0.0",
+    "structlog>=23.2.0",
+    "rich>=13.7.0",
+    "prometheus-client>=0.19.0",
+    "websockets>=12.0",
+    "aiohttp>=3.9.0",
+    "asyncio-mqtt>=0.16.0",
+    "watchdog>=3.0.0",
+    "zstandard>=0.22.0",
+    "lz4>=4.3.0",
+    "pycryptodome>=3.19.0",
+    "ecdsa>=0.18.0",
+    "cerberus>=1.3.5",
+    "marshmallow-jsonschema>=0.6.0",
+    "memory-profiler>=0.61.0",
+    "click>=8.1.0",
+    "tqdm>=4.66.0",
+    "colorama>=0.4.6",
+    "tabulate>=0.9.0"
+]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=6.2.0",
-    "pytest-asyncio>=0.15.0",
-    "pytest-cov>=2.12.0",
-    "pytest-mock>=3.6.0",
-    "black>=21.7b0",
-    "flake8>=3.9.0",
-    "mypy>=0.910"
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.25.0",
+    "pytest-mock>=3.12.0",
+    "black>=23.11.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.7.0"
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0"
+]
+deploy = [
+    "gunicorn>=21.2.0",
+    "supervisor>=4.2.5"
 ]
 hardware = [
-    "RPi.GPIO>=0.7.0",
-    "pyserial>=3.5"
+    "pyserial>=3.5",
+    "RPi.GPIO>=0.7.0"
 ]
-all = [
-    "pytest>=6.2.0",
-    "pytest-asyncio>=0.15.0",
-    "pytest-cov>=2.12.0",
-    "pytest-mock>=3.6.0",
-    "black>=21.7b0",
-    "flake8>=3.9.0",
-    "mypy>=0.910",
-    "RPi.GPIO>=0.7.0",
-    "pyserial>=3.5"
+ml = [
+    "bsdiff4>=0.1.1",
+    "protobuf>=3.19.0",
+    "datasets>=3.3.2",
+    "accelerate>=1.4.0",
+    "evaluate>=0.4.3",
+    "bitsandbytes>=0.45.3",
+    "trl>=0.15.2",
+    "peft>=0.14.0"
 ]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-pythonpath = ["."]
-addopts = [
-    "--strict-markers",
-    "--strict-config",
-    "--cov=atous_sec_network",
-    "-v",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml"
-]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
-    "security: marks tests related to security features",
-    "hardware: marks tests that require physical hardware"
+[project.urls]
+Homepage = "https://github.com/atous/secure-network"
+Documentation = "https://github.com/atous/secure-network/docs"
+Repository = "https://github.com/atous/secure-network.git"
+"Bug Tracker" = "https://github.com/atous/secure-network/issues"
+"Source Code" = "https://github.com/atous/secure-network"
+"Download" = "https://github.com/atous/secure-network/releases"
+"Changelog" = "https://github.com/atous/secure-network/blob/main/CHANGELOG.md"
+
+[project.scripts]
+atous-server = "atous_sec_network.api.server:main"
+atous-cli = "atous_sec_network.agent.cli:main"
+atous-admin = "atous_sec_network.api.routes.admin:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["atous_sec_network*"]
+
+[tool.setuptools.package-data]
+"atous_sec_network" = [
+    "api/static/**/*",
+    "config/*.yaml",
+    "config/*.yml",
+    "config/*.json",
+    "*.md",
+    "*.txt"
 ]
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -102,8 +173,14 @@ extend-exclude = '''
 )/
 '''
 
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["atous_sec_network"]
+
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -117,6 +194,21 @@ warn_no_return = true
 warn_unreachable = true
 strict_equality = true
 
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "security: marks tests as security tests",
+    "overlay: marks tests as overlay tests"
+]
+
 [tool.coverage.run]
 source = ["atous_sec_network"]
 omit = [
@@ -124,7 +216,7 @@ omit = [
     "*/test_*",
     "*/__pycache__/*",
     "*/venv/*",
-    "*/env/*"
+    "*/migrations/*"
 ]
 
 [tool.coverage.report]

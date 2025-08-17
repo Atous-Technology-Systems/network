@@ -22,7 +22,7 @@ from .input_validator import validator, ValidationResult, validate_request_data
 from .config import RateLimitConfig, SecurityPreset
 from .security_presets import get_security_preset
 # Lazy import para evitar problemas com dependências pesadas
-from . import get_abiss_system
+# from . import get_abiss_system
 
 logger = logging.getLogger(__name__)
 
@@ -113,8 +113,19 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
         """Main middleware dispatch method"""
         start_time = time.time()
         client_ip = self._get_client_ip(request)
+        request_path = str(request.url.path)
         
         try:
+            # Check if path is excluded from security checks
+            logger.debug(f"Checking path: {request_path} against excluded paths: {self.excluded_paths}")
+            if request_path in self.excluded_paths:
+                logger.info(f"Path {request_path} is excluded from security checks")
+                # Process excluded paths without security checks
+                response = await call_next(request)
+                return response
+            else:
+                logger.debug(f"Path {request_path} is NOT excluded, applying security checks")
+            
             # Check if IP is blocked
             if client_ip in self.blocked_ips:
                 logger.warning(f"Blocked IP attempted access: {client_ip}")
@@ -555,6 +566,7 @@ class ComprehensiveSecurityMiddleware(BaseHTTPMiddleware):
             if self.abiss_system is None:
                 from .abiss_system import ABISSSystem
                 self.abiss_system = ABISSSystem()
+                logger.info("ABISS system initialized in security middleware")
             
             # Analyze with ABISS
             threat_score = self.abiss_system.analyze_request(request_data)

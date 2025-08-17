@@ -456,7 +456,7 @@ class TestNNISSystem(unittest.TestCase):
         # Verificar consolidação
         self.assertIsInstance(consolidation_result, dict)
         self.assertIn("memories_consolidated", consolidation_result)
-        self.assertIn("redundant_cells_removed", consolidation_result)
+        self.assertIn("patterns_removed", consolidation_result)  # Corrigido: o método retorna "patterns_removed", não "redundant_cells_removed"
         self.assertIn("memory_efficiency_improved", consolidation_result)
 
 

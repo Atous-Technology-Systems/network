@@ -17,6 +17,7 @@ import logging
 
 from atous_sec_network.security.access_control import access_control, Permission
 from atous_sec_network.security.refresh_token_manager import refresh_token_manager
+from atous_sec_network.security.auth_integration import auth_integration
 from atous_sec_network.api.models.auth import (
     UserCreate, UserUpdate, UserLogin, UserResponse, TokenResponse,
     RefreshTokenRequest, RefreshTokenResponse, LogoutRequest, LogoutResponse,
@@ -50,7 +51,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     """
     try:
         token = credentials.credentials
-        user_info = access_control.validate_token(token)
+        user_info = auth_integration.validate_token(token)
         
         if not user_info:
             raise HTTPException(
@@ -82,7 +83,7 @@ def require_permission(permission: Permission):
     def permission_checker(current_user: dict = Depends(get_current_user)):
         user_id = current_user["user_id"]
         
-        if not access_control.check_permission(user_id, permission):
+        if not auth_integration.check_permission(user_id, permission):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Permissão '{permission.value}' requerida"
@@ -135,8 +136,8 @@ async def register_user(
     try:
         ip_address, user_agent = get_client_info(request)
         
-        # Criar usuário
-        user_id = access_control.create_user(
+        # Criar usuário usando o novo sistema de autenticação
+        user_id = auth_integration.create_user(
             username=user_data.username,
             email=user_data.email,
             password=user_data.password,
@@ -144,7 +145,7 @@ async def register_user(
         )
         
         # Obter usuário criado
-        user = access_control.users[user_id]
+        user = auth_integration.get_user(user_id)
         
         # Log de criação
         logger.info(f"User registered: {user_data.username} ({user_id}) from {ip_address}")
@@ -202,8 +203,8 @@ async def login_user(
     try:
         ip_address, user_agent = get_client_info(request)
         
-        # Autenticar usuário
-        auth_result = access_control.authenticate(
+        # Autenticar usuário usando o novo sistema de autenticação
+        auth_result = auth_integration.authenticate_user(
             username=login_data.username,
             password=login_data.password,
             ip_address=ip_address,
@@ -790,6 +791,58 @@ async def get_token_stats(
         
     except Exception as e:
         logger.error(f"Error getting token stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
+        )
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_current_user_info(
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Obter informações do usuário autenticado
+    
+    Retorna os dados do usuário atualmente autenticado,
+    incluindo informações básicas, roles e permissões.
+    
+    Args:
+        current_user: Usuário autenticado (injetado automaticamente)
+        
+    Returns:
+        UserResponse: Dados do usuário autenticado
+        
+    Raises:
+        HTTPException: Se usuário não autenticado
+    """
+    try:
+        # Obter usuário completo do banco de dados
+        user = auth_integration.get_user(current_user["user_id"])
+        
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário não encontrado"
+            )
+        
+        return UserResponse(
+            user_id=user.user_id,
+            username=user.username,
+            email=user.email,
+            roles=[role.value for role in user.roles],
+            permissions=[perm.value for perm in user.get_all_permissions()],
+            is_active=user.is_active,
+            is_locked=user.is_locked,
+            last_login=user.last_login,
+            created_at=user.created_at,
+            updated_at=user.updated_at
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting current user info: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Erro interno do servidor"
