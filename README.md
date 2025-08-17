@@ -532,8 +532,7 @@ Estamos abertos a contribuições\! Se você deseja participar:
 
 ###  **Licença**
 
-Este projeto é licenciado sob os termos da licença **GNU General Public License v3.0**. Veja o arquivo [LICENSE](https://www.google.com/search?q=LICENSE) para mais detalhes.
-
+Este projeto é licenciado sob os termos da licença **GNU General Public License v3.0 E MIT**.
 -----
 
 **Criado por Rodolfo Rodrigues - Atous Technology Systems**

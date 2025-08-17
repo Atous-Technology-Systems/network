@@ -54,11 +54,10 @@ ATous Secure Network provides a comprehensive set of APIs for each subsystem. Th
 ### WebSocket Endpoints
 
 #### Real-time Communication
-- **URL**: `WS /ws`
-- **URL**: `WS /api/ws`
-- **URL**: `WS /websocket`
-- **URL**: `WS /ws/test_node`
-- **Description**: WebSockets para comunicação em tempo real e testes
+- **URL**: `WS /ws` — WebSocket principal
+- **URL**: `WS /api/ws` — WebSocket da API
+- **URL**: `WS /websocket` — WebSocket genérico
+- **Description**: WebSockets para comunicação em tempo real
 - **Features**: Conexão bidirecional, notificações de eventos de segurança
 
 ## Security APIs (nota de estado)

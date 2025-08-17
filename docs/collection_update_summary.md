@@ -15,34 +15,31 @@ A collection do Postman foi completamente atualizada para incluir todos os endpo
 
 #### 🔐 Admin (MVP)
 - `GET /v1/admin/overview` - Visão geral administrativa
-- `GET /v1/admin/systems` - Status detalhado dos sistemas
-- `GET /v1/admin/config` - Configurações do sistema
-- `GET /v1/admin/logs` - Logs recentes
+- `GET /v1/admin/events?limit=N` - Listar eventos (requer header `X-Admin-Api-Key`)
+- `POST /v1/admin/events` - Registrar evento admin
 
 #### 🌐 Discovery
-- `GET /v1/discovery/nodes` - Listar nós conhecidos
 - `POST /v1/discovery/register` - Registrar novo nó
-- `GET /v1/discovery/search` - Buscar nós por capacidade
+- `GET /v1/discovery/services?name=...` - Buscar serviços por nome
+- `GET /v1/discovery/resolve?name=...&pref=local,lan,wan` - Resolver endereços
+- `GET /v1/discovery/agents/{agent_id}` - Detalhes de um agente específico
 
 #### 📡 Relay
-- `GET /v1/relay/status` - Status do sistema de retransmissão
+- `POST /v1/relay/heartbeat` - Heartbeat de agente
 - `POST /v1/relay/send` - Enviar mensagem via relay
-- `GET /v1/relay/pending` - Mensagens pendentes
+- `GET /v1/relay/poll?agent_id=...` - Consultar mensagens para um agente
 
 #### 🤖 Agents
-- `GET /v1/agents/list` - Listar agentes ativos
-- `GET /v1/agents/status/{agent_id}` - Status de agente específico
-- `POST /v1/agents/execute` - Executar comando no agente
+- `POST /v1/agents/enroll` - Registrar novo agente
+- `POST /v1/agents/{agent_id}/heartbeat` - Heartbeat de agente específico
 
 #### 📋 Policies
-- `GET /v1/policies/list` - Listar políticas de segurança
-- `POST /v1/policies/create` - Criar nova política
-- `POST /v1/policies/apply` - Aplicar política ao sistema
+- `GET /v1/policies/active?agent_id=...` - Políticas ativas para um agente
 
-#### 🔒 Presets de Segurança
-- `GET /v1/security/presets` - Listar presets disponíveis
-- `POST /v1/security/presets/apply` - Aplicar preset específico
-- `GET /v1/security/presets/current` - Configuração atual
+#### 🔒 Segurança Avançada
+- `GET /api/v1/security/nnis/status` - Status do sistema NNIS
+- `GET /api/v1/security/security-report` - Relatório detalhado de segurança
+- `GET /api/v1/security/threat-intelligence` - Inteligência sobre ameaças
 
 ### 🔧 Melhorias na Estrutura
 
@@ -55,7 +52,7 @@ A collection do Postman foi completamente atualizada para incluir todos os endpo
 - **Relay**: Sistema de retransmissão
 - **Agents**: Gerenciamento de agentes
 - **Policies**: Gerenciamento de políticas
-- **Presets de Segurança**: Configurações de segurança
+- **Segurança Avançada**: Status ABISS/NNIS e configurações
 - **API Info e Métricas**: Informações e métricas da API
 - **Criptografia**: Endpoints de criptografia
 - **WebSocket**: Comunicação em tempo real
@@ -125,11 +122,10 @@ A collection do Postman foi completamente atualizada para incluir todos os endpo
 - Proteção contra spam e ataques DDoS
 - Teste executando múltiplas requisições rapidamente
 
-### Presets de Segurança
-- **dev/development**: Permissivo para desenvolvimento
-- **staging**: Balanceado para pré-produção
-- **production**: Máxima segurança
-- **security_test**: Agressivo para testes de penetração
+### Sistemas de Segurança
+- **ABISS**: Sistema de detecção de ameaças comportamentais
+- **NNIS**: Sistema imunológico de rede
+- **Middleware**: Configurações de segurança e rate limiting
 
 ### Autenticação Admin
 - Header `X-Admin-Api-Key` para endpoints administrativos
@@ -138,7 +134,7 @@ A collection do Postman foi completamente atualizada para incluir todos os endpo
 ## 📊 Status dos Endpoints
 
 ### ✅ Implementados e Testados
-- Health Check (`/health`, `/health/detailed`, `/health/ping`)
+- Health Check (`/health`, `/api/security/status`, `/api/metrics`)
 - Admin Overview (`/v1/admin/overview`)
 - Criptografia (`/api/crypto/encrypt`)
 - Sistema Principal (`/`, `/docs`, `/redoc`, `/openapi.json`)

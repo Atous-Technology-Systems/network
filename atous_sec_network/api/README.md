@@ -6,8 +6,8 @@ API REST para o sistema ATous Secure Network com Federated Learning.
 
 ### ✅ Health Check Endpoint
 - **GET /health** - Verificação de saúde dos sistemas
-- **GET /health/detailed** - Informações detalhadas do sistema
-- **GET /health/ping** - Endpoint simples de ping
+- **GET /api/security/status** - Status dos sistemas de segurança ABISS e NNIS
+- **GET /api/metrics** - Métricas detalhadas do sistema
 
 ### 📊 Métricas Incluídas
 - Tempo de resposta (ms)
@@ -37,10 +37,8 @@ uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000
 ### Health & Info
 - `GET /` — informações básicas da API
 - `GET /health` — saúde geral e métricas
-- `GET /ready` — prontidão básica
 - `GET /api/info` — informações detalhadas da API
-- `GET /api/v1/status` — status geral dos sistemas
-- `GET /api/v1/security/status` — status dos sistemas de segurança
+- `GET /api/security/status` — status dos sistemas de segurança
 - `GET /api/metrics` — métricas do sistema
 
 ### Admin (MVP)
@@ -72,10 +70,9 @@ uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000
 - `POST /encrypt`
 
 ### WebSockets
-- `WS /ws`
-- `WS /api/ws`
-- `WS /websocket`
-- `WS /ws/test_node`
+- `WS /ws` — WebSocket principal
+- `WS /api/ws` — WebSocket da API
+- `WS /websocket` — WebSocket genérico
 
 ### Documentação
 - **Swagger UI**: `http://localhost:8000/docs`
