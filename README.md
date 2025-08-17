@@ -2,7 +2,7 @@
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
-📋 [Project Status](docs/test_summary_report.md) | 📦 [Requirements](requirements.txt) | 📄 [License](LICENSE) | 🧪 [Testing Guide](tests/TESTING_APPROACH.md) | 🔌 [API Contracts](docs/api-contracts.md) | 📊 [Security Reports](docs/test_summary_report.md)
+ [Project Status](docs/test_summary_report.md) |  [Requirements](requirements.txt) |  [License](LICENSE) |  [Testing Guide](tests/TESTING_APPROACH.md) |  [API Contracts](docs/api-contracts.md) |  [Security Reports](docs/test_summary_report.md)
 
 ##  **Status Atual do Sistema**
 
@@ -373,13 +373,13 @@ python -m pytest --cov=atous_sec_network --cov-report=html
 
 | Modo | Comando | Servidor Web | Descrição | Uso Recomendado |
 |------|---------|--------------|-----------|-----------------|
-| **🧪 Teste de Importação** | `python start_app.py --lite` | ❌ Não | Testa apenas importações e sai | Verificação rápida, CI/CD |
-| **🎯 Demonstração** | `python start_app.py --full` | ❌ Não | Inicializa sistemas e mostra status | Verificação de funcionalidade |
-| **🌐 Servidor Web** | `python start_server.py` | ✅ Sim | Inicia FastAPI com todos os endpoints | Desenvolvimento e produção |
-| **🔧 Debug** | `python start_app.py --debug` | ❌ Não | Verifica problemas de importação | Troubleshooting |
-| **🧪 Testes** | `python start_app.py --test` | ❌ Não | Executa suite de testes | Validação de código |
+| ** Teste de Importação** | `python start_app.py --lite` |  Não | Testa apenas importações e sai | Verificação rápida, CI/CD |
+| ** Demonstração** | `python start_app.py --full` |  Não | Inicializa sistemas e mostra status | Verificação de funcionalidade |
+| ** Servidor Web** | `python start_server.py` |  Sim | Inicia FastAPI com todos os endpoints | Desenvolvimento e produção |
+| ** Debug** | `python start_app.py --debug` |  Não | Verifica problemas de importação | Troubleshooting |
+| ** Testes** | `python start_app.py --test` |  Não | Executa suite de testes | Validação de código |
 
-**⚠️ IMPORTANTE:** Para acessar a API web, WebSockets, endpoints de criptografia e sistemas de segurança, você DEVE usar o **Modo Servidor Web**.
+** IMPORTANTE:** Para acessar a API web, WebSockets, endpoints de criptografia e sistemas de segurança, você DEVE usar o **Modo Servidor Web**.
 
 #### **6. Fluxo de Desenvolvimento Recomendado**
 
