@@ -329,7 +329,7 @@ python start_server.py
 python start_server.py --host 0.0.0.0 --port 8000 --reload
 ```
 
-**📡 Após iniciar o servidor, acesse:**
+** Após iniciar o servidor, acesse:**
 - **API Principal:** http://localhost:8000
 - **Documentação:** http://localhost:8000/docs
 - **Health Check:** http://localhost:8000/health
