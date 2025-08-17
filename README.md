@@ -2,11 +2,7 @@
 
 **Uma plataforma de cibersegurança e comunicação autônoma, inteligente e resiliente para o ecossistema de IoT e redes distribuídas.**
 
- [Project Status](docs/test_summary_report.md) |  [Requirements](requirements.txt) |  [License](LICENSE) |  [Testing Guide](tests/TESTING_APPROACH.md) |  [API Contracts](docs/api-contracts.md) |  [Security Reports](docs/test_summary_report.md)
-
-##  **Status Atual do Sistema*
-
--  **Testes abrangentes aprovados** — veja `docs/test_summary_report.md`
+-  **Testes abrangentes** — veja `docs/test_summary_report.md`
 -  **API Web FastAPI** operacional na porta 8000
 -  **Health checks** funcionais para todos os subsistemas
 -  **Documentação Swagger** disponível em `/docs`
@@ -41,7 +37,7 @@ Este projeto não é apenas uma solução de segurança; é uma base para constr
 
 ### **Potencial de Mercado**
 
-O Atous Secure Network é ideal para setores críticos que demandam alta segurança, resiliência e inteligência:
+A Matrix é ideal para setores críticos que demandam alta segurança, resiliência e inteligência:
 
   - **Indústria 4.0**: Redes de sensores e atuadores em chão de fábrica.
   - **Cidades Inteligentes**: Infraestrutura urbana conectada (iluminação, tráfego, sensores ambientais).
