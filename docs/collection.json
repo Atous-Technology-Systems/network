@@ -137,29 +137,29 @@
           }
         },
         {
-          "name": "Health Check Detalhado",
+          "name": "Status de Segurança",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/health/detailed",
+              "raw": "{{base_url}}/api/security/status",
               "host": ["{{base_url}}"],
-              "path": ["health", "detailed"]
+              "path": ["api", "security", "status"]
             },
-            "description": "Health check com informações detalhadas do sistema"
+            "description": "Status dos sistemas de segurança ABISS e NNIS"
           }
         },
         {
-          "name": "Ping",
+          "name": "Métricas do Sistema",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/health/ping",
+              "raw": "{{base_url}}/api/metrics",
               "host": ["{{base_url}}"],
-              "path": ["health", "ping"]
+              "path": ["api", "metrics"]
             },
-            "description": "Endpoint simples de ping para verificar conectividade"
+            "description": "Métricas detalhadas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
           }
         }
       ]
@@ -187,7 +187,7 @@
           }
         },
         {
-          "name": "Status dos Sistemas",
+          "name": "Eventos do Sistema",
           "request": {
             "method": "GET",
             "header": [
@@ -198,49 +198,52 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/admin/systems",
+              "raw": "{{base_url}}/v1/admin/events",
               "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "systems"]
+              "path": ["v1", "admin", "events"]
             },
-            "description": "Status detalhado de todos os sistemas (ABISS, NNIS, Model Manager, LoRa, P2P)"
+            "description": "Lista os últimos eventos do sistema (requer autenticação admin)"
           }
         },
         {
-          "name": "Configurações do Sistema",
+          "name": "Registrar Evento Admin",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "X-Admin-Api-Key",
                 "value": "{{admin_api_key}}",
                 "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
               }
             ],
-            "url": {
-              "raw": "{{base_url}}/v1/admin/config",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "config"]
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"system_check\",\n  \"payload\": {\n    \"component\": \"admin_panel\",\n    \"action\": \"status_check\",\n    \"timestamp\": \"{{timestamp}}\"\n  }\n}"
             },
-            "description": "Configurações atuais do sistema incluindo presets de segurança"
+            "url": {
+              "raw": "{{base_url}}/v1/admin/events",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "events"]
+            },
+            "description": "Registra um novo evento administrativo no sistema"
           }
         },
         {
-          "name": "Logs do Sistema",
+          "name": "Status de Segurança",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "X-Admin-Api-Key",
-                "value": "{{admin_api_key}}",
-                "type": "text"
-              }
-            ],
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/admin/logs",
+              "raw": "{{base_url}}/api/security/status",
               "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "logs"]
+              "path": ["api", "security", "status"]
             },
-            "description": "Logs recentes do sistema para monitoramento e debug"
+            "description": "Status dos sistemas de segurança ABISS e NNIS"
           }
         }
       ]
@@ -249,16 +252,23 @@
       "name": "🌐 Discovery",
       "item": [
         {
-          "name": "Listar Nós Conhecidos",
+          "name": "Buscar Serviços por Nome",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/discovery/nodes",
+              "raw": "{{base_url}}/v1/discovery/services?name=abiss",
               "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "nodes"]
+              "path": ["v1", "discovery", "services"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "abiss",
+                  "description": "Nome do serviço a buscar"
+                }
+              ]
             },
-            "description": "Lista todos os nós conhecidos na rede P2P"
+            "description": "Busca agentes que fornecem um serviço específico"
           }
         },
         {
@@ -274,7 +284,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"node_id\": \"node_001\",\n  \"address\": \"192.168.1.100:8000\",\n  \"capabilities\": [\"abiss\", \"nnis\", \"lora\"],\n  \"last_seen\": \"{{timestamp}}\"\n}"
+              "raw": "{\n  \"agent_id\": \"node_001\",\n  \"services\": [\n    {\"name\": \"abiss\"},\n    {\"name\": \"nnis\"},\n    {\"name\": \"lora\"}\n  ],\n  \"addresses\": {\n    \"local\": [\"192.168.1.100:8000\"],\n    \"lan\": [\"192.168.1.100:8000\"],\n    \"wan\": []\n  },\n  \"ttl\": 60\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/discovery/register",
@@ -285,22 +295,41 @@
           }
         },
         {
-          "name": "Buscar Nós por Capacidade",
+          "name": "Resolver Endereços",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/discovery/search?capability=abiss",
+              "raw": "{{base_url}}/v1/discovery/resolve?name=abiss&pref=local,lan,wan",
               "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "search"],
+              "path": ["v1", "discovery", "resolve"],
               "query": [
                 {
-                  "key": "capability",
-                  "value": "abiss"
+                  "key": "name",
+                  "value": "abiss",
+                  "description": "Nome do serviço a resolver"
+                },
+                {
+                  "key": "pref",
+                  "value": "local,lan,wan",
+                  "description": "Preferência de escopo (local,lan,wan)"
                 }
               ]
             },
-            "description": "Busca nós que possuem uma capacidade específica"
+            "description": "Resolve endereços de um serviço específico com preferência de escopo"
+          }
+        },
+        {
+          "name": "Detalhes do Agente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/agents/node_001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "agents", "node_001"]
+            },
+            "description": "Obtém detalhes completos de um agente específico"
           }
         }
       ]
@@ -309,16 +338,26 @@
       "name": "📡 Relay",
       "item": [
         {
-          "name": "Status do Relay",
+          "name": "Heartbeat do Agente",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/v1/relay/status",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "status"]
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"node_001\"\n}"
             },
-            "description": "Status do sistema de retransmissão de mensagens"
+            "url": {
+              "raw": "{{base_url}}/v1/relay/heartbeat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "heartbeat"]
+            },
+            "description": "Registra heartbeat de um agente no sistema de relay"
           }
         },
         {
@@ -334,7 +373,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"target_node\": \"node_002\",\n  \"message\": \"Hello from node_001\",\n  \"priority\": \"normal\",\n  \"timestamp\": \"{{timestamp}}\"\n}"
+              "raw": "{\n  \"from\": \"node_001\",\n  \"to\": \"node_002\",\n  \"payload\": {\n    \"message\": \"Hello from node_001\",\n    \"priority\": \"normal\",\n    \"timestamp\": \"{{timestamp}}\"\n  }\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/relay/send",
@@ -345,16 +384,23 @@
           }
         },
         {
-          "name": "Mensagens Pendentes",
+          "name": "Consultar Mensagens",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/relay/pending",
+              "raw": "{{base_url}}/v1/relay/poll?agent_id=node_001",
               "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "pending"]
+              "path": ["v1", "relay", "poll"],
+              "query": [
+                {
+                  "key": "agent_id",
+                  "value": "node_001",
+                  "description": "ID do agente para consultar mensagens"
+                }
+              ]
             },
-            "description": "Lista mensagens pendentes no sistema de relay"
+            "description": "Consulta mensagens pendentes para um agente específico"
           }
         }
       ]
@@ -363,33 +409,7 @@
       "name": "🤖 Agents",
       "item": [
         {
-          "name": "Listar Agentes",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/v1/agents/list",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "agents", "list"]
-            },
-            "description": "Lista todos os agentes ativos no sistema"
-          }
-        },
-        {
-          "name": "Status do Agente",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/v1/agents/status/agent_001",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "agents", "status", "agent_001"]
-            },
-            "description": "Status detalhado de um agente específico"
-          }
-        },
-        {
-          "name": "Executar Comando no Agente",
+          "name": "Enrolar Agente",
           "request": {
             "method": "POST",
             "header": [
@@ -401,14 +421,37 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"agent_id\": \"agent_001\",\n  \"command\": \"status_check\",\n  \"parameters\": {\"check_type\": \"full\"},\n  \"timestamp\": \"{{timestamp}}\"\n}"
+              "raw": "{\n  \"device_info\": {\n    \"model\": \"agent_001\",\n    \"platform\": \"linux\",\n    \"location\": \"datacenter-1\"\n  },\n  \"attestation\": null,\n  \"csr_pem\": \"-----BEGIN CERTIFICATE REQUEST-----\\nMIICvDCCAaQCAQAwdzELMAkGA1UEBhMCVVMxDTALBgNVBAgMBFV0YWgxDzANBgNV\\nBAcMBlByb3ZvMQ8wDQYDVQQKDAZCeVVEaXQxDzANBgNVBAsMBlNlY3VyaXR5MQ0w\\nCwYDVQQDDARUZXN0MSAwHgYJKoZIhvcNAQkBFhF0ZXN0QGV4YW1wbGUuY29tMIIB\\nIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END CERTIFICATE REQUEST-----\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/v1/agents/execute",
+              "raw": "{{base_url}}/v1/agents/enroll",
               "host": ["{{base_url}}"],
-              "path": ["v1", "agents", "execute"]
+              "path": ["v1", "agents", "enroll"]
             },
-            "description": "Executa um comando em um agente específico"
+            "description": "Registra um novo agente no sistema"
+          }
+        },
+        {
+          "name": "Heartbeat do Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version\": \"1.0.0\",\n  \"services\": [\"abiss\", \"nnis\", \"lora\"],\n  \"metrics\": {\n    \"cpu_usage\": 45.2,\n    \"memory_usage\": 67.8,\n    \"network_latency\": 12.5\n  },\n  \"risk_score\": 0.15\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/agents/agent_001/heartbeat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "agent_001", "heartbeat"]
+            },
+            "description": "Envia heartbeat de um agente específico"
           }
         }
       ]
@@ -417,121 +460,67 @@
       "name": "📋 Policies",
       "item": [
         {
-          "name": "Listar Políticas",
+          "name": "Políticas Ativas",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/policies/list",
+              "raw": "{{base_url}}/v1/policies/active?agent_id=agent_001",
               "host": ["{{base_url}}"],
-              "path": ["v1", "policies", "list"]
+              "path": ["v1", "policies", "active"],
+              "query": [
+                {
+                  "key": "agent_id",
+                  "value": "agent_001",
+                  "description": "ID do agente para consultar políticas"
+                }
+              ]
             },
-            "description": "Lista todas as políticas de segurança ativas"
-          }
-        },
-        {
-          "name": "Criar Nova Política",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"strict_security\",\n  \"description\": \"Política de segurança rigorosa\",\n  \"rules\": [\n    {\"type\": \"rate_limit\", \"value\": 10},\n    {\"type\": \"block_suspicious\", \"value\": true}\n  ],\n  \"enabled\": true\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/policies/create",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "policies", "create"]
-            },
-            "description": "Cria uma nova política de segurança"
-          }
-        },
-        {
-          "name": "Aplicar Política",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"policy_id\": \"policy_001\",\n  \"target\": \"global\",\n  \"timestamp\": \"{{timestamp}}\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/policies/apply",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "policies", "apply"]
-            },
-            "description": "Aplica uma política específica ao sistema"
+            "description": "Lista as políticas de segurança atualmente ativas para um agente específico"
           }
         }
       ]
     },
     {
-      "name": "🔒 Presets de Segurança",
+      "name": "🔒 Segurança Avançada",
       "item": [
         {
-          "name": "Listar Presets Disponíveis",
+          "name": "Status NNIS",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/security/presets",
+              "raw": "{{base_url}}/api/v1/security/nnis/status",
               "host": ["{{base_url}}"],
-              "path": ["v1", "security", "presets"]
+              "path": ["api", "v1", "security", "nnis", "status"]
             },
-            "description": "Lista todos os presets de segurança disponíveis (dev, staging, production, security_test)"
+            "description": "Status do sistema de segurança NNIS"
           }
         },
         {
-          "name": "Aplicar Preset de Segurança",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              },
-              {
-                "key": "X-Admin-Api-Key",
-                "value": "{{admin_api_key}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"preset_name\": \"production\",\n  \"reason\": \"Ativação de segurança para produção\",\n  \"timestamp\": \"{{timestamp}}\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/security/presets/apply",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "security", "presets", "apply"]
-            },
-            "description": "Aplica um preset de segurança específico ao sistema"
-          }
-        },
-        {
-          "name": "Configuração Atual de Segurança",
+          "name": "Relatório de Segurança",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/security/presets/current",
+              "raw": "{{base_url}}/api/v1/security/security-report",
               "host": ["{{base_url}}"],
-              "path": ["v1", "security", "presets", "current"]
+              "path": ["api", "v1", "security", "security-report"]
             },
-            "description": "Mostra a configuração de segurança atualmente ativa"
+            "description": "Relatório detalhado de segurança do sistema"
+          }
+        },
+        {
+          "name": "Inteligência de Ameaças",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/security/threat-intelligence",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "security", "threat-intelligence"]
+            },
+            "description": "Informações sobre ameaças detectadas"
           }
         }
       ]
@@ -710,22 +699,12 @@
         {
           "name": "Teste de Rate Limiting",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"test\": \"rate_limit\",\n  \"timestamp\": \"{{timestamp}}\",\n  \"request_id\": \"{{$randomUUID}}\"\n}"
-            },
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/security/middleware/test",
+              "raw": "{{base_url}}/health",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "middleware", "test"]
+              "path": ["health"]
             },
             "description": "Execute múltiplas vezes rapidamente para testar rate limiting. O sistema deve bloquear requisições excessivas com status 429."
           }
@@ -746,9 +725,9 @@
               "raw": "{\n  \"large_data\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\",\n  \"repeated_field\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"test_type\": \"large_payload\",\n  \"timestamp\": \"{{timestamp}}\",\n  \"request_id\": \"{{$randomUUID}}\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/security/middleware/test",
+              "raw": "{{base_url}}/v1/admin/events",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "middleware", "test"]
+              "path": ["v1", "admin", "events"]
             },
             "description": "Testa o sistema com payload grande para verificar limites de tamanho e proteção contra DDoS"
           }

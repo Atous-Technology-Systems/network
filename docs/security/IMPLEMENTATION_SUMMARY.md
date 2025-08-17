@@ -55,6 +55,11 @@ This document summarizes the implementation of enhanced security features for th
 - Security header enforcement
 - Excluded path management
 
+#### Current Status
+- **ABISS System**: Active but blocking endpoints de segurança com score máximo
+- **NNIS System**: Active and operational
+- **Middleware**: Comprehensive security with rate limiting and DDoS protection
+
 ### 3. Automated Health Checking
 
 #### CI Health Check Script

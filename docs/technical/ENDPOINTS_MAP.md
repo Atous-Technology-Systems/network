@@ -68,11 +68,8 @@ Observações:
 
 - GET `/` – Informações básicas da API
 - GET `/health` – Saúde geral e métricas rápidas (retorna 200 ou 503)
-- GET `/ready` – Prontidão básica
 - GET `/api/info` – Metadados da API (nome, versão, recursos)
-- GET `/api/v1/status` – Status consolidado dos sistemas (ABISS/NNIS etc.)
-- GET `/api/v1/security/status` – Status de segurança (v1)
-- GET `/api/security/status` – Status de segurança (compat)
+- GET `/api/security/status` – Status de segurança (ABISS/NNIS)
 - GET `/api/metrics` – Métricas de processo/API/segurança
 
 Exemplos:
@@ -185,9 +182,9 @@ curl -s "http://127.0.0.1:8000/v1/policies/active?agent_id=agt-1"
 
 ## Criptografia
 
-- POST `/api/crypto/encrypt`
-- POST `/api/security/encrypt`
-- POST `/encrypt`
+- POST `/api/crypto/encrypt` - Criptografia principal
+- POST `/api/security/encrypt` - Criptografia de segurança
+- POST `/encrypt` - Interface simplificada
 
 Exemplo:
 ```bash
@@ -197,12 +194,21 @@ curl -s -H 'Content-Type: application/json' -d '{"message":"Hello","algorithm":"
 
 ---
 
+## Segurança Avançada
+
+- GET `/api/v1/security/nnis/status` - Status do sistema NNIS
+- GET `/api/v1/security/security-report` - Relatório de segurança
+- GET `/api/v1/security/threat-intelligence` - Inteligência de ameaças
+
+**Nota**: Endpoints de segurança podem ser bloqueados pelo sistema ABISS com score de ameaça alto.
+
+---
+
 ## WebSocket
 
 - WS `/ws` – Canal principal
 - WS `/api/ws` – Canal da API
 - WS `/websocket` – Canal genérico
-- WS `/ws/test_node` – Canal de teste
 
 Exemplo Python (websockets):
 ```python

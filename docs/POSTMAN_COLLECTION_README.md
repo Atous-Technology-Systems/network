@@ -55,29 +55,27 @@ A collection usa as seguintes variáveis que devem ser configuradas:
 - **Logs**: Logs recentes para monitoramento
 
 ### 🌐 Discovery
-- **Listar Nós**: Lista todos os nós conhecidos na rede P2P
 - **Registrar Nó**: Registra um novo nó na rede
-- **Buscar por Capacidade**: Busca nós com capacidades específicas
+- **Buscar Serviços**: Busca serviços por nome específico
+- **Resolver Endereços**: Resolve endereços com preferências
+- **Detalhes do Agente**: Obtém informações de um agente específico
 
 ### 📡 Relay
-- **Status**: Status do sistema de retransmissão
+- **Heartbeat**: Registra presença do agente
 - **Enviar Mensagem**: Envia mensagens através do relay
-- **Mensagens Pendentes**: Lista mensagens pendentes
+- **Consultar Mensagens**: Busca mensagens para um agente específico
 
 ### 🤖 Agents
-- **Listar Agentes**: Lista todos os agentes ativos
-- **Status do Agente**: Status detalhado de um agente específico
-- **Executar Comando**: Executa comandos em agentes
+- **Registrar Agente**: Registra novo agente com certificado
+- **Heartbeat**: Envia status e métricas do agente
 
 ### 📋 Policies
-- **Listar Políticas**: Lista políticas de segurança ativas
-- **Criar Política**: Cria nova política de segurança
-- **Aplicar Política**: Aplica política ao sistema
+- **Políticas Ativas**: Consulta políticas ativas para um agente específico
 
-### 🔒 Presets de Segurança
-- **Listar Presets**: Lista presets disponíveis (dev, staging, production, security_test)
-- **Aplicar Preset**: Aplica preset específico ao sistema
-- **Configuração Atual**: Mostra configuração atualmente ativa
+### 🔒 Segurança Avançada
+- **Status NNIS**: Status do sistema imunológico de rede
+- **Relatório de Segurança**: Relatório detalhado de segurança
+- **Inteligência de Ameaças**: Informações sobre ameaças detectadas
 
 ### 🔐 Criptografia
 - **Criptografar via /api/crypto/encrypt**: Endpoint principal de criptografia
@@ -109,7 +107,7 @@ Execute primeiro o endpoint **"🔧 Teste de Conectividade"** em `📖 Documenta
 
 ### 3. Funcionalidades Admin
 - **Admin Overview**: `/v1/admin/overview` - Visão geral administrativa
-- **Status dos Sistemas**: `/v1/admin/systems` - Status detalhado
+- **Eventos do Sistema**: `/v1/admin/events` - Listar e registrar eventos
 
 ### 4. Funcionalidades Específicas
 Teste as funcionalidades conforme sua necessidade:
@@ -130,19 +128,19 @@ Teste as funcionalidades conforme sua necessidade:
 O sistema implementa rate limiting para proteger contra spam e ataques DDoS. Execute múltiplas requisições rapidamente para testar:
 
 ```bash
-# Execute o endpoint de teste múltiplas vezes
-curl -X POST http://127.0.0.1:8000/api/v1/security/middleware/test \
-  -H "Content-Type: application/json" \
-  -d '{"test": "rate_limit"}'
+# Execute qualquer endpoint múltiplas vezes rapidamente
+curl -X GET http://127.0.0.1:8000/health
+curl -X GET http://127.0.0.1:8000/health
+curl -X GET http://127.0.0.1:8000/health
+# O sistema deve retornar 429 Too Many Requests
 ```
 
-### Presets de Segurança
-O sistema suporta diferentes níveis de segurança:
+### Sistemas de Segurança
+O sistema implementa múltiplas camadas de segurança:
 
-- **dev/development**: Permissivo para desenvolvimento
-- **staging**: Balanceado para pré-produção
-- **production**: Máxima segurança
-- **security_test**: Agressivo para testes de penetração
+- **ABISS**: Sistema de detecção de ameaças comportamentais
+- **NNIS**: Sistema imunológico de rede
+- **Middleware**: Configurações de segurança e rate limiting
 
 ### Autenticação Admin
 Endpoints administrativos requerem o header `X-Admin-Api-Key`:
@@ -225,8 +223,8 @@ Para verificar o status geral do sistema:
 # Health check básico
 curl http://127.0.0.1:8000/health
 
-# Health check detalhado
-curl http://127.0.0.1:8000/health/detailed
+# Status de segurança
+curl http://127.0.0.1:8000/api/security/status
 
 # Informações da API
 curl http://127.0.0.1:8000/api/info
