@@ -425,7 +425,6 @@ python start_server.py
 python test_complete_functionality.py
 ```
 
-Você deverá ver confirmação de que **TODOS OS SISTEMAS ESTÃO OPERACIONAIS** incluindo:
 -  API REST endpoints
 -  WebSocket connections  
 -  Sistemas de segurança ABISS/NNIS
@@ -457,26 +456,32 @@ Após o seed, a página `/admin` mostrará 1 agente em discovery/relay e eventos
 
 No Windows PowerShell (use `$env:` para variáveis de ambiente):
 
-```powershell
 # 1) Inicie o servidor com auth de admin simples
+
+```powershell
 $env:ALLOWED_HOSTS='localhost,127.0.0.1'; `
 $env:CORS_ALLOWED_ORIGINS='http://localhost'; `
 $env:ADMIN_ENABLED='true'; `
 $env:ADMIN_AUTH_ENABLED='true'; `
 $env:ADMIN_API_KEY='dev-admin'; `
 python -m uvicorn atous_sec_network.api.server:app --host 127.0.0.1 --port 8000
+```
 
 # 2) Em outro terminal, popule dados de demo
+```bash
 python scripts/seed_admin_demo.py --base-url http://127.0.0.1:8000 `
   --agent-id agt-demo --service-name api-service --port 8000
+```
 
 # 3) Verifique endpoints (use curl.exe no Windows)
+
 curl.exe -sS http://127.0.0.1:8000/health
 curl.exe -sS -H "X-Admin-Api-Key: dev-admin" http://127.0.0.1:8000/v1/admin/overview
 curl.exe -sS "http://127.0.0.1:8000/v1/discovery/services?name=api-service"
 curl.exe -sS "http://127.0.0.1:8000/v1/discovery/resolve?name=api-service&pref=local,lan,wan"
 
 # 4) Teste Relay (PowerShell tem cotações estritas; use Python inline)
+```powershell
 python -c "import requests; base='http://127.0.0.1:8000'; print('send:', requests.post(base+'/v1/relay/send', json={'from':'agt-demo','to':'agt-demo','payload':{'msg':'hello'}}).status_code); print('poll:', requests.get(base+'/v1/relay/poll', params={'agent_id':'agt-demo'}).json())"
 ```
 
