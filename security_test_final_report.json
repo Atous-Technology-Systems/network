@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-08-17T18:53:53.655978",
+  "server_status": {
+    "available": true,
+    "status_code": 429,
+    "response_time_ms": 2058.5330000000004
+  },
+  "security_tests": {
+    "security_headers": {
+      "status": "FAIL",
+      "headers": {
+        "x-content-type-options": null,
+        "x-frame-options": null,
+        "x-xss-protection": null,
+        "strict-transport-security": null,
+        "content-security-policy": null
+      }
+    },
+    "encryption__api_crypto_encrypt": {
+      "status": "FAIL",
+      "status_code": 429
+    },
+    "encryption__api_security_encrypt": {
+      "status": "FAIL",
+      "status_code": 429
+    },
+    "encryption__encrypt": {
+      "status": "FAIL",
+      "status_code": 429
+    }
+  },
+  "performance_tests": {
+    "rate_limiting": {
+      "total_requests": 20,
+      "successful_requests": 0,
+      "blocked_requests": 20,
+      "rate_limiting_active": true
+    },
+    "system_metrics": {
+      "status": "UNAVAILABLE",
+      "status_code": 429
+    }
+  },
+  "vulnerability_tests": {
+    "sql_injection": {
+      "status": "UNKNOWN_429",
+      "status_code": 429,
+      "payload": "' OR '1'='1"
+    },
+    "xss": {
+      "status": "UNKNOWN_429",
+      "status_code": 429,
+      "payload": "<script>alert('XSS')</script>"
+    },
+    "path_traversal": {
+      "status": "UNKNOWN_429",
+      "status_code": 429,
+      "payload": "../../../etc/passwd"
+    },
+    "command_injection": {
+      "status": "UNKNOWN_429",
+      "status_code": 429,
+      "payload": "; cat /etc/passwd"
+    }
+  },
+  "summary": {
+    "total_tests": 10,
+    "passed_tests": 1,
+    "success_rate": 10.0,
+    "server_available": true
+  }
+}

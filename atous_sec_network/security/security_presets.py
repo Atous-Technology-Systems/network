@@ -13,28 +13,30 @@ from .config import RateLimitConfig, SecurityPreset
 # Development preset - More permissive for testing
 DEV_PRESET = SecurityPreset(
     name="development",
-    description="Development environment - permissive for testing and debugging",
+    description="Development environment - very permissive for testing and debugging",
     rate_limit_config=RateLimitConfig(
-        requests_per_minute=120,      # 2 req/sec
-        requests_per_hour=5000,       # ~1.4 req/sec average
-        burst_limit=20,               # Allow bursts
-        block_duration_minutes=5      # Short blocks
+        requests_per_minute=10000,    # Muito mais permissivo
+        requests_per_hour=100000,     # Muito mais permissivo
+        burst_limit=1000,             # Bursts muito maiores
+        block_duration_minutes=1      # Bloqueios muito curtos
     ),
-    max_connections_per_ip=100,       # Higher for testing
-    connection_timeout_seconds=2,
+    max_connections_per_ip=1000,      # Muito mais permissivo
+    connection_timeout_seconds=5,     # Mais tempo para conexões
     enable_input_validation=True,
     strict_validation=False,          # Allow some suspicious patterns
     block_suspicious_patterns=False,  # Don't block immediately
-    max_request_size_mb=10,          # 10MB for file uploads
-    max_query_params=50,
-    max_header_size=8192,            # 8KB headers
-    auto_block_malicious_threshold=10,  # Higher threshold
-    auto_block_suspicious_threshold=20, # Higher threshold
+    max_request_size_mb=50,          # 50MB para uploads grandes
+    max_query_params=100,            # Mais parâmetros
+    max_header_size=16384,           # 16KB headers
+    auto_block_malicious_threshold=50,   # Threshold muito alto
+    auto_block_suspicious_threshold=100, # Threshold muito alto
     block_duration_hours=1,
     excluded_paths=[
         "/health", "/docs", "/redoc", "/openapi.json", "/",
         "/api/crypto/encrypt", "/api/security/encrypt", "/encrypt",
-        "/api/info", "/api/security/status", "/api/metrics"
+        "/api/info", "/api/security/status", "/api/metrics",
+        "/api/auth/*", "/api/admin/*", "/api/agents/*", "/api/discovery/*",
+        "/api/policies/*", "/api/relay/*", "/api/security/*"
     ],
     strict_security_headers=False,    # Less strict for dev
     enable_csp=False,                 # Disable CSP in dev

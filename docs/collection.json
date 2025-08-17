@@ -1,42 +1,63 @@
 {
   "info": {
-    "name": "ATous Secure Network API Collection",
-    "description": "Collection completa para testar todas as funcionalidades do sistema ATous Secure Network via endpoints REST e WebSockets. Esta collection inclui todos os endpoints disponíveis na aplicação, com exemplos de payloads, testes automatizados e documentação detalhada.",
-    "version": "4.0.0",
+    "name": "ATous Secure Network - API Completa",
+    "description": "Collection completa para testar TODOS os endpoints, WebSockets e funcionalidades do backend ATous Secure Network",
+    "version": "2.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "base_url",
       "value": "http://127.0.0.1:8000",
-      "type": "string",
-      "description": "URL base do servidor ATous Secure Network"
+      "type": "string"
     },
     {
-      "key": "admin_api_key",
-      "value": "dev-admin",
-      "type": "string",
-      "description": "Chave de API para autenticação admin"
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
     },
     {
-      "key": "jwt_token",
-      "value": "your-jwt-token-here",
-      "type": "string",
-      "description": "Token JWT para autenticação Bearer (quando implementado)"
-    },
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
     {
-      "key": "timestamp",
-      "value": "{{$timestamp}}",
-      "type": "string",
-      "description": "Timestamp dinâmico para requisições"
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// Auto-save tokens after login/refresh",
+          "if (pm.response.code === 200 || pm.response.code === 201) {",
+          "    const response = pm.response.json();",
+          "    if (response.access_token) {",
+          "        pm.collectionVariables.set('auth_token', response.access_token);",
+          "    }",
+          "    if (response.refresh_token) {",
+          "        pm.collectionVariables.set('refresh_token', response.refresh_token);",
+          "    }",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
     }
   ],
   "item": [
     {
-      "name": "📖 Documentação e Instruções",
+      "name": "🏠 **ROOT & INFO**",
       "item": [
         {
-          "name": "📋 Como Usar Esta Collection",
+          "name": "Root Endpoint",
           "request": {
             "method": "GET",
             "header": [],
@@ -45,38 +66,20 @@
               "host": ["{{base_url}}"],
               "path": [""]
             },
-            "description": "## 🚀 Como Usar Esta Collection\n\n### 📋 Pré-requisitos\n1. **Servidor ATous**: Certifique-se de que o servidor esteja rodando em `http://127.0.0.1:8000`\n2. **Postman**: Versão 8.0 ou superior\n3. **Variáveis**: Configure as variáveis de ambiente se necessário\n\n### 🔧 Configuração Inicial\n1. **Importe a collection** no Postman\n2. **Configure as variáveis**:\n   - `base_url`: URL do servidor (padrão: http://127.0.0.1:8000)\n   - `admin_api_key`: Chave de API admin (padrão: dev-admin)\n3. **Execute o teste de conectividade** primeiro\n\n### 📊 Estrutura da Collection\n- **🏠 Sistema Principal**: Endpoints básicos e documentação\n- **🏥 Health Check**: Verificação de saúde dos sistemas\n- **🔐 Admin**: Interface administrativa (MVP)\n- **🌐 Discovery**: Sistema de descoberta de nós\n- **📡 Relay**: Sistema de retransmissão\n- **🤖 Agents**: Gerenciamento de agentes\n- **📋 Policies**: Gerenciamento de políticas\n- **🔒 Presets de Segurança**: Configurações de segurança\n- **🔐 Criptografia**: Endpoints de criptografia\n- **🌐 WebSocket**: Comunicação em tempo real\n- **🧪 Testes de Carga**: Performance e stress tests\n\n### 🎯 Ordem Recomendada de Testes\n1. **Conectividade**: `/health`\n2. **Status Geral**: `/api/info`\n3. **Admin**: `/v1/admin/overview`\n4. **Funcionalidades Específicas**: Conforme necessário\n\n### 🔍 Interpretando Respostas\n- **200**: Sucesso\n- **400**: Erro de requisição\n- **401**: Não autorizado\n- **403**: Bloqueado por segurança\n- **429**: Rate limit atingido\n- **500**: Erro interno do servidor\n- **503**: Serviço indisponível\n\n### 🛡️ Recursos de Segurança\n- **Rate Limiting**: Proteção contra spam\n- **Input Validation**: Validação de entrada\n- **DDoS Protection**: Proteção contra ataques\n- **Presets de Segurança**: Configurações adaptáveis\n\n### 📝 Logs e Debug\nTodos os requests incluem logs automáticos no console do Postman para facilitar o debug."
+            "description": "Endpoint raiz com informações básicas da API"
           }
         },
         {
-          "name": "🔧 Teste de Conectividade",
+          "name": "API Info",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/health",
+              "raw": "{{base_url}}/api/info",
               "host": ["{{base_url}}"],
-              "path": ["health"]
+              "path": ["api", "info"]
             },
-            "description": "**🎯 Execute este teste primeiro!**\n\nTeste básico de conectividade para verificar se o servidor está respondendo. Deve retornar status de saúde dos sistemas.\n\n**Resposta esperada:**\n```json\n{\n  \"status\": \"healthy\",\n  \"systems\": {\n    \"abiss\": {\"status\": \"healthy\"},\n    \"nnis\": {\"status\": \"healthy\"}\n  }\n}\n```\n\n**Troubleshooting:**\n- Se falhar, verifique se o servidor está rodando\n- Confirme a URL base nas variáveis\n- Verifique firewall/proxy"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🏠 Sistema Principal",
-      "item": [
-        {
-          "name": "Root - Informações da API",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/",
-              "host": ["{{base_url}}"],
-              "path": [""]
-            },
-            "description": "Endpoint raiz com informações básicas da API e lista de endpoints disponíveis"
+            "description": "Informações detalhadas da API, features e endpoints"
           }
         },
         {
@@ -106,7 +109,7 @@
           }
         },
         {
-          "name": "OpenAPI Schema",
+          "name": "Schema OpenAPI",
           "request": {
             "method": "GET",
             "header": [],
@@ -121,10 +124,10 @@
       ]
     },
     {
-      "name": "🏥 Health Check",
+      "name": "💚 **HEALTH & MONITORING**",
       "item": [
         {
-          "name": "Health Check Principal",
+          "name": "Health Check Básico",
           "request": {
             "method": "GET",
             "header": [],
@@ -133,7 +136,20 @@
               "host": ["{{base_url}}"],
               "path": ["health"]
             },
-            "description": "Verificação de saúde dos sistemas com métricas detalhadas incluindo ABISS, NNIS e Model Manager"
+            "description": "Verificação de saúde de todos os sistemas"
+          }
+        },
+        {
+          "name": "Health Check Detalhado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/detailed",
+              "host": ["{{base_url}}"],
+              "path": ["health", "detailed"]
+            },
+            "description": "Verificação detalhada de saúde com métricas completas"
           }
         },
         {
@@ -159,451 +175,498 @@
               "host": ["{{base_url}}"],
               "path": ["api", "metrics"]
             },
-            "description": "Métricas detalhadas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
+            "description": "Métricas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
           }
         }
       ]
     },
     {
-      "name": "🔐 Admin (MVP)",
+      "name": "🔐 **AUTENTICAÇÃO & USUÁRIOS**",
       "item": [
         {
-          "name": "Visão Geral do Sistema",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "X-Admin-Api-Key",
-                "value": "{{admin_api_key}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/v1/admin/overview",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "overview"]
-            },
-            "description": "Visão geral do sistema administrativo com status dos componentes principais"
-          }
-        },
-        {
-          "name": "Eventos do Sistema",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "X-Admin-Api-Key",
-                "value": "{{admin_api_key}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/v1/admin/events",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "events"]
-            },
-            "description": "Lista os últimos eventos do sistema (requer autenticação admin)"
-          }
-        },
-        {
-          "name": "Registrar Evento Admin",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Admin-Api-Key",
-                "value": "{{admin_api_key}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type\": \"system_check\",\n  \"payload\": {\n    \"component\": \"admin_panel\",\n    \"action\": \"status_check\",\n    \"timestamp\": \"{{timestamp}}\"\n  }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/admin/events",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "admin", "events"]
-            },
-            "description": "Registra um novo evento administrativo no sistema"
-          }
-        },
-        {
-          "name": "Status de Segurança",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/security/status",
-              "host": ["{{base_url}}"],
-              "path": ["api", "security", "status"]
-            },
-            "description": "Status dos sistemas de segurança ABISS e NNIS"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🌐 Discovery",
-      "item": [
-        {
-          "name": "Buscar Serviços por Nome",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/v1/discovery/services?name=abiss",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "services"],
-              "query": [
-                {
-                  "key": "name",
-                  "value": "abiss",
-                  "description": "Nome do serviço a buscar"
-                }
-              ]
-            },
-            "description": "Busca agentes que fornecem um serviço específico"
-          }
-        },
-        {
-          "name": "Registrar Novo Nó",
+          "name": "Registrar Usuário",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"agent_id\": \"node_001\",\n  \"services\": [\n    {\"name\": \"abiss\"},\n    {\"name\": \"nnis\"},\n    {\"name\": \"lora\"}\n  ],\n  \"addresses\": {\n    \"local\": [\"192.168.1.100:8000\"],\n    \"lan\": [\"192.168.1.100:8000\"],\n    \"wan\": []\n  },\n  \"ttl\": 60\n}"
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"roles\": [\"OPERATOR\"]\n}"
             },
             "url": {
-              "raw": "{{base_url}}/v1/discovery/register",
+              "raw": "{{base_url}}/auth/register",
               "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "register"]
+              "path": ["auth", "register"]
             },
-            "description": "Registra um novo nó na rede de descoberta"
+            "description": "Registrar novo usuário no sistema"
           }
         },
         {
-          "name": "Resolver Endereços",
+          "name": "Login de Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"TestPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Autenticar usuário e gerar tokens de acesso"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Renovar access token usando refresh token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Fazer logout do usuário e invalidar tokens"
+          }
+        },
+        {
+          "name": "Alterar Senha",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"TestPassword123!\",\n  \"new_password\": \"NewPassword456!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "change-password"]
+            },
+            "description": "Alterar senha do usuário autenticado"
+          }
+        },
+        {
+          "name": "Perfil do Usuário",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/discovery/resolve?name=abiss&pref=local,lan,wan",
+              "raw": "{{base_url}}/auth/profile",
               "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "resolve"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Obter perfil completo do usuário autenticado"
+          }
+        },
+        {
+          "name": "Atualizar Perfil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Atualizar perfil do usuário autenticado"
+          }
+        },
+        {
+          "name": "Sessões do Usuário",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/sessions",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "sessions"]
+            },
+            "description": "Obter sessões ativas do usuário autenticado"
+          }
+        },
+        {
+          "name": "Usuário Atual",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Obter informações do usuário atualmente autenticado"
+          }
+        },
+        {
+          "name": "Listar Usuários (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/users?page=1&per_page=10",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "users"],
               "query": [
                 {
-                  "key": "name",
-                  "value": "abiss",
-                  "description": "Nome do serviço a resolver"
+                  "key": "page",
+                  "value": "1"
                 },
                 {
-                  "key": "pref",
-                  "value": "local,lan,wan",
-                  "description": "Preferência de escopo (local,lan,wan)"
+                  "key": "per_page",
+                  "value": "10"
                 }
               ]
             },
-            "description": "Resolve endereços de um serviço específico com preferência de escopo"
+            "description": "Listar usuários do sistema (apenas para administradores)"
           }
         },
         {
-          "name": "Detalhes do Agente",
+          "name": "Estatísticas de Segurança (Admin)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/discovery/agents/node_001",
+              "raw": "{{base_url}}/auth/security/stats",
               "host": ["{{base_url}}"],
-              "path": ["v1", "discovery", "agents", "node_001"]
+              "path": ["auth", "security", "stats"]
             },
-            "description": "Obtém detalhes completos de um agente específico"
-          }
-        }
-      ]
-    },
-    {
-      "name": "📡 Relay",
-      "item": [
-        {
-          "name": "Heartbeat do Agente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"agent_id\": \"node_001\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/relay/heartbeat",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "heartbeat"]
-            },
-            "description": "Registra heartbeat de um agente no sistema de relay"
+            "description": "Obter estatísticas de segurança do sistema"
           }
         },
         {
-          "name": "Enviar Mensagem via Relay",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"from\": \"node_001\",\n  \"to\": \"node_002\",\n  \"payload\": {\n    \"message\": \"Hello from node_001\",\n    \"priority\": \"normal\",\n    \"timestamp\": \"{{timestamp}}\"\n  }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/relay/send",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "send"]
-            },
-            "description": "Envia uma mensagem através do sistema de relay"
-          }
-        },
-        {
-          "name": "Consultar Mensagens",
+          "name": "Logs de Acesso (Admin)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/relay/poll?agent_id=node_001",
+              "raw": "{{base_url}}/auth/security/logs?page=1&per_page=50",
               "host": ["{{base_url}}"],
-              "path": ["v1", "relay", "poll"],
+              "path": ["auth", "security", "logs"],
               "query": [
                 {
-                  "key": "agent_id",
-                  "value": "node_001",
-                  "description": "ID do agente para consultar mensagens"
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "50"
                 }
               ]
             },
-            "description": "Consulta mensagens pendentes para um agente específico"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🤖 Agents",
-      "item": [
-        {
-          "name": "Enrolar Agente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"device_info\": {\n    \"model\": \"agent_001\",\n    \"platform\": \"linux\",\n    \"location\": \"datacenter-1\"\n  },\n  \"attestation\": null,\n  \"csr_pem\": \"-----BEGIN CERTIFICATE REQUEST-----\\nMIICvDCCAaQCAQAwdzELMAkGA1UEBhMCVVMxDTALBgNVBAgMBFV0YWgxDzANBgNV\\nBAcMBlByb3ZvMQ8wDQYDVQQKDAZCeVVEaXQxDzANBgNVBAsMBlNlY3VyaXR5MQ0w\\nCwYDVQQDDARUZXN0MSAwHgYJKoZIhvcNAQkBFhF0ZXN0QGV4YW1wbGUuY29tMIIB\\nIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END CERTIFICATE REQUEST-----\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/agents/enroll",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "agents", "enroll"]
-            },
-            "description": "Registra um novo agente no sistema"
+            "description": "Obter logs de acesso e auditoria do sistema"
           }
         },
         {
-          "name": "Heartbeat do Agente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"version\": \"1.0.0\",\n  \"services\": [\"abiss\", \"nnis\", \"lora\"],\n  \"metrics\": {\n    \"cpu_usage\": 45.2,\n    \"memory_usage\": 67.8,\n    \"network_latency\": 12.5\n  },\n  \"risk_score\": 0.15\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/v1/agents/agent_001/heartbeat",
-              "host": ["{{base_url}}"],
-              "path": ["v1", "agents", "agent_001", "heartbeat"]
-            },
-            "description": "Envia heartbeat de um agente específico"
-          }
-        }
-      ]
-    },
-    {
-      "name": "📋 Policies",
-      "item": [
-        {
-          "name": "Políticas Ativas",
+          "name": "Estatísticas de Tokens (Admin)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/v1/policies/active?agent_id=agent_001",
+              "raw": "{{base_url}}/auth/tokens/stats",
               "host": ["{{base_url}}"],
-              "path": ["v1", "policies", "active"],
-              "query": [
-                {
-                  "key": "agent_id",
-                  "value": "agent_001",
-                  "description": "ID do agente para consultar políticas"
-                }
-              ]
+              "path": ["auth", "tokens", "stats"]
             },
-            "description": "Lista as políticas de segurança atualmente ativas para um agente específico"
+            "description": "Obter estatísticas de refresh tokens e sessões"
+          }
+        },
+        {
+          "name": "Limpeza de Manutenção (Super Admin)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/maintenance/cleanup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "maintenance", "cleanup"]
+            },
+            "description": "Limpar dados expirados e realizar manutenção do sistema"
           }
         }
       ]
     },
     {
-      "name": "🔒 Segurança Avançada",
+      "name": "🛡️ **SEGURANÇA & CRIPTOGRAFIA**",
       "item": [
+        {
+          "name": "Status ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "abiss", "status"]
+            },
+            "description": "Obter status e saúde do sistema ABISS"
+          }
+        },
+        {
+          "name": "Configuração ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/config",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "abiss", "config"]
+            },
+            "description": "Obter configuração atual do sistema ABISS"
+          }
+        },
+        {
+          "name": "Estatísticas ABISS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/abiss/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "abiss", "stats"]
+            },
+            "description": "Obter estatísticas e métricas do sistema ABISS"
+          }
+        },
         {
           "name": "Status NNIS",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/security/nnis/status",
+              "raw": "{{base_url}}/api/security/nnis/status",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "nnis", "status"]
+              "path": ["api", "security", "nnis", "status"]
             },
-            "description": "Status do sistema de segurança NNIS"
+            "description": "Obter status e saúde do sistema NNIS"
           }
         },
         {
-          "name": "Relatório de Segurança",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/v1/security/security-report",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "security-report"]
-            },
-            "description": "Relatório detalhado de segurança do sistema"
-          }
-        },
-        {
-          "name": "Inteligência de Ameaças",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/v1/security/threat-intelligence",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "security", "threat-intelligence"]
-            },
-            "description": "Informações sobre ameaças detectadas"
-          }
-        }
-      ]
-    },
-    {
-      "name": "📊 API Info e Métricas",
-      "item": [
-        {
-          "name": "Informações da API",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/info",
-              "host": ["{{base_url}}"],
-              "path": ["api", "info"]
-            },
-            "description": "Informações detalhadas da API, recursos disponíveis e endpoints"
-          }
-        },
-        {
-          "name": "Status de Segurança da API",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/security/status",
-              "host": ["{{base_url}}"],
-              "path": ["api", "security", "status"]
-            },
-            "description": "Status dos sistemas de segurança com informações detalhadas"
-          }
-        },
-        {
-          "name": "Métricas do Sistema",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/metrics",
-              "host": ["{{base_url}}"],
-              "path": ["api", "metrics"]
-            },
-            "description": "Métricas detalhadas do sistema incluindo uso de CPU, memória e estatísticas de segurança"
-          }
-        }
-      ]
-    },
-    {
-      "name": "🔐 Criptografia",
-      "item": [
-        {
-          "name": "Criptografar via /api/crypto/encrypt",
+          "name": "Detectar Antígenos NNIS",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"message\": \"Dados confidenciais para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"crypto-key-001\"\n}"
+              "raw": "{\n  \"network_traffic\": {\n    \"connections\": 150,\n    \"packets_per_second\": 1000,\n    \"suspicious_patterns\": [\"unusual_port_scan\", \"data_exfiltration\"]\n  },\n  \"timestamp\": \"2025-08-17T20:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/nnis/detect-antigens",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "nnis", "detect-antigens"]
+            },
+            "description": "Detectar antígenos de ameaças usando o sistema NNIS"
+          }
+        },
+        {
+          "name": "Gerar Resposta Imune NNIS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"ddos_attack\",\n  \"severity\": \"high\",\n  \"context\": {\n    \"source_ip\": \"192.168.1.100\",\n    \"attack_pattern\": \"syn_flood\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/nnis/generate-response",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "nnis", "generate-response"]
+            },
+            "description": "Gerar resposta imune para ameaça detectada"
+          }
+        },
+        {
+          "name": "Bloquear IP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ip_address\": \"192.168.1.100\",\n  \"reason\": \"DDoS attack detected\",\n  \"duration_minutes\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/middleware/block-ip",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "middleware", "block-ip"]
+            },
+            "description": "Bloquear IP específico via middleware de segurança"
+          }
+        },
+        {
+          "name": "Desbloquear IP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ip_address\": \"192.168.1.100\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/middleware/unblock-ip",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "middleware", "unblock-ip"]
+            },
+            "description": "Desbloquear IP previamente bloqueado"
+          }
+        },
+        {
+          "name": "Validar Input",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input_data\": \"<script>alert('xss')</script>\",\n  \"input_type\": \"html_content\",\n  \"validation_rules\": [\"no_xss\", \"no_sql_injection\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/security/validate-input",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "validate-input"]
+            },
+            "description": "Validar input usando sistema de validação de segurança"
+          }
+        },
+        {
+          "name": "Configuração de Segurança Atual",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/config/current",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "config", "current"]
+            },
+            "description": "Obter configuração atual de segurança para desenvolvimento"
+          }
+        },
+        {
+          "name": "Teste Simples de Segurança",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/security/test/simple",
+              "host": ["{{base_url}}"],
+              "path": ["api", "security", "test", "simple"]
+            },
+            "description": "Endpoint de teste básico para verificar comportamento do middleware de segurança"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 **CRIPTOGRAFIA**",
+      "item": [
+        {
+          "name": "Criptografar Dados",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Dados sensíveis para criptografar\",\n  \"algorithm\": \"AES-256\",\n  \"key_id\": \"user-key-001\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/crypto/encrypt",
               "host": ["{{base_url}}"],
               "path": ["api", "crypto", "encrypt"]
             },
-            "description": "Endpoint de criptografia via /api/crypto/encrypt - Criptografa dados usando algoritmos seguros"
+            "description": "Criptografar dados usando endpoint de criptografia principal"
           }
         },
         {
-          "name": "Criptografar via /api/security/encrypt",
+          "name": "Criptografar Dados (Segurança)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
@@ -615,18 +678,17 @@
               "host": ["{{base_url}}"],
               "path": ["api", "security", "encrypt"]
             },
-            "description": "Endpoint de criptografia via /api/security/encrypt - Criptografia focada em segurança"
+            "description": "Criptografar dados usando endpoint de segurança"
           }
         },
         {
-          "name": "Criptografar via /encrypt",
+          "name": "Criptografar Dados (Simples)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
@@ -638,292 +700,406 @@
               "host": ["{{base_url}}"],
               "path": ["encrypt"]
             },
-            "description": "Endpoint de criptografia simples via /encrypt - Interface simplificada"
+            "description": "Criptografar dados usando endpoint simples"
           }
         }
       ]
     },
     {
-      "name": "🌐 WebSocket Endpoints",
+      "name": "🔌 **WEBSOCKETS**",
       "item": [
         {
-          "name": "WebSocket Principal (/ws)",
+          "name": "WebSocket Principal",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "ws://127.0.0.1:8000/ws",
-              "protocol": "ws",
-              "host": ["127.0.0.1"],
-              "port": "8000",
+              "raw": "{{base_url}}/ws",
+              "host": ["{{base_url}}"],
               "path": ["ws"]
             },
-            "description": "Endpoint WebSocket principal para comunicação em tempo real. Aceita mensagens JSON e texto simples, retornando echo das mensagens recebidas."
+            "description": "WebSocket principal para comunicação geral e testes"
           }
         },
         {
-          "name": "WebSocket API (/api/ws)",
+          "name": "WebSocket da API",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "ws://127.0.0.1:8000/api/ws",
-              "protocol": "ws",
-              "host": ["127.0.0.1"],
-              "port": "8000",
+              "raw": "{{base_url}}/api/ws",
+              "host": ["{{base_url}}"],
               "path": ["api", "ws"]
             },
-            "description": "Endpoint WebSocket da API para comunicação estruturada. Ideal para integrações que precisam de comunicação bidirecional."
+            "description": "WebSocket da API para operações específicas"
           }
         },
         {
-          "name": "WebSocket Genérico (/websocket)",
+          "name": "WebSocket Genérico",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "ws://127.0.0.1:8000/websocket",
-              "protocol": "ws",
-              "host": ["127.0.0.1"],
-              "port": "8000",
+              "raw": "{{base_url}}/websocket",
+              "host": ["{{base_url}}"],
               "path": ["websocket"]
             },
-            "description": "Endpoint WebSocket genérico para compatibilidade com diferentes clientes WebSocket."
+            "description": "WebSocket genérico para operações básicas"
+          }
+        },
+        {
+          "name": "WebSocket Teste de Nó",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ws/test_node",
+              "host": ["{{base_url}}"],
+              "path": ["ws", "test_node"]
+            },
+            "description": "WebSocket para testes de conectividade de nós"
           }
         }
       ]
     },
     {
-      "name": "🧪 Testes de Carga e Performance",
+      "name": "📊 **MONITORAMENTO WEBSOCKET**",
       "item": [
         {
-          "name": "Teste de Rate Limiting",
+          "name": "Status dos WebSockets",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/health",
+              "raw": "{{base_url}}/api/websocket/status",
               "host": ["{{base_url}}"],
-              "path": ["health"]
+              "path": ["api", "websocket", "status"]
             },
-            "description": "Execute múltiplas vezes rapidamente para testar rate limiting. O sistema deve bloquear requisições excessivas com status 429."
+            "description": "Obter status atual de todos os WebSockets ativos"
           }
         },
         {
-          "name": "Teste de Payload Grande",
+          "name": "Configuração dos WebSockets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/websocket/config",
+              "host": ["{{base_url}}"],
+              "path": ["api", "websocket", "config"]
+            },
+            "description": "Obter configurações atuais dos WebSockets"
+          }
+        },
+        {
+          "name": "Endpoints WebSocket Disponíveis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/websocket/endpoints",
+              "host": ["{{base_url}}"],
+              "path": ["api", "websocket", "endpoints"]
+            },
+            "description": "Lista todos os endpoints WebSocket disponíveis"
+          }
+        },
+        {
+          "name": "Health Check dos WebSockets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/websocket/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "websocket", "health"]
+            },
+            "description": "Verificação de saúde dos WebSockets"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏢 **ADMINISTRAÇÃO**",
+      "item": [
+        {
+          "name": "Visão Geral do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/overview",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "overview"]
+            },
+            "description": "Obter visão geral do sistema administrativo"
+          }
+        },
+        {
+          "name": "Eventos Administrativos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/admin/events?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "admin", "events"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Obter eventos administrativos do sistema"
+          }
+        },
+        {
+          "name": "Criar Evento Administrativo",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"large_data\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\",\n  \"repeated_field\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"test_type\": \"large_payload\",\n  \"timestamp\": \"{{timestamp}}\",\n  \"request_id\": \"{{$randomUUID}}\"\n}"
+              "raw": "{\n  \"type\": \"system_maintenance\",\n  \"payload\": {\n    \"action\": \"backup_completed\",\n    \"timestamp\": \"2025-08-17T20:00:00Z\"\n  }\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/admin/events",
               "host": ["{{base_url}}"],
               "path": ["v1", "admin", "events"]
             },
-            "description": "Testa o sistema com payload grande para verificar limites de tamanho e proteção contra DDoS"
+            "description": "Criar novo evento administrativo"
           }
         }
       ]
     },
     {
-      "name": "🔧 Utilitários e Debug",
+      "name": "🔍 **DESCOBERTA DE SERVIÇOS**",
       "item": [
         {
-          "name": "Verificar Tempo de Resposta",
+          "name": "Registrar Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"agent-001\",\n  \"services\": [\n    {\n      \"name\": \"data_processing\",\n      \"version\": \"1.0.0\",\n      \"capabilities\": [\"ml_inference\", \"data_aggregation\"]\n    }\n  ],\n  \"addresses\": {\n    \"local\": [\"127.0.0.1:8080\"],\n    \"lan\": [\"192.168.1.100:8080\"],\n    \"wan\": [\"203.0.113.1:8080\"]\n  },\n  \"ttl\": 300\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/register",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "register"]
+            },
+            "description": "Registrar agente no sistema de descoberta"
+          }
+        },
+        {
+          "name": "Buscar Serviços",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/metrics",
+              "raw": "{{base_url}}/v1/discovery/services?name=data_processing",
               "host": ["{{base_url}}"],
-              "path": ["api", "metrics"]
+              "path": ["v1", "discovery", "services"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "data_processing"
+                }
+              ]
             },
-            "description": "Verifica métricas de performance e tempo de resposta do sistema"
+            "description": "Buscar serviços por nome"
           }
         },
         {
-          "name": "Teste de Headers Customizados",
+          "name": "Resolver Serviço",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "X-Test-Header",
-                "value": "PostmanTest",
-                "type": "text"
-              },
-              {
-                "key": "X-Request-ID",
-                "value": "{{$randomUUID}}",
-                "type": "text"
-              },
-              {
-                "key": "User-Agent",
-                "value": "ATous-Test-Client/1.0",
-                "type": "text"
-              }
-            ],
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/",
+              "raw": "{{base_url}}/v1/discovery/resolve?name=data_processing&pref=local,lan,wan",
               "host": ["{{base_url}}"],
-              "path": [""]
+              "path": ["v1", "discovery", "resolve"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "data_processing"
+                },
+                {
+                  "key": "pref",
+                  "value": "local,lan,wan"
+                }
+              ]
             },
-            "description": "Testa como o sistema processa headers customizados"
+            "description": "Resolver serviço com preferências de rede"
+          }
+        },
+        {
+          "name": "Obter Agente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/discovery/agents/agent-001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "discovery", "agents", "agent-001"]
+            },
+            "description": "Obter informações de agente específico"
           }
         }
       ]
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{jwt_token}}",
-        "type": "string"
-      }
-    ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Script para executar antes de cada requisição",
-          "console.log('🚀 Executando requisição para:', pm.request.url.toString());",
-          "",
-          "// Adicionar timestamp dinâmico",
-          "pm.globals.set('timestamp', new Date().toISOString());",
-          "",
-          "// Adicionar ID único para cada requisição",
-          "pm.globals.set('requestId', pm.variables.replaceIn('{{$randomUUID}}'));",
-          "",
-          "// Log de informações da requisição",
-          "console.log('📅 Timestamp:', pm.globals.get('timestamp'));",
-          "console.log('🆔 Request ID:', pm.globals.get('requestId'));",
-          "",
-          "// Verificar se é um endpoint de segurança",
-          "const url = pm.request.url.toString();",
-          "if (url.includes('/security/') || url.includes('/admin/')) {",
-          "    console.log('🛡️ Endpoint de segurança/admin detectado');",
-          "}",
-          "",
-          "// Verificar se é um WebSocket",
-          "if (url.startsWith('ws://') || url.startsWith('wss://')) {",
-          "    console.log('🌐 Conexão WebSocket detectada');",
-          "}"
-        ]
-      }
     },
     {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Testes automáticos para todas as requisições",
-          "pm.test('✅ Status code não é 500 (erro interno)', function () {",
-          "    pm.expect(pm.response.code).to.not.equal(500);",
-          "});",
-          "",
-          "pm.test('⚡ Tempo de resposta menor que 5 segundos', function () {",
-          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
-          "});",
-          "",
-          "pm.test('📄 Resposta tem Content-Type válido', function () {",
-          "    const contentType = pm.response.headers.get('Content-Type');",
-          "    if (contentType) {",
-          "        pm.expect(contentType).to.match(/application\\/json|text\\/html|text\\/plain/);",
-          "    }",
-          "});",
-          "",
-          "// Teste específico para endpoints JSON",
-          "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
-          "    pm.test('🔍 Resposta JSON tem timestamp', function () {",
-          "        try {",
-          "            const jsonData = pm.response.json();",
-          "            if (jsonData.timestamp) {",
-          "                pm.expect(jsonData.timestamp).to.be.a('string');",
-          "                pm.expect(jsonData.timestamp).to.match(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
-          "            }",
-          "        } catch (e) {",
-          "            console.log('⚠️ Não foi possível parsear JSON ou timestamp não encontrado');",
-          "        }",
-          "    });",
-          "",
-          "    pm.test('🔍 Resposta JSON tem estrutura válida', function () {",
-          "        try {",
-          "            const jsonData = pm.response.json();",
-          "            pm.expect(jsonData).to.be.an('object');",
-          "        } catch (e) {",
-          "            console.log('⚠️ Resposta não é um JSON válido');",
-          "        }",
-          "    });",
-          "}",
-          "",
-          "// Teste para endpoints de admin",
-          "const url = pm.request.url.toString();",
-          "if (url.includes('/admin/')) {",
-          "    pm.test('🔐 Endpoint admin respondeu adequadamente', function () {",
-          "        pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 401, 403, 429]);",
-          "    });",
-          "}",
-          "",
-          "// Teste para rate limiting",
-          "if (pm.response.code === 429) {",
-          "    pm.test('⏱️ Rate limiting ativo - resposta adequada', function () {",
-          "        pm.expect(pm.response.code).to.equal(429);",
-          "        console.log('🚫 Rate limit atingido - sistema funcionando corretamente');",
-          "    });",
-          "}",
-          "",
-          "// Teste para bloqueios de segurança",
-          "if (pm.response.code === 403) {",
-          "    pm.test('🚫 Bloqueio de segurança - resposta adequada', function () {",
-          "        pm.expect(pm.response.code).to.equal(403);",
-          "        console.log('🛡️ Requisição bloqueada por segurança - sistema funcionando');",
-          "    });",
-          "}",
-          "",
-          "// Log detalhado da resposta para debug",
-          "console.log('📊 Status da resposta:', pm.response.status);",
-          "console.log('⏱️ Tempo de resposta:', pm.response.responseTime + 'ms');",
-          "console.log('📏 Tamanho da resposta:', pm.response.responseSize + ' bytes');",
-          "",
-          "// Log de headers importantes",
-          "const importantHeaders = ['Content-Type', 'Content-Length', 'X-RateLimit-Remaining', 'X-Request-ID'];",
-          "importantHeaders.forEach(header => {",
-          "    const value = pm.response.headers.get(header);",
-          "    if (value) {",
-          "        console.log(`📋 ${header}:`, value);",
-          "    }",
-          "});",
-          "",
-          "// Salvar métricas para relatório",
-          "if (!pm.globals.get('testMetrics')) {",
-          "    pm.globals.set('testMetrics', JSON.stringify([]));",
-          "}",
-          "",
-          "const metrics = JSON.parse(pm.globals.get('testMetrics'));",
-          "metrics.push({",
-          "    url: pm.request.url.toString(),",
-          "    method: pm.request.method,",
-          "    status: pm.response.code,",
-          "    responseTime: pm.response.responseTime,",
-          "    timestamp: new Date().toISOString()",
-          "});",
-          "",
-          "pm.globals.set('testMetrics', JSON.stringify(metrics));"
-        ]
-      }
+      "name": "📡 **RELAY & COMUNICAÇÃO**",
+      "item": [
+        {
+          "name": "Heartbeat do Relay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"agent-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/relay/heartbeat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "heartbeat"]
+            },
+            "description": "Enviar heartbeat para manter agente ativo no relay"
+          }
+        },
+        {
+          "name": "Enviar Mensagem via Relay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"agent-001\",\n  \"to\": \"agent-002\",\n  \"payload\": {\n    \"type\": \"data_request\",\n    \"data\": {\"query\": \"get_metrics\"}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/relay/send",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "send"]
+            },
+            "description": "Enviar mensagem entre agentes via relay"
+          }
+        },
+        {
+          "name": "Poll de Mensagens",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/relay/poll?agent_id=agent-001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "relay", "poll"],
+              "query": [
+                {
+                  "key": "agent_id",
+                  "value": "agent-001"
+                }
+              ]
+            },
+            "description": "Verificar mensagens pendentes para agente específico"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 **AGENTES**",
+      "item": [
+        {
+          "name": "Enrolar Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_info\": {\n    \"hostname\": \"agent-host-001\",\n    \"os\": \"linux\",\n    \"version\": \"1.0.0\"\n  },\n  \"attestation\": {\n    \"measurement\": \"sha256:abc123...\",\n    \"quote\": \"base64:xyz789...\"\n  },\n  \"csr_pem\": \"-----BEGIN CERTIFICATE REQUEST-----\\n...\\n-----END CERTIFICATE REQUEST-----\\n\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/agents/enroll",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "enroll"]
+            },
+            "description": "Enrolar novo agente no sistema"
+          }
+        },
+        {
+          "name": "Heartbeat do Agente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version\": \"1.0.0\",\n  \"services\": [\"data_processing\", \"ml_inference\"],\n  \"metrics\": {\n    \"cpu_usage\": 45.2,\n    \"memory_usage\": 67.8,\n    \"active_connections\": 12\n  },\n  \"risk_score\": 0.15\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/agents/agent-001/heartbeat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "agents", "agent-001", "heartbeat"]
+            },
+            "description": "Enviar heartbeat com métricas e status do agente"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 **POLÍTICAS**",
+      "item": [
+        {
+          "name": "Política Ativa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/policies/active?agent_id=agent-001",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "policies", "active"],
+              "query": [
+                {
+                  "key": "agent_id",
+                  "value": "agent-001"
+                }
+              ]
+            },
+            "description": "Obter política ativa para agente específico"
+          }
+        }
+      ]
     }
   ]
 }

@@ -18,6 +18,19 @@ logger = logging.getLogger(__name__)
 
 @router.get("/v1/admin/overview")
 async def admin_overview():
+    """
+    Obter visão geral do sistema administrativo
+    
+    Endpoint que fornece uma visão consolidada do estado do sistema,
+    incluindo agentes de descoberta ativos, status do relay,
+    políticas configuradas e métricas do servidor em tempo real.
+    
+    Returns:
+        dict: Visão geral completa do sistema com métricas e status
+        
+    Raises:
+        HTTPException: Se erro interno ao obter dados do sistema
+    """
     # discovery snapshot
     discovery_agents = list(DISCOVERY.by_agent.values())
     # relay snapshot
@@ -102,11 +115,44 @@ async def require_admin_api_key(x_admin_api_key: str | None = Header(default=Non
 
 @router.get("/v1/admin/events", dependencies=[Depends(require_admin_api_key)])
 async def get_events(limit: int = Query(100, ge=1, le=500)):
+    """
+    Obter eventos administrativos do sistema
+    
+    Endpoint que retorna eventos administrativos recentes do sistema,
+    incluindo ações de usuários, mudanças de configuração e eventos
+    de segurança. Requer autenticação via API key administrativa.
+    
+    Args:
+        limit: Número máximo de eventos a retornar (1-500, padrão: 100)
+        
+    Returns:
+        dict: Lista de eventos administrativos com limite especificado
+        
+    Raises:
+        HTTPException: Se não autorizado ou erro interno
+    """
     return {"events": _EVENTS[-limit:]}
 
 
 @router.post("/v1/admin/events", dependencies=[Depends(require_admin_api_key)])
 async def post_event(evt: AdminEvent):
+    """
+    Postar evento administrativo no sistema
+    
+    Endpoint que permite registrar eventos administrativos no sistema,
+    incluindo ações de usuários, mudanças de configuração e eventos
+    de auditoria. Requer autenticação via API key administrativa.
+    Campos sensíveis são automaticamente redatados.
+    
+    Args:
+        evt: Evento administrativo a ser registrado
+        
+    Returns:
+        dict: Confirmação de registro do evento
+        
+    Raises:
+        HTTPException: Se não autorizado, payload inválido ou evento muito grande
+    """
     # Basic input limits and sanitization for production safety
     max_bytes = int(os.environ.get("MAX_ADMIN_EVENT_BYTES", "8192"))
     try:
