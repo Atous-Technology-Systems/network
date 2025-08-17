@@ -311,14 +311,13 @@ python -m atous_sec_network
 ```
 
 #### Ou usando uvicorn diretamente
-bash```
+```bash
 python -m uvicorn atous_sec_network.api.server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 *Este comando inicializa todos os sistemas, mostra o status e sai. Ideal para verificar se tudo está funcionando.*
 
 ##### ** Modo Servidor Web (Production Mode)**
-
 
 #### Inicia o servidor web FastAPI com todos os endpoints
 ```bash
@@ -352,13 +351,15 @@ Para garantir que tudo está funcionando corretamente:
 python start_app.py --test
 ```
 
-# Testes específicos
+#### Testes específicos
 ```bash
 python -m pytest tests/unit/ -v
 ```
+
 ```bash
 python -m pytest tests/integration/ -v 
 ```
+
 ```bash
 python -m pytest tests/security/ -v
 ```
@@ -411,13 +412,14 @@ python start_server.py --reload
 ```bash
 curl http://localhost:8000/health
 ```
+
 ```bash
 curl http://localhost:8000/api/security/status
 ```
 
 #### **7. Verificação de Funcionalidade Completa**
-
 Para testar todas as funcionalidades do sistema:
+
 #### 1. Inicie o servidor
 ```bash
 python start_server.py
