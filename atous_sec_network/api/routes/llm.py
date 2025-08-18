@@ -118,11 +118,15 @@ async def query_llm(request: LLMQueryRequest):
     try:
         start_time = datetime.now(UTC)
         
-        # Verificar se o modelo está carregado
-        if not llm_service.is_loaded:
+        # Verificar se o modelo está pronto
+        if not llm_service.is_model_ready():
             raise HTTPException(
                 status_code=503,
-                detail="Modelo LLM não está carregado. Aguarde o carregamento."
+                detail={
+                    "error": "Modelo LLM não está pronto",
+                    "status": llm_service.get_model_status(),
+                    "message": "Aguarde o carregamento ou verifique o status do modelo"
+                }
             )
         
         # Obter contexto do sistema se solicitado
@@ -168,11 +172,15 @@ async def start_fine_tuning(request: FineTuningRequest):
     que otimiza os thresholds e parâmetros do sistema ABISS/NNIS.
     """
     try:
-        # Verificar se o modelo está carregado
-        if not llm_service.is_loaded:
+        # Verificar se o modelo está pronto
+        if not llm_service.is_model_ready():
             raise HTTPException(
                 status_code=503,
-                detail="Modelo LLM não está carregado. Aguarde o carregamento."
+                detail={
+                    "error": "Modelo LLM não está pronto",
+                    "status": llm_service.get_model_status(),
+                    "message": "Aguarde o carregamento ou verifique o status do modelo"
+                }
             )
         
         # Verificar se já está em treinamento
@@ -337,6 +345,28 @@ async def get_system_context():
         raise HTTPException(
             status_code=500,
             detail=f"Erro interno ao obter contexto: {str(e)}"
+        )
+
+@router.get("/model-status")
+async def get_model_status():
+    """
+    Obtém status detalhado do modelo LLM
+    
+    Retorna informações sobre:
+    - Status de carregamento (ready/degraded/unavailable)
+    - Modo fallback
+    - Detalhes do modelo
+    - Mensagens de status
+    """
+    try:
+        status = llm_service.get_model_status()
+        return JSONResponse(content=status)
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter status do modelo: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro interno ao obter status do modelo: {str(e)}"
         )
 
 # WebSocket endpoint para LLM

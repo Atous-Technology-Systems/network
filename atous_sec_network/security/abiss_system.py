@@ -302,6 +302,147 @@ class ABISSSystem:
         if TRANSFORMERS_AVAILABLE:
             self._initialize_model()
     
+    def get_security_status(self) -> Dict[str, Any]:
+        """
+        Retorna status detalhado de segurança do sistema ABISS
+        
+        Returns:
+            Dicionário com status de segurança
+        """
+        try:
+            # Calcular score de segurança baseado em métricas
+            threat_score = self._calculate_threat_score()
+            protection_score = self._calculate_protection_score()
+            overall_score = (threat_score + protection_score) / 2
+            
+            # Determinar nível de ameaça
+            if overall_score >= 0.8:
+                threat_level = "low"
+            elif overall_score >= 0.6:
+                threat_level = "medium"
+            elif overall_score >= 0.4:
+                threat_level = "high"
+            else:
+                threat_level = "critical"
+            
+            # Determinar status do sistema
+            if self.model is not None and self.tokenizer is not None:
+                system_status = "operational"
+            else:
+                system_status = "degraded"
+            
+            return {
+                "system_status": system_status,
+                "threat_level": threat_level,
+                "active_protections": self._get_active_protections(),
+                "last_scan": time.time(),
+                "security_score": round(overall_score, 3),
+                "threat_score": round(threat_score, 3),
+                "protection_score": round(protection_score, 3),
+                "model_status": "active" if self.model is not None else "inactive",
+                "total_threats_detected": len(self.threat_patterns),
+                "last_threat_detection": self._get_last_threat_time()
+            }
+            
+        except Exception as e:
+            logger.error(f"Erro ao obter status de segurança: {e}")
+            return {
+                "system_status": "error",
+                "threat_level": "unknown",
+                "active_protections": [],
+                "last_scan": time.time(),
+                "security_score": 0.0,
+                "error": str(e)
+            }
+    
+    def _calculate_threat_score(self) -> float:
+        """Calcula score de ameaça baseado em padrões detectados"""
+        try:
+            if not self.threat_patterns:
+                return 1.0  # Sem ameaças = score alto
+            
+            # Calcular score baseado na severidade e frequência das ameaças
+            total_severity = sum(pattern.severity for pattern in self.threat_patterns.values())
+            total_frequency = sum(pattern.frequency for pattern in self.threat_patterns.values())
+            
+            # Normalizar scores (0-1)
+            avg_severity = total_severity / len(self.threat_patterns)
+            avg_frequency = total_frequency / len(self.threat_patterns)
+            
+            # Score de ameaça (quanto menor, melhor)
+            threat_score = 1.0 - (avg_severity * 0.7 + avg_frequency * 0.3)
+            
+            return max(0.0, min(1.0, threat_score))
+            
+        except Exception as e:
+            logger.error(f"Erro ao calcular threat score: {e}")
+            return 0.5
+    
+    def _calculate_protection_score(self) -> float:
+        """Calcula score de proteção baseado em recursos ativos"""
+        try:
+            score = 0.0
+            
+            # Modelo ativo
+            if self.model is not None:
+                score += 0.4
+            
+            # Tokenizer ativo
+            if self.tokenizer is not None:
+                score += 0.2
+            
+            # Padrões de ameaça carregados
+            if self.threat_patterns:
+                score += 0.2
+            
+            # Sistema de logging
+            if logger:
+                score += 0.1
+            
+            # Sistema de monitoramento
+            if self._monitoring_active:
+                score += 0.1
+            
+            return min(1.0, score)
+            
+        except Exception as e:
+            logger.error(f"Erro ao calcular protection score: {e}")
+            return 0.0
+    
+    def _get_active_protections(self) -> List[str]:
+        """Retorna lista de proteções ativas"""
+        protections = []
+        
+        if self.model is not None:
+            protections.append("AI Threat Detection")
+        
+        if self.tokenizer is not None:
+            protections.append("Input Validation")
+        
+        if self.threat_patterns:
+            protections.append("Pattern Matching")
+        
+        if self._monitoring_active:
+            protections.append("Real-time Monitoring")
+        
+        if logger:
+            protections.append("Security Logging")
+        
+        return protections
+    
+    def _get_last_threat_time(self) -> float:
+        """Retorna timestamp da última ameaça detectada"""
+        try:
+            if not self.threat_patterns:
+                return 0.0
+            
+            latest_time = max(pattern.created_at for pattern in self.threat_patterns.values())
+            return latest_time
+            
+        except Exception as e:
+            logger.error(f"Erro ao obter último tempo de ameaça: {e}")
+            return 0.0
+    
     def _load_config_from_file(self) -> Dict[str, Any]:
         """Carrega configuração do arquivo security_presets.yaml"""
         try:
