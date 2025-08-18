@@ -33,7 +33,7 @@ class WebSocketTestSuite:
         try:
             # Conecta sem timeout para evitar o erro atual
             async with websockets.connect(uri) as websocket:
-                self.log(f"✅ Conectado com sucesso: {endpoint}")
+                self.log(f" Conectado com sucesso: {endpoint}")
                 
                 # Envia mensagem de teste
                 test_message = {
@@ -43,12 +43,12 @@ class WebSocketTestSuite:
                 }
                 
                 await websocket.send(json.dumps(test_message))
-                self.log(f"📤 Mensagem enviada: {test_message}")
+                self.log(f" Mensagem enviada: {test_message}")
                 
                 # Aguarda resposta com timeout manual
                 try:
                     response = await asyncio.wait_for(websocket.recv(), timeout=5.0)
-                    self.log(f"📥 Resposta recebida: {response[:100]}...")
+                    self.log(f" Resposta recebida: {response[:100]}...")
                     
                     self.results['endpoints_tested'].append({
                         'endpoint': endpoint,
@@ -72,7 +72,7 @@ class WebSocketTestSuite:
                     
         except Exception as e:
             error_msg = str(e)
-            self.log(f"❌ Erro conectando a {endpoint}: {error_msg}")
+            self.log(f" Erro conectando a {endpoint}: {error_msg}")
             self.results['endpoints_tested'].append({
                 'endpoint': endpoint,
                 'uri': uri,
@@ -88,7 +88,7 @@ class WebSocketTestSuite:
     
     async def run_websocket_tests(self):
         """Executa todos os testes de WebSocket"""
-        self.log("🔌 === INICIANDO TESTES DE WEBSOCKET ===\n")
+        self.log(" === INICIANDO TESTES DE WEBSOCKET ===\n")
         
         # Endpoints que devem estar disponíveis
         expected_endpoints = [
@@ -114,7 +114,7 @@ class WebSocketTestSuite:
             'timestamp': datetime.now().isoformat()
         }
         
-        self.log(f"\n📊 === RESUMO DOS TESTES DE WEBSOCKET ===")
+        self.log(f"\n === RESUMO DOS TESTES DE WEBSOCKET ===")
         self.log(f"Total de endpoints testados: {total_tests}")
         self.log(f"Conexões bem-sucedidas: {self.results['successful_connections']}")
         self.log(f"Conexões falharam: {self.results['failed_connections']}")
@@ -124,12 +124,12 @@ class WebSocketTestSuite:
         with open('websocket_test_results.json', 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2, ensure_ascii=False)
         
-        self.log(f"\n💾 Resultados salvos em: websocket_test_results.json")
+        self.log(f"\n Resultados salvos em: websocket_test_results.json")
         
         # Teste TDD: deve falhar se menos de 75% dos endpoints funcionarem
         if success_rate < 75:
-            self.log(f"\n❌ TESTE TDD FALHOU: Taxa de sucesso ({success_rate:.1f}%) abaixo do esperado (75%)")
-            self.log("🔧 Correções necessárias:")
+            self.log(f"\n TESTE TDD FALHOU: Taxa de sucesso ({success_rate:.1f}%) abaixo do esperado (75%)")
+            self.log(" Correções necessárias:")
             
             if self.results['failed_connections'] > 0:
                 self.log("   - Implementar endpoints WebSocket faltantes")
@@ -138,7 +138,7 @@ class WebSocketTestSuite:
             
             return False
         else:
-            self.log(f"\n✅ TESTE TDD PASSOU: WebSockets funcionando adequadamente")
+            self.log(f"\n TESTE TDD PASSOU: WebSockets funcionando adequadamente")
             return True
 
 def main():
@@ -151,10 +151,10 @@ def main():
     try:
         success = asyncio.run(run_tests())
         exit_code = 0 if success else 1
-        print(f"\n🏁 Teste finalizado com código de saída: {exit_code}")
+        print(f"\n Teste finalizado com código de saída: {exit_code}")
         exit(exit_code)
     except Exception as e:
-        print(f"\n💥 Erro fatal durante os testes: {e}")
+        print(f"\n Erro fatal durante os testes: {e}")
         exit(2)
 
 if __name__ == "__main__":
