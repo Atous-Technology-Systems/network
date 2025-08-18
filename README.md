@@ -632,9 +632,6 @@ Estamos abertos a contribuições\! Se você deseja participar:
 4.  Garanta que todos os testes estão passando (`pytest`).
 5.  Envie um *Pull Request* detalhado.
 
-###  **Licença**
-
-Este projeto é licenciado sob os termos da licença **GNU General Public License v3.0 E MIT**.
 -----
 
 **Criado por Rodolfo Rodrigues - Atous Technology Systems**
