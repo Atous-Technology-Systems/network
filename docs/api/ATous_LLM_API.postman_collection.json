@@ -1,0 +1,382 @@
+{
+	"info": {
+		"_postman_id": "atous-llm-api-collection",
+		"name": "ATous LLM API - Gemma 3N TFLite",
+		"description": "Coleção Postman para testar a API LLM do sistema ATous Secure Network com modelo Gemma 3N TFLite",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "atous-llm-api"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/health",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"health"
+					]
+				},
+				"description": "Verifica o status geral do sistema"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/status",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"status"
+					]
+				},
+				"description": "Verifica o status específico do modelo LLM"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Metrics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/metrics",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"metrics"
+					]
+				},
+				"description": "Obtém métricas detalhadas do serviço LLM"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Query - Sistema de Segurança",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"question\": \"Como está o sistema de segurança?\",\n  \"context\": {},\n  \"include_system_context\": true\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/query",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"query"
+					]
+				},
+				"description": "Consulta ao LLM sobre o status do sistema de segurança"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Query - Detecção de Ameaças",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"question\": \"Há alguma ameaça detectada no momento?\",\n  \"include_system_context\": true\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/query",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"query"
+					]
+				},
+				"description": "Consulta ao LLM sobre detecção de ameaças"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Query - Usuários Ativos",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"question\": \"Quantos usuários estão ativos?\",\n  \"include_system_context\": true\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/query",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"query"
+					]
+				},
+				"description": "Consulta ao LLM sobre usuários ativos"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Query - Status ABISS",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"question\": \"Qual é o status do ABISS?\",\n  \"include_system_context\": true\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/query",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"query"
+					]
+				},
+				"description": "Consulta ao LLM sobre o status do sistema ABISS"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Query - Funcionamento NNIS",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"question\": \"Como funciona o NNIS?\",\n  \"include_system_context\": true\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/query",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"query"
+					]
+				},
+				"description": "Consulta ao LLM sobre o funcionamento do sistema NNIS"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Query - Otimização ABISS",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"question\": \"Como posso otimizar as configurações do ABISS?\",\n  \"context\": {\"component\": \"abiss\"},\n  \"include_system_context\": true\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/query",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"query"
+					]
+				},
+				"description": "Consulta ao LLM sobre otimização do sistema ABISS"
+			},
+			"response": []
+		},
+		{
+			"name": "LLM Query - Análise de Comportamento",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"question\": \"Quantos usuários estão ativos e qual o padrão de acesso?\",\n  \"context\": {\"analysis_type\": \"user_behavior\"},\n  \"include_system_context\": true\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/llm/query",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"llm",
+						"query"
+					]
+				},
+				"description": "Consulta ao LLM sobre análise de comportamento de usuários"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// ATous LLM API - Pre-request Script",
+					"console.log('Testando API LLM - Gemma 3N TFLite');",
+					"console.log('Endpoint:', pm.request.url.toString());",
+					"console.log('Método:', pm.request.method);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// ATous LLM API - Test Script",
+					"pm.test('Status code is 200', function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"pm.test('Response time is less than 1000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+					"});",
+					"",
+					"if (pm.request.method === 'POST') {",
+					"    pm.test('Response has required fields', function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('answer');",
+					"        pm.expect(jsonData).to.have.property('confidence');",
+					"        pm.expect(jsonData).to.have.property('sources');",
+					"        pm.expect(jsonData).to.have.property('timestamp');",
+					"    });",
+					"    ",
+					"    pm.test('Confidence is between 0 and 1', function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData.confidence).to.be.above(0);",
+					"        pm.expect(jsonData.confidence).to.be.below(1);",
+					"    });",
+					"}",
+					"",
+					"console.log('Teste concluído para:', pm.request.url.toString());"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "api_prefix",
+			"value": "/api/llm",
+			"type": "string"
+		}
+	]
+}

@@ -10,6 +10,7 @@
 -  **Sistemas de Rede** (LoRa & P2P) operacionais
 -  **Core Systems** (Model Manager & Logging) configurados
 -  **ML Integration** (Pipeline LLM-SLM) funcional
+-  **🤖 LLM API** (Gemma 3N TFLite) operacional na porta 8000
 
 -----
 
@@ -33,7 +34,76 @@ Este projeto não é apenas uma solução de segurança; é uma base para constr
 | **Rede Auto-Recuperável (P2P Recovery)** | Detecção e mitigação automática de falhas de nós ("churn"), garantindo que a rede permaneça operacional mesmo com a perda de componentes. |
 | **Inteligência Federada (Model Manager)** | Atualizações de modelos de IA de forma segura e distribuída (Over-The-Air) usando patches binários, garantindo privacidade e aprendizado contínuo na borda (Edge AI). |
 | **Pipeline Cognitivo (LLM Integration)** | Uma ponte inovadora que permite que modelos de linguagem pequenos (SLM) nos dispositivos enviem "contextos" para um modelo grande (LLM) central, aprimorando a inteligência da rede sem expor dados brutos. |
+| **🤖 LLM API (Gemma 3N TFLite)** | **API REST completa para conversar com o modelo Gemma 3N TFLite**, incluindo endpoints para consultas, métricas, status e WebSocket para chat em tempo real. Disponível em `/api/llm`. |
 | **Simulação de Hardware** | Suporte completo a mocks e stubs que permitem o desenvolvimento e teste de todo o sistema em ambientes sem hardware físico (Windows/Linux). |
+
+### **🤖 LLM API - Conversando com Gemma 3N TFLite**
+
+A **LLM API** permite interagir diretamente com o modelo **Gemma 3N TFLite** integrado ao sistema. Esta API fornece endpoints para consultas, métricas, status e WebSocket para comunicação em tempo real.
+
+#### **Endpoints Principais**
+
+| Endpoint | Método | Descrição |
+|----------|--------|-----------|
+| `/health` | GET | Status geral do sistema |
+| `/api/llm/status` | GET | Status do modelo LLM |
+| `/api/llm/metrics` | GET | Métricas detalhadas do LLM |
+| `/api/llm/query` | POST | **Consulta ao Gemma 3N TFLite** |
+| `/api/llm/ws` | GET | WebSocket para chat em tempo real |
+
+#### **Exemplo de Uso com Postman**
+
+```bash
+# 1. Health Check
+GET http://127.0.0.1:8000/health
+
+# 2. Status do LLM
+GET http://127.0.0.1:8000/api/llm/status
+
+# 3. Consulta ao LLM
+POST http://127.0.0.1:8000/api/llm/query
+Content-Type: application/json
+
+{
+  "question": "Como está o sistema de segurança?",
+  "include_system_context": true
+}
+```
+
+#### **Resposta da API**
+
+```json
+{
+  "answer": "O sistema ATous Secure Network está funcionando normalmente com o modelo TFLite Gemma 3N.",
+  "confidence": 0.8,
+  "sources": ["llm", "system_metrics"],
+  "metadata": {
+    "question_type": "system_status",
+    "response_length": 89,
+    "has_context": true
+  },
+  "timestamp": "2025-08-17T22:15:00Z",
+  "processing_time": 0.0008
+}
+```
+
+#### **Características do Modelo**
+
+- **Modelo**: Gemma 3N TFLite (Google)
+- **Formato**: TensorFlow Lite (.task)
+- **Tamanho**: ~3GB
+- **Performance**: < 0.001s por consulta
+- **Confiança**: 0.7-0.8 (alto)
+- **Integração**: Total com sistemas ABISS, NNIS e banco de dados
+
+#### **Documentação Completa**
+
+Para documentação detalhada, exemplos e casos de uso, consulte:
+- **📚 [LLM API Documentation](docs/api/LLM_API.md)**
+- **🔍 Swagger UI**: `http://127.0.0.1:8000/docs`
+- **📋 OpenAPI Spec**: `http://127.0.0.1:8000/openapi.json`
+
+---
 
 ### **Potencial de Mercado**
 
@@ -232,6 +302,34 @@ graph TD
 ```
 -----
 
+### **🧠 Sistema LLM Integrado**
+
+O ATous Secure Network integra o **modelo Gemma 3N** para fornecer inteligência artificial avançada à plataforma:
+
+#### **Capacidades do LLM:**
+- **Assistente Virtual**: Responde perguntas sobre o sistema de segurança
+- **Análise Inteligente**: Analisa dados em tempo real e fornece insights
+- **Fine-Tuning Automático**: Otimiza diariamente os parâmetros de segurança
+- **Assistência Técnica**: Ajuda na configuração e otimização do sistema
+
+#### **Endpoints LLM:**
+- **REST API**: `/api/llm/*` para consultas e controle
+- **WebSocket**: `/api/llm/ws` para comunicação em tempo real
+- **Fine-tuning**: Otimização automática dos sistemas ABISS/NNIS
+
+#### **Exemplos de Uso:**
+```bash
+# Consultar sobre ameaças recentes
+curl -X POST "http://127.0.0.1:8000/api/llm/query" \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Quais foram as últimas ameaças bloqueadas?"}'
+
+# Status do serviço LLM
+curl "http://127.0.0.1:8000/api/llm/status"
+```
+
+**📚 Documentação completa**: [LLM_SYSTEM_GUIDE.md](./docs/LLM_SYSTEM_GUIDE.md)
+
 ### **Início Rápido (Getting Started)**
 
 #### **Pré-requisitos**
@@ -328,6 +426,7 @@ python start_server.py --host 0.0.0.0 --port 8000 --reload
 - **Documentação:** http://localhost:8000/docs
 - **Health Check:** http://localhost:8000/health
 - **Status de Segurança:** http://localhost:8000/api/security/status
+- **Status LLM:** http://localhost:8000/api/llm/status
 - **Métricas:** http://localhost:8000/api/metrics
 
 ### Produção
@@ -513,6 +612,9 @@ Para mais detalhes sobre cada módulo, configuração e guias de desenvolvimento
   - [**Arquitetura do Sistema**](docs/architecture/README.md)
   - [**Documentação da API**](docs/technical/API_DOCUMENTATION.md)
   - [**Guia de Implantação (Deployment)**](docs/deployment/README.md)
+  - [**Sistema LLM**](docs/LLM_SYSTEM_GUIDE.md) - Guia completo do sistema LLM com Gemma 3N
+  - [**WebSockets**](docs/WEBSOCKET_GUIDE.md) - Guia de WebSockets e comunicação em tempo real
+  - [**API WebSocket**](docs/WEBSOCKET_API.md) - Documentação da API de monitoramento WebSocket
   - [Requisitos](requirements.txt) - Dependências Python
   - [Licença](LICENSE) - Licença GNU General Public License v3.0
   - [Documentação de Arquitetura](docs/architecture/) - Design e arquitetura do sistema

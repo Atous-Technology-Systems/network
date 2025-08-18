@@ -1100,6 +1100,112 @@
           }
         }
       ]
+    },
+    {
+      "name": "🧠 **LLM & IA**",
+      "item": [
+        {
+          "name": "Consultar LLM",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Quais foram as últimas ameaças bloqueadas pelo sistema?\",\n  \"context\": {\n    \"include_security_data\": true,\n    \"include_user_stats\": true\n  },\n  \"include_system_context\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/llm/query",
+              "host": ["{{base_url}}"],
+              "path": ["api", "llm", "query"]
+            },
+            "description": "Fazer pergunta ao modelo Gemma 3N sobre o sistema"
+          }
+        },
+        {
+          "name": "Iniciar Fine-Tuning",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"force\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/llm/fine-tuning",
+              "host": ["{{base_url}}"],
+              "path": ["api", "llm", "fine-tuning"]
+            },
+            "description": "Iniciar fine-tuning manual do sistema de segurança"
+          }
+        },
+        {
+          "name": "Status do LLM",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/llm/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "llm", "status"]
+            },
+            "description": "Obter status atual do serviço LLM"
+          }
+        },
+        {
+          "name": "Carregar Modelo LLM",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/llm/load-model",
+              "host": ["{{base_url}}"],
+              "path": ["api", "llm", "load-model"]
+            },
+            "description": "Carregar modelo LLM manualmente"
+          }
+        },
+        {
+          "name": "Contexto do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/llm/context",
+              "host": ["{{base_url}}"],
+              "path": ["api", "llm", "context"]
+            },
+            "description": "Obter contexto atual do sistema para o LLM"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔌 **WEBSOCKETS LLM**",
+      "item": [
+        {
+          "name": "WebSocket LLM",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/llm/ws",
+              "host": ["{{base_url}}"],
+              "path": ["api", "llm", "ws"]
+            },
+            "description": "WebSocket para comunicação em tempo real com o LLM"
+          }
+        }
+      ]
     }
   ]
 }

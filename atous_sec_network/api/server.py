@@ -30,6 +30,8 @@ from .routes import relay
 from .routes import admin
 from .routes import discovery
 from .routes import auth  # Importar rotas de autenticação
+from .routes import identity  # Importar rotas de identidade
+from .routes import ca  # Importar rotas de CA
 
 # Import new security middleware
 from ..security.security_middleware import ComprehensiveSecurityMiddleware, RateLimitConfig
@@ -535,7 +537,8 @@ app.state.rate_limit_hits = 0
 
 # Incluir routers
 from .routes import health 
-from .routes import websocket_monitor 
+from .routes import websocket_monitor
+from .routes import llm 
 
 app.include_router(health.router, tags=["health"]) 
 app.include_router(websocket_monitor.router, prefix="/api/websocket", tags=["websockets"]) 
@@ -545,7 +548,10 @@ app.include_router(policies.router, tags=["policies"])
 app.include_router(relay.router, tags=["relay"]) 
 app.include_router(admin.router, tags=["admin"]) 
 app.include_router(discovery.router, tags=["discovery"]) 
-app.include_router(auth.router, tags=["authentication"]) 
+app.include_router(auth.router, tags=["authentication"])
+app.include_router(llm.router, prefix="/api/llm", tags=["llm"]) 
+app.include_router(identity.router, tags=["identity"])
+app.include_router(ca.router, tags=["ca"])
 
 
 from ..core.crypto_utils import CryptoUtils
@@ -1202,6 +1208,34 @@ async def system_metrics():
             "timestamp": datetime.now(UTC).isoformat()
         }
 
+
+@app.on_event("startup")
+async def startup_event():
+    """Evento de inicialização do servidor"""
+    try:
+        # Inicializar database
+        from atous_sec_network.database.database import initialize_database
+        
+        logger.info("Inicializando database...")
+        success = initialize_database()
+        if success:
+            logger.info("Database inicializado com sucesso")
+        else:
+            logger.warning("Falha ao inicializar database")
+        
+        # Definir tempo de início
+        app.state.start_time = time.time()
+        app.state.total_requests = 0
+        app.state.active_connections = 0
+        app.state.errors_count = 0
+        app.state.threats_blocked = 0
+        app.state.anomalies_detected = 0
+        app.state.rate_limit_hits = 0
+        
+        logger.info("Servidor inicializado com sucesso")
+        
+    except Exception as e:
+        logger.error(f"Erro na inicialização do servidor: {e}")
 
 def create_app() -> FastAPI:
     """Factory function para criar aplicação"""
