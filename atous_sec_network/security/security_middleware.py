@@ -26,6 +26,380 @@ from .security_presets import get_security_preset
 
 logger = logging.getLogger(__name__)
 
+
+class SecurityMiddleware:
+    """
+    Security Middleware - Classe principal para gerenciamento de configuração de segurança
+    
+    Fornece endpoints para:
+    - Configuração de segurança
+    - Atualização de configuração
+    - Validação de configuração
+    - Reset de configuração
+    - Rollback de configuração
+    - Exportação/Importação de configuração
+    - Health check
+    """
+    
+    def __init__(self, config: Dict[str, Any]):
+        """
+        Inicializa o middleware de segurança
+        
+        Args:
+            config: Configuração de segurança
+        """
+        self.config = config.copy()
+        self.security_level = config.get("security_level", "medium")
+        self.encryption_enabled = config.get("encryption_enabled", True)
+        self.rate_limiting = config.get("rate_limiting", True)
+        self.max_requests_per_minute = config.get("max_requests_per_minute", 100)
+        self.allowed_origins = config.get("allowed_origins", ["*"])
+        self.jwt_secret = config.get("jwt_secret", "default-secret")
+        self.session_timeout = config.get("session_timeout", 3600)
+        
+        # Histórico de configurações para rollback
+        self.config_history = []
+        self.max_history_size = 10
+        
+        # Informações de auditoria
+        self.last_updated = time.time()
+        self.updated_by = "system"
+        self.version = "1.0.0"
+        
+        # Configuração padrão
+        self.default_config = {
+            "security_level": "medium",
+            "encryption_enabled": True,
+            "rate_limiting": True,
+            "max_requests_per_minute": 100,
+            "allowed_origins": ["*"],
+            "jwt_secret": "default-secret",
+            "session_timeout": 3600
+        }
+        
+        self.logger = logging.getLogger(__name__)
+        self.logger.info(f"Security Middleware inicializado com nível: {self.security_level}")
+    
+    def get_security_config(self) -> Dict[str, Any]:
+        """
+        Retorna configuração atual de segurança
+        
+        Returns:
+            Dicionário com configuração de segurança
+        """
+        try:
+            return {
+                "security_level": self.security_level,
+                "encryption_enabled": self.encryption_enabled,
+                "rate_limiting": self.rate_limiting,
+                "max_requests_per_minute": self.max_requests_per_minute,
+                "allowed_origins": self.allowed_origins,
+                "jwt_secret": self.jwt_secret,
+                "session_timeout": self.session_timeout,
+                "last_updated": self.last_updated,
+                "updated_by": self.updated_by,
+                "version": self.version
+            }
+        except Exception as e:
+            self.logger.error(f"Erro ao obter configuração de segurança: {e}")
+            return {
+                "error": str(e),
+                "security_level": self.security_level,
+                "encryption_enabled": self.encryption_enabled
+            }
+    
+    def update_security_config(self, new_config: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Atualiza configuração de segurança
+        
+        Args:
+            new_config: Nova configuração
+            
+        Returns:
+            Configuração atualizada
+        """
+        try:
+            # Salvar configuração atual no histórico
+            self._save_config_to_history()
+            
+            # Validar nova configuração
+            validation_result = self._validate_new_config(new_config)
+            if not validation_result['is_valid']:
+                return {
+                    "error": f"Configuração inválida: {validation_result['errors']}",
+                    "current_config": self.get_security_config()
+                }
+            
+            # Aplicar nova configuração
+            for key, value in new_config.items():
+                if hasattr(self, key):
+                    setattr(self, key, value)
+            
+            # Atualizar informações de auditoria
+            self.last_updated = time.time()
+            self.updated_by = "user"
+            
+            self.logger.info(f"Configuração de segurança atualizada: {new_config}")
+            return self.get_security_config()
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao atualizar configuração: {e}")
+            return {
+                "error": str(e),
+                "current_config": self.get_security_config()
+            }
+    
+    def validate_security_config(self) -> Dict[str, Any]:
+        """
+        Valida configuração atual de segurança
+        
+        Returns:
+            Resultado da validação
+        """
+        try:
+            errors = []
+            warnings = []
+            
+            # Validar security_level
+            valid_levels = ["low", "medium", "high", "maximum"]
+            if self.security_level not in valid_levels:
+                errors.append(f"security_level deve ser um dos: {valid_levels}")
+            
+            # Validar max_requests_per_minute
+            if self.max_requests_per_minute < 1 or self.max_requests_per_minute > 10000:
+                errors.append("max_requests_per_minute deve estar entre 1 e 10000")
+            
+            # Validar session_timeout
+            if self.session_timeout < 60 or self.session_timeout > 86400:
+                warnings.append("session_timeout deve estar entre 60 e 86400 segundos")
+            
+            # Validar jwt_secret
+            if len(self.jwt_secret) < 16:
+                warnings.append("jwt_secret deve ter pelo menos 16 caracteres")
+            
+            is_valid = len(errors) == 0
+            
+            return {
+                "is_valid": is_valid,
+                "errors": errors,
+                "warnings": warnings,
+                "config": self.get_security_config()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro na validação: {e}")
+            return {
+                "is_valid": False,
+                "errors": [str(e)],
+                "warnings": [],
+                "config": self.get_security_config()
+            }
+    
+    def reset_security_config(self) -> Dict[str, Any]:
+        """
+        Reseta configuração para valores padrão
+        
+        Returns:
+            Configuração padrão
+        """
+        try:
+            # Salvar configuração atual no histórico
+            self._save_config_to_history()
+            
+            # Aplicar configuração padrão
+            for key, value in self.default_config.items():
+                setattr(self, key, value)
+            
+            # Atualizar informações de auditoria
+            self.last_updated = time.time()
+            self.updated_by = "system"
+            
+            self.logger.info("Configuração de segurança resetada para padrão")
+            return self.get_security_config()
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao resetar configuração: {e}")
+            return {
+                "error": str(e),
+                "current_config": self.get_security_config()
+            }
+    
+    def rollback_security_config(self) -> Dict[str, Any]:
+        """
+        Faz rollback para configuração anterior
+        
+        Returns:
+            Configuração após rollback
+        """
+        try:
+            if not self.config_history:
+                return {
+                    "error": "Nenhuma configuração anterior disponível para rollback",
+                    "current_config": self.get_security_config()
+                }
+            
+            # Salvar configuração atual
+            self._save_config_to_history()
+            
+            # Restaurar configuração anterior
+            previous_config = self.config_history.pop()
+            for key, value in previous_config.items():
+                if hasattr(self, key):
+                    setattr(self, key, value)
+            
+            # Atualizar informações de auditoria
+            self.last_updated = time.time()
+            self.updated_by = "system"
+            
+            self.logger.info("Rollback de configuração de segurança executado")
+            return self.get_security_config()
+            
+        except Exception as e:
+            self.logger.error(f"Erro no rollback: {e}")
+            return {
+                "error": str(e),
+                "current_config": self.get_security_config()
+            }
+    
+    def export_security_config(self) -> Dict[str, Any]:
+        """
+        Exporta configuração atual
+        
+        Returns:
+            Configuração exportada
+        """
+        try:
+            config = self.get_security_config()
+            config['export_timestamp'] = time.time()
+            config['export_format'] = 'json'
+            
+            self.logger.info("Configuração de segurança exportada")
+            return config
+            
+        except Exception as e:
+            self.logger.error(f"Erro na exportação: {e}")
+            return {"error": str(e)}
+    
+    def import_security_config(self, imported_config: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Importa configuração
+        
+        Args:
+            imported_config: Configuração a ser importada
+            
+        Returns:
+            Resultado da importação
+        """
+        try:
+            # Validar configuração importada
+            validation_result = self._validate_new_config(imported_config)
+            if not validation_result['is_valid']:
+                return {
+                    "error": f"Configuração importada inválida: {validation_result['errors']}",
+                    "current_config": self.get_security_config()
+                }
+            
+            # Aplicar configuração importada
+            return self.update_security_config(imported_config)
+            
+        except Exception as e:
+            self.logger.error(f"Erro na importação: {e}")
+            return {"error": str(e)}
+    
+    def health_check(self) -> Dict[str, Any]:
+        """
+        Verifica saúde do sistema de segurança
+        
+        Returns:
+            Status de saúde
+        """
+        try:
+            # Verificar validação da configuração
+            validation = self.validate_security_config()
+            
+            if validation['is_valid']:
+                status = "healthy"
+            elif len(validation['warnings']) > 0 and len(validation['errors']) == 0:
+                status = "degraded"
+            else:
+                status = "unhealthy"
+            
+            return {
+                "status": status,
+                "timestamp": time.time(),
+                "validation": validation,
+                "config_version": self.version
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Erro no health check: {e}")
+            return {
+                "status": "unhealthy",
+                "timestamp": time.time(),
+                "error": str(e)
+            }
+    
+    def _save_config_to_history(self) -> None:
+        """Salva configuração atual no histórico"""
+        current_config = {
+            "security_level": self.security_level,
+            "encryption_enabled": self.encryption_enabled,
+            "rate_limiting": self.rate_limiting,
+            "max_requests_per_minute": self.max_requests_per_minute,
+            "allowed_origins": self.allowed_origins,
+            "jwt_secret": self.jwt_secret,
+            "session_timeout": self.session_timeout,
+            "timestamp": time.time()
+        }
+        
+        self.config_history.append(current_config)
+        
+        # Manter apenas as últimas configurações
+        if len(self.config_history) > self.max_history_size:
+            self.config_history.pop(0)
+    
+    def _validate_new_config(self, new_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Valida nova configuração"""
+        errors = []
+        warnings = []
+        
+        # Validar security_level
+        if "security_level" in new_config:
+            valid_levels = ["low", "medium", "high", "maximum"]
+            if new_config["security_level"] not in valid_levels:
+                errors.append(f"security_level deve ser um dos: {valid_levels}")
+        
+        # Validar max_requests_per_minute
+        if "max_requests_per_minute" in new_config:
+            try:
+                value = int(new_config["max_requests_per_minute"])
+                if value < 1 or value > 10000:
+                    errors.append("max_requests_per_minute deve estar entre 1 e 10000")
+            except (ValueError, TypeError):
+                errors.append("max_requests_per_minute deve ser um número inteiro")
+        
+        # Validar session_timeout
+        if "session_timeout" in new_config:
+            try:
+                value = int(new_config["session_timeout"])
+                if value < 60 or value > 86400:
+                    warnings.append("session_timeout deve estar entre 60 e 86400 segundos")
+            except (ValueError, TypeError):
+                errors.append("session_timeout deve ser um número inteiro")
+        
+        return {
+            "is_valid": len(errors) == 0,
+            "errors": errors,
+            "warnings": warnings
+        }
+    
+    async def shutdown(self) -> None:
+        """Desliga o middleware de segurança"""
+        try:
+            self.logger.info("Security Middleware desligado")
+        except Exception as e:
+            self.logger.error(f"Erro ao desligar: {e}")
+
 @dataclass
 class ClientInfo:
     """Information about a client for rate limiting and monitoring"""

@@ -92,6 +92,8 @@ class LLMService:
         self.tokenizer = None
         self.is_loaded = False
         self.is_training = False
+        self.fallback_mode = False
+        self.model_loaded = False
         
         # Configurações
         self.max_length = 2048
@@ -115,6 +117,13 @@ class LLMService:
         self.average_response_time = 0.0
         
         logger.info(f"LLM Service inicializado com modelo Gemma 3N em: {self.model_path}")
+        
+        # Carregar modelo síncronamente
+        self._load_model_sync()
+    
+    def is_model_ready(self) -> bool:
+        """Verifica se o modelo está pronto para uso"""
+        return self.is_loaded and self.model is not None and self.tokenizer is not None
     
     def _load_system_context(self) -> str:
         """Carrega o contexto do sistema para o LLM"""
@@ -143,6 +152,36 @@ class LLMService:
         """
         return context.strip()
     
+    def _load_model_sync(self) -> bool:
+        """Carrega o modelo Gemma 3N de forma síncrona (PyTorch ou TFLite)"""
+        try:
+            logger.info("Iniciando carregamento síncrono do modelo Gemma 3N...")
+            
+            # Verificar se o modelo existe
+            if not os.path.exists(self.model_path):
+                logger.error(f"Modelo não encontrado em: {self.model_path}")
+                return False
+            
+            # Verificar se é um modelo TFLite
+            model_dir = Path(self.model_path)
+            has_task_file = any(model_dir.glob("*.task"))
+            is_tflite_path = ('.task' in self.model_path or 
+                             'tflite' in self.model_path.lower() or
+                             'gemma-3n' in self.model_path and has_task_file)
+            
+            if is_tflite_path:
+                logger.info(f"Detectado modelo TFLite em: {self.model_path}")
+                return self._load_tflite_model_sync()
+            else:
+                logger.info(f"Detectado modelo PyTorch em: {self.model_path}")
+                return self._load_pytorch_model_sync()
+            
+        except Exception as e:
+            logger.error(f"Erro ao carregar modelo síncrono: {e}")
+            # Tentar ativar modo fallback
+            self._activate_fallback_mode()
+            return self.fallback_mode
+    
     async def load_model(self) -> bool:
         """Carrega o modelo Gemma 3N de forma assíncrona (PyTorch ou TFLite)"""
         try:
@@ -170,6 +209,83 @@ class LLMService:
             
         except Exception as e:
             logger.error(f"Erro ao carregar modelo: {e}")
+            return False
+    
+    def _load_tflite_model_sync(self) -> bool:
+        """Carrega modelo TFLite de forma síncrona"""
+        try:
+            logger.info("Carregando modelo TFLite Gemma 3N...")
+            
+            # Usar tokenizer básico para TFLite
+            logger.info("Usando tokenizer básico para TFLite...")
+            self.tokenizer = self._create_basic_tokenizer()
+            
+            # Carregar modelo TFLite (ou simulador)
+            logger.info("Carregando modelo TFLite...")
+            if TFLITE_AVAILABLE:
+                self.model = tflite.Interpreter(model_path=self.model_path)
+            else:
+                logger.info("Usando simulador TFLite (TensorFlow não disponível)")
+                self.model = TFLiteSimulator(self.model_path)
+            
+            self.model.allocate_tensors()
+            
+            self.is_loaded = True
+            self.model_loaded = True
+            logger.info("Modelo TFLite Gemma 3N carregado com sucesso!")
+            
+            # Iniciar thread de fine-tuning
+            self._start_fine_tuning_thread()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erro ao carregar modelo TFLite síncrono: {e}")
+            return False
+    
+    def _load_pytorch_model_sync(self) -> bool:
+        """Carrega modelo PyTorch de forma síncrona"""
+        try:
+            logger.info("Carregando modelo PyTorch Gemma 3N...")
+            
+            # Carregar tokenizer
+            logger.info("Carregando tokenizer...")
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.model_path,
+                    trust_remote_code=True
+                )
+                logger.info("Tokenizer carregado com sucesso!")
+            except Exception as e:
+                logger.error(f"Erro ao carregar tokenizer: {e}")
+                return False
+            
+            # Carregar modelo
+            logger.info("Carregando modelo...")
+            try:
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_path,
+                    torch_dtype=torch.float16,
+                    device_map="auto",
+                    trust_remote_code=True,
+                    local_files_only=True
+                )
+                logger.info("Modelo PyTorch Gemma 3N carregado com sucesso!")
+            except Exception as e:
+                logger.error(f"Erro ao carregar modelo: {e}")
+                return False
+            
+            self.is_loaded = True
+            self.model_loaded = True
+            logger.info("Modelo PyTorch Gemma 3N carregado com sucesso!")
+            
+            # Iniciar thread de fine-tuning
+            self._start_fine_tuning_thread()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erro ao carregar modelo PyTorch síncrono: {e}")
             return False
     
     async def _load_tflite_model(self) -> bool:
@@ -266,6 +382,64 @@ class LLMService:
         
         return BasicTokenizer()
     
+    def _activate_fallback_mode(self):
+        """Ativa modo fallback quando modelo principal falha"""
+        try:
+            logger.warning("Ativando modo fallback para LLM Service...")
+            self.fallback_mode = True
+            
+            # Carregar modelo fallback
+            fallback_model = self._load_fallback_model()
+            if fallback_model:
+                self.model = fallback_model
+                self.tokenizer = self._create_basic_tokenizer()
+                self.is_loaded = True
+                self.model_loaded = True
+                logger.info("Modo fallback ativado com sucesso")
+            else:
+                logger.error("Falha ao carregar modelo fallback")
+                self.is_loaded = False
+                self.model_loaded = False
+                
+        except Exception as e:
+            logger.error(f"Erro ao ativar modo fallback: {e}")
+            self.is_loaded = False
+            self.model_loaded = False
+    
+    def _load_fallback_model(self):
+        """Carrega modelo fallback quando principal falha"""
+        try:
+            logger.info("Carregando modelo fallback...")
+            
+            # Criar modelo fallback simples
+            class FallbackModel:
+                def __init__(self):
+                    self.allocated = False
+                
+                def allocate_tensors(self):
+                    self.allocated = True
+                
+                def get_input_details(self):
+                    return [{'shape': [1, 512], 'dtype': 'float32'}]
+                
+                def get_output_details(self):
+                    return [{'shape': [1, 512], 'dtype': 'float32'}]
+                
+                def set_tensor(self, index, value):
+                    pass
+                
+                def invoke(self):
+                    pass
+                
+                def get_tensor(self, index):
+                    return [0.1, 0.2, 0.3]
+            
+            return FallbackModel()
+            
+        except Exception as e:
+            logger.error(f"Erro ao carregar modelo fallback: {e}")
+            return None
+    
     def _start_fine_tuning_thread(self):
         """Inicia thread de fine-tuning automático"""
         if self.fine_tuning_thread is None or not self.fine_tuning_thread.is_alive():
@@ -295,12 +469,8 @@ class LLMService:
     
     async def query(self, question: str, context: Dict[str, Any] = None) -> LLMResponse:
         """Executa uma consulta para o LLM"""
-        if not self.is_loaded:
-            return LLMResponse(
-                answer="Modelo não carregado. Aguarde o carregamento.",
-                confidence=0.0,
-                sources=["system"]
-            )
+        if not self.is_model_ready():
+            raise Exception("Modelo LLM não está pronto para uso")
         
         start_time = time.time()
         self.total_queries += 1
@@ -538,6 +708,43 @@ class LLMService:
             base_confidence += 0.05
         
         return min(base_confidence, 1.0)
+    
+    def get_model_status(self) -> Dict[str, Any]:
+        """Retorna status detalhado do modelo"""
+        try:
+            if self.is_loaded and self.model is not None and self.tokenizer is not None:
+                if self.fallback_mode:
+                    status = "degraded"
+                    message = "Modelo em modo fallback"
+                else:
+                    status = "ready"
+                    message = "Modelo principal operacional"
+            else:
+                status = "unavailable"
+                message = "Modelo não disponível"
+            
+            return {
+                "status": status,
+                "message": message,
+                "details": {
+                    "is_loaded": self.is_loaded,
+                    "model_loaded": self.model_loaded,
+                    "fallback_mode": self.fallback_mode,
+                    "model_type": "tflite" if hasattr(self.model, 'allocate_tensors') else "pytorch" if self.model else "none",
+                    "has_tokenizer": self.tokenizer is not None,
+                    "is_training": self.is_training
+                },
+                "fallback_mode": self.fallback_mode
+            }
+            
+        except Exception as e:
+            logger.error(f"Erro ao obter status do modelo: {e}")
+            return {
+                "status": "error",
+                "message": f"Erro ao obter status: {str(e)}",
+                "details": {},
+                "fallback_mode": False
+            }
     
     def _identify_sources(self, question: str, response: str) -> List[str]:
         """Identifica fontes da resposta"""

@@ -91,6 +91,41 @@ class RelayPollResponse(BaseModel):
     messages: list[dict]
 
 
+class RelayStatusResponse(BaseModel):
+    system_status: str  # "operational", "idle", "error"
+    active_agents: int
+    total_messages: int
+    ttl_seconds: int
+    last_cleanup: str  # ISO timestamp
+    version: str
+    timestamp: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+
+
+@router.get("/v1/relay/status", response_model=RelayStatusResponse)
+async def relay_status():
+    """
+    Retorna o status operacional do sistema de relay
+    """
+    try:
+        # Coletar métricas do _STORE
+        active_agents = len(_STORE.agents)
+        total_messages = sum(len(queue) for queue in _STORE.queues.values())
+        
+        # Calcular status geral
+        system_status = "operational" if active_agents > 0 else "idle"
+        
+        return RelayStatusResponse(
+            system_status=system_status,
+            active_agents=active_agents,
+            total_messages=total_messages,
+            ttl_seconds=_STORE.ttl_seconds,
+            last_cleanup=datetime.now(UTC).isoformat(),
+            version="1.0.0"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao obter status: {str(e)}")
+
+
 @router.get("/v1/relay/poll", response_model=RelayPollResponse)
 async def relay_poll(agent_id: str = Query(...)):
     if not agent_id:
