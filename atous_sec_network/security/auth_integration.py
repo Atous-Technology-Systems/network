@@ -44,7 +44,7 @@ class AuthIntegrationService:
             return False
     
     def create_user(self, username: str, email: str, password: str, 
-                   roles: Optional[Set[Role]] = None) -> str:
+                   roles: Optional[Set[str]] = None) -> str:
         """
         Create user in database with proper password hashing
         
@@ -64,8 +64,8 @@ class AuthIntegrationService:
             # Hash password
             password_hash = self.hash_password(password)
             
-            # Convert roles to role names
-            role_names = [role.value for role in roles] if roles else None
+            # Use roles directly (already strings)
+            role_names = list(roles) if roles else None
             
             # Create user in database
             user_id = self.db_auth_service.create_user(

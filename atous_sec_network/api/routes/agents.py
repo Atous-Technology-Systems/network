@@ -2,12 +2,12 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
 
-from ...security.ca_service import CAService
+from ...security.ca_service import ProductionCAService
 from ...security.policy_service import PolicyService
 
 
 router = APIRouter()
-_ca_service = CAService()
+_ca_service = ProductionCAService()
 _policy_service = PolicyService()
 
 
@@ -21,15 +21,21 @@ class EnrollResponse(BaseModel):
     agent_id: str
     certificate_pem: str
     ca_chain_pem: str
+    serial_number: int
 
 
 @router.post("/v1/agents/enroll", response_model=EnrollResponse)
 async def enroll_agent(req: EnrollRequest):
     try:
-        cert_pem, ca_pem = _ca_service.issue_certificate(req.csr_pem)
+        cert_pem, ca_pem, serial_number = _ca_service.issue_certificate(req.csr_pem)
         # For MVP, agent_id derived from CN is acceptable
         agent_id = "agt-" + str(abs(hash(cert_pem)))[0:10]
-        return EnrollResponse(agent_id=agent_id, certificate_pem=cert_pem, ca_chain_pem=ca_pem)
+        return EnrollResponse(
+            agent_id=agent_id, 
+            certificate_pem=cert_pem, 
+            ca_chain_pem=ca_pem,
+            serial_number=serial_number
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
