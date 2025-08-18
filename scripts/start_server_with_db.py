@@ -74,6 +74,7 @@ def main():
     except Exception as e:
         print(f" Erro no servidor: {e}")
         return 1
+
     return 0
 
 if __name__ == "__main__":
